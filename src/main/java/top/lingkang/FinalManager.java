@@ -4,8 +4,11 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.lingkang.config.FinalSecurityProperties;
+import top.lingkang.constants.MessageConstants;
 import top.lingkang.entity.SessionEntity;
 import top.lingkang.error.FinalExceptionHandler;
+import top.lingkang.error.NotLoginException;
+import top.lingkang.error.TokenException;
 import top.lingkang.http.FinalRequest;
 import top.lingkang.http.FinalResponse;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
@@ -14,13 +17,13 @@ import top.lingkang.security.FinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
+import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSession;
 import top.lingkang.utils.AssertUtils;
+import top.lingkang.utils.StringUtils;
 import top.lingkang.utils.TokenUtils;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author lingkang
@@ -29,7 +32,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class FinalManager {
     // 管理所有会话
-    private static ConcurrentMap<String, SessionEntity> concurrentMap = new ConcurrentHashMap<String, SessionEntity>();
+    private static SessionManager sessionManager;
     public static SessionListener sessionListener;
 
     private static FinalRequest finalRequest;
@@ -37,6 +40,15 @@ public class FinalManager {
     private static FinalSecurityProperties finalSecurityProperties;
     private static FinalTokenGenerate finalTokenGenerate;
     private static FinalExceptionHandler finalExceptionHandler;
+    private static long sessionMaxValid;
+
+    public static long getSessionMaxValid() {
+        return sessionMaxValid;
+    }
+
+    public static void setSessionMaxValid(long sessionMaxValid) {
+        FinalManager.sessionMaxValid = sessionMaxValid;
+    }
 
     public static FinalRequest getFinalRequest() {
         if (finalRequest instanceof FinalRequestSpringMVC) {
@@ -54,6 +66,14 @@ public class FinalManager {
         }
         AssertUtils.isNull(null, "获取response上下文失败！");
         return null;
+    }
+
+    public static SessionManager getSessionManager() {
+        return sessionManager;
+    }
+
+    public static void setSessionManager(SessionManager sessionManager) {
+        FinalManager.sessionManager = sessionManager;
     }
 
     public static void setFinalResponse(FinalResponse finalResponse) {
@@ -95,22 +115,40 @@ public class FinalManager {
     }
 
     public static boolean isLogin() {
-        return concurrentMap.containsKey(getToken());
+        // 检查会话里的令牌
+        String token = FinalManager.getToken();
+        if (StringUtils.isEmpty(token)) {
+            throw new NotLoginException(MessageConstants.notLoginMsg);
+        }
+        // 检查token是否有效
+        FinalManager.checkToken(token);
+
+        return true;
     }
 
     public static void logout() {
-        concurrentMap.remove(getToken());
+        sessionManager.remove(getToken());
     }
 
     /**
      * 检查 token是否有效
      */
-    public static boolean checkToken(String token) {
-        return concurrentMap.containsKey(token);
+    public static void checkToken(String token) {
+        SessionEntity sessionEntity = sessionManager.get(token);
+        if (sessionEntity == null) {
+            throw new TokenException(MessageConstants.tokenInvalidMsg);
+        }
+        if (!sessionEntity.getFinalSession().isValidInternal(sessionMaxValid)) {
+            // 调用 session 监听
+            sessionListener.delete(sessionEntity);
+            throw new TokenException(MessageConstants.TokenValidInvalidMsg);
+        }
+        // 更新session访问时间
+        sessionEntity.getFinalSession().updateLastAccessTime();
     }
 
     public static boolean checkToken() {
-        return concurrentMap.containsKey(getToken());
+        return sessionManager.containsKey(getToken());
     }
 
     public static String getToken() {
@@ -132,7 +170,7 @@ public class FinalManager {
             return token;
         }
 
-        return null;
+        throw new TokenException(MessageConstants.requestNotToken);
     }
 
     // -----------------  login 相关 ---------------------------------------- end
@@ -144,11 +182,11 @@ public class FinalManager {
     }
 
     protected static void addFinalSession(String id, SessionEntity sessionEntity) {
-        concurrentMap.put(id, sessionEntity);
+        sessionManager.put(id, sessionEntity);
     }
 
     public static FinalSession getFinalSession(String token) {
-        SessionEntity entity = concurrentMap.get(token);
+        SessionEntity entity = sessionManager.get(token);
         if (entity != null)
             return entity.getFinalSession();
 
@@ -177,6 +215,9 @@ public class FinalManager {
         return finalSession;
     }
 
+    public static SessionEntity getSessionEntity() {
+        return sessionManager.get(getToken());
+    }
 
     // -----------------  session 相关 ---------------------------------------- end
 
@@ -184,9 +225,9 @@ public class FinalManager {
 
     public static void addRoles(List<String> roles) {
         String token = getToken();
-        FinalRoles finalRoles = concurrentMap.get(token).getFinalRoles();
+        FinalRoles finalRoles = sessionManager.get(token).getFinalRoles();
         finalRoles.addRoles(roles);
-        concurrentMap.get(token).setFinalRoles(finalRoles);
+        sessionManager.get(token).setFinalRoles(finalRoles);
     }
 
     // -----------------  权限 相关 ---------------------------------------- end

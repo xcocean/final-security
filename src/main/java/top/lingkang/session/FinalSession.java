@@ -18,4 +18,8 @@ public interface FinalSession {
 
     void removeAttribute(String var1);
 
+    boolean isValidInternal(long time);
+
+    void updateLastAccessTime();
+
 }

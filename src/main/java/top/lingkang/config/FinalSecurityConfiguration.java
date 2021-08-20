@@ -13,9 +13,12 @@ import top.lingkang.error.FinalExceptionHandler;
 import top.lingkang.error.impl.DefaultFinalExceptionHandler;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.http.impl.FinalResponseSpringMVC;
+import top.lingkang.security.FinalHttpSecurity;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
+import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalTokenGenerate;
+import top.lingkang.session.impl.DefaultSessionManager;
 
 import java.util.Map;
 
@@ -40,21 +43,19 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
     }
 
     public FinalSecurityConfig getFinalSecurityConfig() {
-        Map<String, FinalSecurityConfig> finalSecurityConfigMap = applicationContext.getBeansOfType(FinalSecurityConfig.class);
-        if (!finalSecurityConfigMap.isEmpty()) {
-            for (Map.Entry<String, FinalSecurityConfig> entry : finalSecurityConfigMap.entrySet()) {
-                return entry.getValue();
-            }
+        FinalSecurityConfig beanByClass = getBeanByClass(FinalSecurityConfig.class);
+        if (beanByClass != null) {
+            return beanByClass;
         }
 
-        // 返回一个空对象
+        // 返回一个默认对象
         return new FinalSecurityConfig();
     }
 
     @Bean
     @Order(0)
     public void FinalSecurityInit() {
-        // 填加配置
+        // 添加配置
         addFinalSecurityProperties();
         // 初始化http请求上下文
         addHttpServletRequest();
@@ -62,6 +63,9 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
 
         // 自定义配置大于默认
         FinalSecurityConfig finalSecurityConfig = getFinalSecurityConfig();
+
+        // 添加会话管理
+        addSessionManager(finalSecurityConfig.getSessionManager());
 
         // 初始化添加会话监听
         addSessionListener(finalSecurityConfig.getSessionListener());
@@ -72,11 +76,29 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
         // 添加异常处理
         addFinalExceptionHandler(finalSecurityConfig.getFinalExceptionHandler());
 
+        // 添加会话失效时间
+        addSessionMaxValid(finalSecurityConfig.getSessionMaxValid());
     }
 
+    @Bean
+    public FinalHttpSecurity finalHttpSecurity() {
+        return getFinalSecurityConfig().getFinalHttpSecurity();
+    }
 
     private void addFinalSecurityProperties() {
         FinalManager.setFinalSecurityProperties(properties);
+    }
+
+    private void addSessionManager(SessionManager sessionManager) {
+        if (sessionManager != null) {
+            FinalManager.setSessionManager(sessionManager);
+        }
+        SessionManager beanByClass = getBeanByClass(SessionManager.class);
+        if (beanByClass != null) {
+            FinalManager.setSessionManager(beanByClass);
+        } else {
+            FinalManager.setSessionManager(new DefaultSessionManager());
+        }
     }
 
     private void addSessionListener(SessionListener sessionListener) {
@@ -127,6 +149,13 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
 
     }
 
+    private void addSessionMaxValid(long sessionMaxValid) {
+        if (sessionMaxValid != 0L) {
+            FinalManager.setSessionMaxValid(sessionMaxValid);
+        } else {
+            FinalManager.setSessionMaxValid(properties.getSessionMaxValid());
+        }
+    }
 
     private <T> T getBeanByClass(Class<T> clazz) {
         Map<String, T> beansOfType = applicationContext.getBeansOfType(clazz);

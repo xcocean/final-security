@@ -12,4 +12,6 @@ public interface FinalExceptionHandler {
     void notLoginException(NotLoginException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     void tokenException(TokenException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+    void permissionException(PermissionException e,HttpServletRequest request, HttpServletResponse response)throws Exception;
 }

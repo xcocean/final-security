@@ -31,13 +31,14 @@ public class FinalSecurityController {
         return new ModelAndView("redirect:/");
     }
 
-    @GetMapping("")
+    @GetMapping("/")
     public Object index() {
-        FinalSession finalSession = FinalContext.getFinalSession();
-        System.out.println(finalSession.getToken());
-        System.out.println(finalSession.getAttribute("a"));
-        System.out.println(FinalContext.getFinalSession().getToken());
         return "123";
+    }
+
+    @GetMapping("/test")
+    public Object test() {
+        return "test";
     }
 
     @GetMapping("logout")

@@ -1,9 +1,7 @@
 package top.lingkang.session.impl;
 
 import top.lingkang.session.FinalSession;
-import top.lingkang.FinalManager;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,12 +14,12 @@ public class DefaultFinalSession implements FinalSession {
     private final Map<String, Object> data = new ConcurrentHashMap<String, Object>();
     private String token;
     private String id;
-    private volatile long creationTime;
+    private volatile long creationTime, lastAccessTime;
 
-    public DefaultFinalSession(String id,String token) {
-        this.id=id;
+    public DefaultFinalSession(String id, String token) {
+        this.id = id;
         this.token = token;
-        this.creationTime = System.currentTimeMillis();
+        this.creationTime = this.lastAccessTime = System.currentTimeMillis();
     }
 
     public long getCreationTime() {
@@ -48,4 +46,11 @@ public class DefaultFinalSession implements FinalSession {
         data.remove(var1);
     }
 
+    public boolean isValidInternal(long time) {
+        return System.currentTimeMillis() - lastAccessTime < time;
+    }
+
+    public void updateLastAccessTime() {
+        lastAccessTime = System.currentTimeMillis();
+    }
 }

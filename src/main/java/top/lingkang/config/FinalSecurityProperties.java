@@ -13,6 +13,17 @@ public class FinalSecurityProperties {
 
     private String[] excludePath = {"/login"};
 
+    // 默认session最大存活时间 默认 30分钟
+    private long sessionMaxValid = 1800000L;
+
+    public long getSessionMaxValid() {
+        return sessionMaxValid;
+    }
+
+    public void setSessionMaxValid(long sessionMaxValid) {
+        this.sessionMaxValid = sessionMaxValid;
+    }
+
     public String getTokenName() {
         return tokenName;
     }

@@ -1,10 +1,13 @@
 package top.lingkang.config;
 
 import top.lingkang.error.FinalExceptionHandler;
-import top.lingkang.security.FinalAuthConfig;
+import top.lingkang.security.CheckAuth;
+import top.lingkang.security.FinalHttpSecurity;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
+import top.lingkang.session.SessionManager;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -15,21 +18,40 @@ import java.util.List;
 public class FinalSecurityConfig {
     // token生成策略
     private FinalTokenGenerate finalTokenGenerate;
+    private SessionManager sessionManager;
     // 会话监听
     private SessionListener sessionListener;
     // 排除路径
     private List<String> excludePath;
     // 异常处理
     private FinalExceptionHandler finalExceptionHandler;
-    // 鉴权配置
-    private FinalAuthConfig finalAuthConfig;
 
-    public FinalAuthConfig getFinalAuthConfig() {
-        return finalAuthConfig;
+    private long sessionMaxValid;
+
+    private FinalHttpSecurity finalHttpSecurity;
+
+    public FinalHttpSecurity getFinalHttpSecurity() {
+        return finalHttpSecurity;
     }
 
-    public void setFinalAuthConfig(FinalAuthConfig finalAuthConfig) {
-        this.finalAuthConfig = finalAuthConfig;
+    public void setFinalHttpSecurity(FinalHttpSecurity finalHttpSecurity) {
+        this.finalHttpSecurity = finalHttpSecurity;
+    }
+
+    public long getSessionMaxValid() {
+        return sessionMaxValid;
+    }
+
+    public void setSessionMaxValid(long sessionMaxValid) {
+        this.sessionMaxValid = sessionMaxValid;
+    }
+
+    public SessionManager getSessionManager() {
+        return sessionManager;
+    }
+
+    public void setSessionManager(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
     }
 
     public FinalExceptionHandler getFinalExceptionHandler() {

@@ -3,17 +3,16 @@ package top.lingkang.filter;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import top.lingkang.FinalManager;
 import top.lingkang.config.FinalSecurityConfig;
 import top.lingkang.config.FinalSecurityProperties;
-import top.lingkang.constants.MessageConstants;
 import top.lingkang.error.NotLoginException;
 import top.lingkang.error.PermissionException;
 import top.lingkang.error.TokenException;
-import top.lingkang.utils.StringUtils;
+import top.lingkang.security.CheckAuth;
+import top.lingkang.security.FinalHttpSecurity;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -27,13 +26,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lingkang
  * @date 2021/8/10 15:30
  * @description
  */
-@Order(0)
 @Component
 public class RequestFilter implements Filter {
 
@@ -41,6 +40,8 @@ public class RequestFilter implements Filter {
     private FinalSecurityProperties properties;
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private FinalHttpSecurity finalHttpSecurity;
 
     private List<String> excludePath = new ArrayList<String>();
 
@@ -60,20 +61,21 @@ public class RequestFilter implements Filter {
         }
 
         try {
-            // 检查会话里的令牌
-            String token = FinalManager.getToken();
-            if (StringUtils.isEmpty(token)) {
-                throw new NotLoginException("You haven't logged in yet, please login, 您还未登录，请登录！");
+            // 鉴权逻辑
+            if (finalHttpSecurity.getCheckAuthHashMap() != null) {
+                for (Map.Entry<String, CheckAuth> map : finalHttpSecurity.getCheckAuthHashMap().entrySet()) {
+                    if (matcher.match(map.getKey(), path)) {
+                        map.getValue().checkAll();
+                    }
+                }
             }
 
-            // 检查token是否有效
-            if (!FinalManager.checkToken(token)) {
-                throw new TokenException(MessageConstants.tokenInvalidMsg);
-            }
         } catch (Exception e) {
             try {
                 handlerException(request, response, e);
             } catch (Exception ex) {
+                ex.printStackTrace();
+                throw new ServletException(ex);
             }
             return;
         }
@@ -100,7 +102,9 @@ public class RequestFilter implements Filter {
     }
 
     private void handlerException(HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
-        if (e instanceof NotLoginException) {
+        if (e instanceof PermissionException) {
+            FinalManager.getFinalExceptionHandler().permissionException((PermissionException) e, request, response);
+        } else if (e instanceof NotLoginException) {
             FinalManager.getFinalExceptionHandler().notLoginException((NotLoginException) e, request, response);
         } else if (e instanceof TokenException) {
             FinalManager.getFinalExceptionHandler().tokenException((TokenException) e, request, response);

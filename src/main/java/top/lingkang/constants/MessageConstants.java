@@ -8,7 +8,11 @@ package top.lingkang.constants;
 public final class MessageConstants {
     public static final String notLoginMsg = "You haven't logged in yet, please login, 您还未登录，请登录！";
 
-    public static final String tokenInvalidMsg = "token invalid, 无效的token！";
+    public static final String tokenInvalidMsg = "token invalid, please login. 无效的token, 请重新登录";
 
-    public static final String unauthorizedMsg="Unauthorized, 未授权！";
+    public static final String TokenValidInvalidMsg = "token expire, token到期, 请重新登录";
+
+    public static final String requestNotToken="request not exist token parameter, please login. 请求不存在token参数, 请登录!";
+
+    public static final String unauthorizedMsg = "Unauthorized, 未授权的资源！";
 }

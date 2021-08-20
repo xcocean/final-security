@@ -1,6 +1,7 @@
 package top.lingkang.bean;
 
 import org.springframework.stereotype.Component;
+import top.lingkang.entity.SessionEntity;
 import top.lingkang.session.SessionListener;
 
 /**
@@ -14,7 +15,8 @@ public class MySessionListener implements SessionListener {
         System.out.println("session-id创建" + token);
     }
 
-    public void delete(String token) {
-        System.out.println("session-token删除" + token);
+    public void delete(SessionEntity sessionEntity) {
+
+        System.out.println("session-token删除" + sessionEntity.getFinalSession().getToken());
     }
 }

@@ -3,7 +3,6 @@ package top.lingkang.security.impl;
 import top.lingkang.FinalManager;
 import top.lingkang.constants.MessageConstants;
 import top.lingkang.entity.SessionEntity;
-import top.lingkang.error.NotLoginException;
 import top.lingkang.error.PermissionException;
 import top.lingkang.security.FinalAuthConfig;
 
@@ -21,10 +20,8 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
         this.sessionEntity = sessionEntity;
     }
 
-    public void checkLogin() throws NotLoginException {
-        if (!FinalManager.isLogin()) {
-            throw new NotLoginException(MessageConstants.notLoginMsg);
-        }
+    public void checkLogin() {
+        FinalManager.isLogin();
     }
 
     public void hasRoles(String... roles) {
