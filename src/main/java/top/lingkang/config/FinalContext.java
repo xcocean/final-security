@@ -1,6 +1,9 @@
 package top.lingkang.config;
 
 import top.lingkang.FinalManager;
+import top.lingkang.entity.SessionEntity;
+import top.lingkang.security.FinalRoles;
+import top.lingkang.security.impl.DefaultFinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.utils.AssertUtils;
 
@@ -39,7 +42,28 @@ public class FinalContext {
      * 注销当前登录的用户
      */
     public static void logout() {
+        FinalManager.logout();
+    }
 
+    /**
+     * 注销指定token的会话
+     */
+    public static void logout(String token) {
+        FinalManager.logout(token);
+    }
+
+    /**
+     * 获取所有会话实体
+     */
+    public static List<SessionEntity> getAllSessionEntity() {
+        return FinalManager.getAllSessionEntity();
+    }
+
+    /**
+     * 获取所有会话个数
+     */
+    public static int getAllSessionEntityCount() {
+        return FinalManager.getAllSessionEntityCount();
     }
 
     /**
@@ -50,7 +74,14 @@ public class FinalContext {
     }
 
     public static void addRoles(List<String> roles) {
-
+        SessionEntity sessionEntity = FinalManager.getSessionEntity();
+        FinalRoles finalRoles = sessionEntity.getFinalRoles();
+        if (finalRoles == null) {
+            finalRoles = new DefaultFinalRoles();
+        }
+        finalRoles.addRoles(roles);
+        sessionEntity.setFinalRoles(finalRoles);
+        FinalManager.updateSessionEntity(sessionEntity.getFinalSession().getToken(), sessionEntity);
     }
 
 }

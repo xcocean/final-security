@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import top.lingkang.FinalManager;
@@ -27,7 +28,7 @@ import java.util.Map;
  * @date 2021/8/10 15:22
  * @description
  */
-//@ComponentScan("top.lingkang")
+@ComponentScan("top.lingkang")
 @Configuration
 @EnableConfigurationProperties(FinalSecurityProperties.class)
 public class FinalSecurityConfiguration implements ApplicationContextAware {
@@ -82,7 +83,15 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
 
     @Bean
     public FinalHttpSecurity finalHttpSecurity() {
-        return getFinalSecurityConfig().getFinalHttpSecurity();
+        FinalHttpSecurity beanByClass = getBeanByClass(FinalHttpSecurity.class);
+        if (beanByClass!=null){
+            return beanByClass;
+        }
+        FinalHttpSecurity finalHttpSecurity = getFinalSecurityConfig().getFinalHttpSecurity();
+        if (finalHttpSecurity==null){
+            return new FinalHttpSecurity();
+        }
+        return finalHttpSecurity;
     }
 
     private void addFinalSecurityProperties() {
@@ -114,7 +123,7 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
 
 
     private void addHttpServletRequest() {
-        FinalManager.setFinalRequest(new FinalRequestSpringMVC(null));
+        FinalManager.setFinalRequest(new FinalRequestSpringMVC());
     }
 
     private void addHttpServletResponse() {

@@ -14,12 +14,7 @@ import top.lingkang.error.TokenException;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -93,7 +88,6 @@ public class RequestFilter implements Filter {
             // 默认排除路径 /login
             List<String> list = Arrays.asList(properties.getExcludePath());
             this.excludePath.addAll(list);
-            //this.excludePath.add("/favicon.ico");
         }
     }
 
@@ -108,6 +102,8 @@ public class RequestFilter implements Filter {
             FinalManager.getFinalExceptionHandler().notLoginException((NotLoginException) e, request, response);
         } else if (e instanceof TokenException) {
             FinalManager.getFinalExceptionHandler().tokenException((TokenException) e, request, response);
+        } else {
+            FinalManager.getFinalExceptionHandler().otherException(e, request, response);
         }
     }
 }

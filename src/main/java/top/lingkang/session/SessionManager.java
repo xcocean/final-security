@@ -2,6 +2,8 @@ package top.lingkang.session;
 
 import top.lingkang.entity.SessionEntity;
 
+import java.util.List;
+
 /**
  * @author lingkang
  * @date 2021/8/20 10:11
@@ -15,4 +17,10 @@ public interface SessionManager {
     void remove(String token);
 
     boolean containsKey(String token);
+
+    SessionEntity getById(String id);
+
+    List<SessionEntity> getAllSessionEntity();
+
+    int getAllSessionEntityCount();
 }

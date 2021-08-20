@@ -1,13 +1,13 @@
 package top.lingkang.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.config.FinalContext;
 import top.lingkang.session.FinalSession;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author lingkang
@@ -17,17 +17,17 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class FinalSecurityController {
 
-    @Autowired
-    private HttpServletRequest request;
-
     @GetMapping("login")
     public Object login() {
         FinalContext.login("lk");
         FinalSession finalSession = FinalContext.getFinalSession();
         System.out.println(finalSession.getToken());
         System.out.println(finalSession.getAttribute("a"));
-        finalSession.setAttribute("a",finalSession.getToken());
+        finalSession.setAttribute("a", finalSession.getToken());
         System.out.println(finalSession.getToken());
+        List<String> role = new ArrayList<>();
+        role.add("user");
+        FinalContext.addRoles(role);
         return new ModelAndView("redirect:/");
     }
 
@@ -42,7 +42,7 @@ public class FinalSecurityController {
     }
 
     @GetMapping("logout")
-    public Object logout(){
+    public Object logout() {
         FinalContext.logout();
         String id = FinalContext.getId();
         return id;

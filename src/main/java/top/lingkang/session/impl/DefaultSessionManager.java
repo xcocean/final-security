@@ -3,6 +3,9 @@ package top.lingkang.session.impl;
 import top.lingkang.entity.SessionEntity;
 import top.lingkang.session.SessionManager;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -28,5 +31,28 @@ public class DefaultSessionManager implements SessionManager {
 
     public boolean containsKey(String token) {
         return concurrentMap.containsKey(token);
+    }
+
+    public SessionEntity getById(String id) {
+        for (Map.Entry<String, SessionEntity> map : concurrentMap.entrySet()) {
+            if (map.getValue().getFinalSession().getId().equals(id)) {
+                return map.getValue();
+            }
+        }
+        return null;
+    }
+
+    public List<SessionEntity> getAllSessionEntity() {
+        List<SessionEntity> list = new ArrayList<SessionEntity>();
+        for (Map.Entry<String, SessionEntity> map : concurrentMap.entrySet()) {
+            list.add(map.getValue());
+        }
+        return list;
+    }
+
+    public int getAllSessionEntityCount() {
+        if (concurrentMap != null)
+            return concurrentMap.size();
+        return 0;
     }
 }

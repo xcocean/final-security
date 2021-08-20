@@ -12,7 +12,9 @@ public final class MessageConstants {
 
     public static final String TokenValidInvalidMsg = "token expire, token到期, 请重新登录";
 
-    public static final String requestNotToken="request not exist token parameter, please login. 请求不存在token参数, 请登录!";
+    public static final String requestNotToken = "request not exist token parameter, please login. 请求不存在token参数, 请登录!";
+
+    public static final String tokenNotNull = "token not null, token不能为空";
 
     public static final String unauthorizedMsg = "Unauthorized, 未授权的资源！";
 }

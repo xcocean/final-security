@@ -14,4 +14,6 @@ public interface FinalExceptionHandler {
     void tokenException(TokenException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
     void permissionException(PermissionException e,HttpServletRequest request, HttpServletResponse response)throws Exception;
+
+    void otherException(Exception e,HttpServletRequest request, HttpServletResponse response);
 }

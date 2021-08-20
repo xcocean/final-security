@@ -114,20 +114,35 @@ public class FinalManager {
         createFinalSession(id);
     }
 
-    public static boolean isLogin() {
-        // 检查会话里的令牌
-        String token = FinalManager.getToken();
+    public static boolean isLogin(String token) {
         if (StringUtils.isEmpty(token)) {
-            throw new NotLoginException(MessageConstants.notLoginMsg);
+            throw new NotLoginException(MessageConstants.tokenNotNull);
         }
         // 检查token是否有效
         FinalManager.checkToken(token);
-
         return true;
     }
 
+    public static boolean isLogin() {
+        // 检查会话里的令牌
+        String token = FinalManager.getToken();
+        return isLogin(token);
+    }
+
     public static void logout() {
-        sessionManager.remove(getToken());
+        logout(getToken());
+    }
+
+    public static void logout(String token) {
+        sessionManager.remove(token);
+    }
+
+    public static List<SessionEntity> getAllSessionEntity() {
+        return sessionManager.getAllSessionEntity();
+    }
+
+    public static int getAllSessionEntityCount() {
+        return sessionManager.getAllSessionEntityCount();
     }
 
     /**
@@ -181,10 +196,6 @@ public class FinalManager {
         FinalManager.sessionListener = sessionListener;
     }
 
-    protected static void addFinalSession(String id, SessionEntity sessionEntity) {
-        sessionManager.put(id, sessionEntity);
-    }
-
     public static FinalSession getFinalSession(String token) {
         SessionEntity entity = sessionManager.get(token);
         if (entity != null)
@@ -198,17 +209,30 @@ public class FinalManager {
      * 创建会话
      */
     public static FinalSession createFinalSession(String id) {
-        String token = getFinalTokenGenerate().generateToken();
-        FinalSession finalSession = new DefaultFinalSession(id, token);
         // 首次登录可以在ThreadLocal中获取
         ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
+
+        // 首先判断是否登录了
+        SessionEntity byId = sessionManager.getById(id);
+        if (byId != null) {
+            FinalSession finalSession = byId.getFinalSession();
+            // 登录了更新session的最后访问时间
+            finalSession.updateLastAccessTime();
+            servletRequestAttributes.setAttribute(finalSecurityProperties.getTokenName(), finalSession.getToken(), RequestAttributes.SCOPE_REQUEST);
+            // 添加到cookie中
+            TokenUtils.addToken(servletRequestAttributes.getResponse(), finalSecurityProperties.getTokenName(), finalSession.getToken());
+            return finalSession;
+        }
+
+        String token = getFinalTokenGenerate().generateToken();
+        FinalSession finalSession = new DefaultFinalSession(id, token);
         servletRequestAttributes.setAttribute(finalSecurityProperties.getTokenName(), token, RequestAttributes.SCOPE_REQUEST);
         // 添加到cookie中
         TokenUtils.addToken(servletRequestAttributes.getResponse(), finalSecurityProperties.getTokenName(), token);
         // 存储到统一管理
         SessionEntity entity = new SessionEntity();
         entity.setFinalSession(finalSession);
-        addFinalSession(token, entity);
+        sessionManager.put(token, entity);
 
         // 通知监听
         FinalManager.sessionListener.create(id, token);
@@ -216,7 +240,17 @@ public class FinalManager {
     }
 
     public static SessionEntity getSessionEntity() {
-        return sessionManager.get(getToken());
+        return getSessionEntity(getToken());
+    }
+
+    public static SessionEntity getSessionEntity(String token) {
+        return sessionManager.get(token);
+    }
+
+    public static void updateSessionEntity(String token, SessionEntity sessionEntity) {
+        // 更新最后访问时间
+        sessionEntity.getFinalSession().updateLastAccessTime();
+        sessionManager.put(token, sessionEntity);
     }
 
     // -----------------  session 相关 ---------------------------------------- end

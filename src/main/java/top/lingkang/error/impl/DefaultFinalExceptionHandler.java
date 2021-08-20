@@ -8,6 +8,7 @@ import top.lingkang.error.TokenException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * @author lingkang
@@ -37,5 +38,14 @@ public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
         jsonObject.put("code", 401);
         jsonObject.put("msg", e.getMessage());
         response.getWriter().print(jsonObject);
+    }
+
+    public void otherException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+        response.setHeader("Content-type", "text/html; charset=utf-8");
+        try {
+            response.getWriter().println(e);
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
     }
 }
