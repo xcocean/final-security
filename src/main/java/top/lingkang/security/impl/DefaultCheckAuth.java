@@ -1,9 +1,7 @@
 package top.lingkang.security.impl;
 
 import top.lingkang.FinalManager;
-import top.lingkang.constants.MessageConstants;
 import top.lingkang.error.NotLoginException;
-import top.lingkang.error.PermissionException;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalAuthConfig;
 
@@ -14,18 +12,25 @@ import top.lingkang.security.FinalAuthConfig;
  */
 public class DefaultCheckAuth implements CheckAuth {
     private boolean checkLogin;
-    private String[] hasRoles;
+    private String[] hasRoles, hasAllRoles, permission, hasAllpermission;
 
     public boolean checkAll() {
         FinalAuthConfig authConfig = new DefaultFinalAuthConfig(FinalManager.getSessionEntity());
         if (checkLogin)
             authConfig.checkLogin();
-        if (hasRoles != null)
-            try {
-                authConfig.hasRoles(hasRoles);
-            } catch (Exception e) {
-                throw new PermissionException(MessageConstants.unauthorizedMsg);
-            }
+
+        if (hasRoles != null) {
+            authConfig.hasRoles(hasRoles);
+        }
+        if (hasAllRoles != null) {
+            authConfig.hasAllRoles(hasAllRoles);
+        }
+        if (permission != null) {
+            authConfig.hasPermission(permission);
+        }
+        if (hasAllpermission != null) {
+            authConfig.hasAllPermission(hasAllpermission);
+        }
         return true;
     }
 
@@ -38,5 +43,26 @@ public class DefaultCheckAuth implements CheckAuth {
         hasRoles = roles;
         checkLogin = true;
         return this;
+    }
+
+    @Override
+    public CheckAuth hasAllRoles(String... roles) {
+        checkLogin = true;
+        hasAllRoles = roles;
+        return this;
+    }
+
+    @Override
+    public CheckAuth hasPermission(String... permission) {
+        checkLogin = true;
+        this.permission = permission;
+        return this;
+    }
+
+    @Override
+    public CheckAuth hasAllPermission(String... permission) {
+        checkLogin = true;
+        this.hasAllpermission = permission;
+        return null;
     }
 }

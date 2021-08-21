@@ -19,8 +19,9 @@ public class MyFinalHttpSecurity {
     public FinalHttpSecurity checkAuthBean() {
         FinalHttpSecurity finalHttpSecurity = new FinalHttpSecurity();
         HashMap<String, CheckAuth> map = new HashMap<String, CheckAuth>();
-        map.put("/test", new DefaultCheckAuth().checkLogin().hasRoles("user"));
+        map.put("/*", new DefaultCheckAuth().checkLogin().hasRoles("user"));
         finalHttpSecurity.setCheckAuthHashMap(map);
+        finalHttpSecurity.setExcludePath("/login");
         return finalHttpSecurity;
     }
 }

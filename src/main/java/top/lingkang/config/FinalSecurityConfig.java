@@ -1,14 +1,10 @@
 package top.lingkang.config;
 
 import top.lingkang.error.FinalExceptionHandler;
-import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
 import top.lingkang.session.SessionManager;
-
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author lingkang
@@ -21,8 +17,6 @@ public class FinalSecurityConfig {
     private SessionManager sessionManager;
     // 会话监听
     private SessionListener sessionListener;
-    // 排除路径
-    private List<String> excludePath;
     // 异常处理
     private FinalExceptionHandler finalExceptionHandler;
 
@@ -78,11 +72,4 @@ public class FinalSecurityConfig {
         this.sessionListener = sessionListener;
     }
 
-    public List<String> getExcludePath() {
-        return excludePath;
-    }
-
-    public void setExcludePath(List<String> excludePath) {
-        this.excludePath = excludePath;
-    }
 }

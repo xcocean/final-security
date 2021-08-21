@@ -5,8 +5,9 @@ import top.lingkang.constants.MessageConstants;
 import top.lingkang.entity.SessionEntity;
 import top.lingkang.error.PermissionException;
 import top.lingkang.security.FinalAuthConfig;
-
-import java.util.List;
+import top.lingkang.security.FinalPermission;
+import top.lingkang.security.FinalRoles;
+import top.lingkang.utils.AuthUtils;
 
 /**
  * @author lingkang
@@ -25,18 +26,59 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
     }
 
     public void hasRoles(String... roles) {
-        List<String> r = sessionEntity.getFinalRoles().getRoles();
+        FinalRoles finalRoles = sessionEntity.getFinalRoles();
+        if (finalRoles == null) {
+            throw new PermissionException(MessageConstants.unauthorizedMsg);
+        }
         for (String role : roles) {
-            if (r.contains(role))
+            if (finalRoles.getRoles().contains(role))
                 return;
         }
         throw new PermissionException(MessageConstants.unauthorizedMsg);
     }
 
     public void hasAllRoles(String... roles) {
-        List<String> r = sessionEntity.getFinalRoles().getRoles();
+        FinalRoles finalRoles = sessionEntity.getFinalRoles();
+        if (finalRoles == null) {
+            throw new PermissionException(MessageConstants.unauthorizedMsg);
+        }
         for (String role : roles) {
-            if (!r.contains(role))
+            if (!finalRoles.getRoles().contains(role))
+                throw new PermissionException(MessageConstants.unauthorizedMsg);
+        }
+    }
+
+    @Override
+    public void hasPermission(String... permission) {
+        FinalPermission finalPermission = sessionEntity.getFinalPermission();
+        if (finalPermission == null) {
+            throw new PermissionException(MessageConstants.unauthorizedMsg);
+        }
+        for (String per : permission) {
+            for (String has : finalPermission.getPermission()) {
+                if (AuthUtils.patternMatch(has, per)) {
+                    return;
+                }
+            }
+        }
+        throw new PermissionException(MessageConstants.unauthorizedMsg);
+    }
+
+    @Override
+    public void hasAllPermission(String... permission) {
+        FinalPermission finalPermission = sessionEntity.getFinalPermission();
+        if (finalPermission == null) {
+            throw new PermissionException(MessageConstants.unauthorizedMsg);
+        }
+        for (String per : permission) {
+            boolean ok = false;
+            for (String has : finalPermission.getPermission()) {
+                if (AuthUtils.patternMatch(has, per)) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (!ok)
                 throw new PermissionException(MessageConstants.unauthorizedMsg);
         }
     }

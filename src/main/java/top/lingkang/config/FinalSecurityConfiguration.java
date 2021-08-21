@@ -2,6 +2,7 @@ package top.lingkang.config;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -12,8 +13,11 @@ import org.springframework.core.annotation.Order;
 import top.lingkang.FinalManager;
 import top.lingkang.error.FinalExceptionHandler;
 import top.lingkang.error.impl.DefaultFinalExceptionHandler;
+import top.lingkang.filter.FinalFilter;
+import top.lingkang.filter.impl.FinalAuthFilter;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.http.impl.FinalResponseSpringMVC;
+import top.lingkang.security.FinalFilterManager;
 import top.lingkang.security.FinalHttpSecurity;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
@@ -21,6 +25,8 @@ import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalTokenGenerate;
 import top.lingkang.session.impl.DefaultSessionManager;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -81,17 +87,32 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
         addSessionMaxValid(finalSecurityConfig.getSessionMaxValid());
     }
 
+    /**
+     * 1、权限配置bean
+     */
     @Bean
     public FinalHttpSecurity finalHttpSecurity() {
         FinalHttpSecurity beanByClass = getBeanByClass(FinalHttpSecurity.class);
-        if (beanByClass!=null){
+        if (beanByClass != null) {
             return beanByClass;
         }
         FinalHttpSecurity finalHttpSecurity = getFinalSecurityConfig().getFinalHttpSecurity();
-        if (finalHttpSecurity==null){
+        if (finalHttpSecurity == null) {
             return new FinalHttpSecurity();
         }
         return finalHttpSecurity;
+    }
+
+    /**
+     * 2、过滤器 bean
+     */
+    @Bean
+    public FinalFilterManager finalFilterManager(@Qualifier("finalHttpSecurity") FinalHttpSecurity httpSecurity) {
+        FinalFilterManager manager = new FinalFilterManager();
+        List<FinalFilter> list = new ArrayList<>();
+        list.add(new FinalAuthFilter(httpSecurity));
+        manager.setFilters(list);
+        return manager;
     }
 
     private void addFinalSecurityProperties() {

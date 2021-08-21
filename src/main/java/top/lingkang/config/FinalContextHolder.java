@@ -14,7 +14,7 @@ import java.util.List;
  * @date 2021/8/13 15:44
  * @description 开放上下文供调用
  */
-public class FinalContext {
+public class FinalContextHolder {
 
     /**
      * 获取会话
@@ -82,6 +82,10 @@ public class FinalContext {
         finalRoles.addRoles(roles);
         sessionEntity.setFinalRoles(finalRoles);
         FinalManager.updateSessionEntity(sessionEntity.getFinalSession().getToken(), sessionEntity);
+    }
+
+    public static void addPermission(List<String> permission){
+
     }
 
 }

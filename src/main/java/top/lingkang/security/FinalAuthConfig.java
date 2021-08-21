@@ -14,4 +14,10 @@ public interface FinalAuthConfig {
 
     // 有所有角色即可通过
     void hasAllRoles(String... roles);
+
+    // 有其中一个权限即可通过
+    void hasPermission(String... permission);
+
+    // 有所有权限即可通过
+    void hasAllPermission(String... permission);
 }

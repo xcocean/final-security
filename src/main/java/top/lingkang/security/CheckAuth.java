@@ -1,7 +1,5 @@
 package top.lingkang.security;
 
-import top.lingkang.error.NotLoginException;
-
 /**
  * @author lingkang
  * @date 2021/8/20 16:35
@@ -9,6 +7,14 @@ import top.lingkang.error.NotLoginException;
  */
 public interface CheckAuth {
     boolean checkAll();
+
     CheckAuth checkLogin();
-    CheckAuth hasRoles(String ... roles);
+
+    CheckAuth hasRoles(String... roles);
+
+    CheckAuth hasAllRoles(String... roles);
+
+    CheckAuth hasPermission(String... permission);
+
+    CheckAuth hasAllPermission(String... permission);
 }

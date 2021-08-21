@@ -20,8 +20,7 @@ public class DefaultFinalRoles implements FinalRoles {
 
     public void addRoles(List<String> roles) {
         list.addAll(roles);
-        List<String> newList = new ArrayList<String>(new TreeSet<String>(list));
-        list = newList;
+        list = new ArrayList<String>(new TreeSet<String>(list));
     }
 
     public void deleteRole(String role) {
