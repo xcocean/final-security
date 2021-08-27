@@ -9,7 +9,6 @@ import top.lingkang.error.NotLoginException;
 import top.lingkang.error.PermissionException;
 import top.lingkang.error.TokenException;
 import top.lingkang.security.CheckAuth;
-import top.lingkang.security.FinalFilterManager;
 import top.lingkang.security.FinalHttpSecurity;
 
 import javax.servlet.*;
@@ -33,14 +32,12 @@ public class RequestFilter implements Filter {
     private FinalSecurityProperties properties;
     @Autowired
     private FinalHttpSecurity finalHttpSecurity;
-    @Autowired
-    private FinalFilterManager finalFilterManager;
 
-    private List<String> excludePath = new ArrayList<String>();
+    private List<String> excludePath = new ArrayList<>();
 
     private final AntPathMatcher matcher = new AntPathMatcher();
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
         excludePath = finalHttpSecurity.getExcludePath();
         if (properties.getExcludePath() == null) {
             excludePath = Arrays.asList(properties.getExcludePath());
@@ -48,6 +45,11 @@ public class RequestFilter implements Filter {
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        // 未配置 checkAuthHashMap 时直接通过
+        if (finalHttpSecurity.getCheckAuthHashMap() == null) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String path = request.getServletPath();
 
@@ -62,10 +64,16 @@ public class RequestFilter implements Filter {
         }
 
         try {
-            // 过滤器逻辑（代理）
-            for (FinalFilter manager : finalFilterManager.getFilters()) {
-                manager.doFilter(servletRequest, servletResponse, filterChain);
+            // 1、鉴权逻辑
+            for (Map.Entry<String, CheckAuth> map : finalHttpSecurity.getCheckAuthHashMap().entrySet()) {
+                if (matcher.match(map.getKey(), path)) {
+                    map.getValue().checkAll();
+                }
             }
+
+            // 2、校验无异常，通过
+            filterChain.doFilter(request, servletResponse);
+            return;
         } catch (Exception e) {
             try {
                 HttpServletResponse response = (HttpServletResponse) servletResponse;

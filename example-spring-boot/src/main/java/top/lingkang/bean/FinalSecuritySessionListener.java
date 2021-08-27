@@ -10,7 +10,7 @@ import top.lingkang.session.SessionListener;
  * @description
  */
 @Component
-public class MySessionListener implements SessionListener {
+public class FinalSecuritySessionListener implements SessionListener {
     public void create(String id, String token) {
         System.out.println("session-id创建" + token);
     }

@@ -12,7 +12,7 @@
     <modules>
         <module>final-security-core</module>
         <module>example-spring-boot</module>
-        <module>final-security-data-redis</module>
+        <module>final-security-data</module>
     </modules>
 
     <properties>

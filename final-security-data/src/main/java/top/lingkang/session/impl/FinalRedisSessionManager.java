@@ -1,10 +1,11 @@
 package top.lingkang.session.impl;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.security.FinalPermission;
 import top.lingkang.security.FinalRoles;
+import top.lingkang.security.impl.DefaultFinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
@@ -12,12 +13,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Component
 public class FinalRedisSessionManager implements SessionManager {
 
     private static final String prefix_permission = "permission:";
     private static final String prefix_session = "session:";
     private static final String prefix_roles = "roles:";
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Override
@@ -52,8 +53,11 @@ public class FinalRedisSessionManager implements SessionManager {
     @Override
     public void addFinalRoles(String token, List<String> roles) {
         FinalRoles finalRoles = getFinalRoles(token);
+        if (finalRoles == null) {
+            finalRoles = new DefaultFinalRoles();
+        }
         finalRoles.addRoles(roles);
-        redisTemplate.opsForValue().set(token, finalRoles, FinalManager.getSessionMaxValid(), TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(prefix_roles + token, finalRoles, FinalManager.getSessionMaxValid(), TimeUnit.MINUTES);
     }
 
     @Override

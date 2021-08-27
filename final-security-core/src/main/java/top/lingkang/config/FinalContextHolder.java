@@ -24,7 +24,6 @@ public class FinalContextHolder {
      * 用户登录
      */
     public static void login(String id) {
-        AssertUtils.isNotNull(id, "登录id不能为空！");
         FinalManager.login(id);
     }
 
@@ -47,13 +46,6 @@ public class FinalContextHolder {
      */
     public static void logout(String token) {
         FinalManager.logout(token);
-    }
-
-    /**
-     * 获取所有会话个数
-     */
-    public static int getAllSessionEntityCount() {
-        return FinalManager.getAllSessionEntityCount();
     }
 
     /**

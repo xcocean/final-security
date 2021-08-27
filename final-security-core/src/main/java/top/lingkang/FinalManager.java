@@ -109,6 +109,7 @@ public class FinalManager {
     // -----------------  login 相关 ---------------------------------------- start
 
     public static void login(String id) {
+        AssertUtils.isNotNull(id, "登录id不能为空！");
         createFinalSession(id);
     }
 
