@@ -68,4 +68,11 @@ public class DefaultFinalSessionManager implements SessionManager {
     public boolean hasToken(String token) {
         return session.containsKey(token);
     }
+
+    @Override
+    public void updateLastAccessTime(String token) {
+        FinalSession finalSession = session.get(token);
+        finalSession.updateLastAccessTime();
+        session.put(token, finalSession);
+    }
 }

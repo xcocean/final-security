@@ -23,7 +23,7 @@ public class FinalRedisSessionManager implements SessionManager {
 
     @Override
     public void putFinalSession(String token, FinalSession finalSession) {
-        redisTemplate.opsForValue().set(prefix_session + token, finalSession, FinalManager.getSessionMaxValid(), TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(prefix_session + token, finalSession, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FinalRedisSessionManager implements SessionManager {
             finalRoles = new DefaultFinalRoles();
         }
         finalRoles.addRoles(roles);
-        redisTemplate.opsForValue().set(prefix_roles + token, finalRoles, FinalManager.getSessionMaxValid(), TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(prefix_roles + token, finalRoles, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -75,5 +75,18 @@ public class FinalRedisSessionManager implements SessionManager {
     @Override
     public boolean hasToken(String token) {
         return redisTemplate.hasKey(prefix_session + token);
+    }
+
+    @Override
+    public void updateLastAccessTime(String token) {
+        // 会话
+        FinalSession finalSession = getFinalSession(token);
+        finalSession.updateLastAccessTime();
+        this.putFinalSession(token, finalSession);
+
+        // 角色
+        redisTemplate.expire(prefix_roles + token, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
+        // 权限
+        redisTemplate.expire(prefix_permission + token, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
     }
 }

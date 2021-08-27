@@ -20,6 +20,17 @@ public class FinalSecurityProperties {
     // 默认session最大存活时间 默认 30分钟
     private long sessionMaxValid = 1800000L;
 
+    // 每次访问是否更新会话时间，默认 true 即每次访问都会更新token的失效时间为最大
+    private boolean accessUpdateSessionTime = true;
+
+    public boolean isAccessUpdateSessionTime() {
+        return accessUpdateSessionTime;
+    }
+
+    public void setAccessUpdateSessionTime(boolean accessUpdateSessionTime) {
+        this.accessUpdateSessionTime = accessUpdateSessionTime;
+    }
+
     public long getSessionMaxValid() {
         return sessionMaxValid;
     }

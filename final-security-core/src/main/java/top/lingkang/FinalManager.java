@@ -150,8 +150,12 @@ public class FinalManager {
             sessionListener.delete(finalSession);
             throw new TokenException(MessageConstants.TokenValidInvalidMsg);
         }
+
         // 更新session访问时间
-        finalSession.updateLastAccessTime();
+        if (finalSecurityProperties.isAccessUpdateSessionTime()) {
+            sessionManager.updateLastAccessTime(token);
+        }
+
     }
 
     public static boolean checkToken() {
