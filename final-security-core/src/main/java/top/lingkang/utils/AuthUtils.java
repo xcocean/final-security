@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 public class AuthUtils {
 
     /**
+     * 模式匹配
      * 校验权限是否存在，例如：
      * use*           user            true
      * user-          user            false

@@ -27,23 +27,33 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
     public void hasRoles(String... roles) {
         FinalRoles finalRoles = FinalManager.getSessionManager().getFinalRoles(token);
         if (finalRoles == null) {
-            throw new PermissionException(MessageConstants.unauthorizedMsg);
+            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String role : roles) {
-            if (finalRoles.getRoles().contains(role))
-                return;
+            for (String has : finalRoles.getRoles()) {
+                if (AuthUtils.patternMatch(has, role)) {
+                    return;
+                }
+            }
         }
-        throw new PermissionException(MessageConstants.unauthorizedMsg);
+        throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
     }
 
     public void hasAllRoles(String... roles) {
         FinalRoles finalRoles = FinalManager.getSessionManager().getFinalRoles(token);
         if (finalRoles == null) {
-            throw new PermissionException(MessageConstants.unauthorizedMsg);
+            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String role : roles) {
-            if (!finalRoles.getRoles().contains(role))
-                throw new PermissionException(MessageConstants.unauthorizedMsg);
+            boolean exist = false;
+            for (String has : finalRoles.getRoles()) {
+                if (AuthUtils.patternMatch(has, role)) {
+                    exist = true;
+                    break;
+                }
+            }
+            if (!exist)
+                throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
     }
 
@@ -51,7 +61,7 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
     public void hasPermission(String... permission) {
         FinalPermission finalPermission = FinalManager.getSessionManager().getFinalPermission(token);
         if (finalPermission == null) {
-            throw new PermissionException(MessageConstants.unauthorizedMsg);
+            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String per : permission) {
             for (String has : finalPermission.getPermission()) {
@@ -60,14 +70,14 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
                 }
             }
         }
-        throw new PermissionException(MessageConstants.unauthorizedMsg);
+        throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
     }
 
     @Override
     public void hasAllPermission(String... permission) {
         FinalPermission finalPermission = FinalManager.getSessionManager().getFinalPermission(token);
         if (finalPermission == null) {
-            throw new PermissionException(MessageConstants.unauthorizedMsg);
+            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String per : permission) {
             boolean ok = false;
@@ -78,7 +88,7 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
                 }
             }
             if (!ok)
-                throw new PermissionException(MessageConstants.unauthorizedMsg);
+                throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
     }
 }

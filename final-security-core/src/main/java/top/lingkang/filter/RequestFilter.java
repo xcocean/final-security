@@ -53,17 +53,17 @@ public class RequestFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String path = request.getServletPath();
 
-        // 1、排除的路径
-        if (excludePath != null) {
-            for (String ex : excludePath) {
-                if (matcher.match(ex, path)) {
-                    filterChain.doFilter(servletRequest, servletResponse);
-                    return;
+        try {
+            // 1、排除的路径
+            if (excludePath != null) {
+                for (String ex : excludePath) {
+                    if (matcher.match(ex, path)) {
+                        filterChain.doFilter(servletRequest, servletResponse);
+                        return;
+                    }
                 }
             }
-        }
 
-        try {
             // 1、鉴权逻辑
             for (Map.Entry<String, CheckAuth> map : finalHttpSecurity.getCheckAuthHashMap().entrySet()) {
                 if (matcher.match(map.getKey(), path)) {

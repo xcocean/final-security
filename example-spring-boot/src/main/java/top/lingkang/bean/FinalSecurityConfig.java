@@ -26,8 +26,8 @@ public class FinalSecurityConfig {
         return finalHttpSecurity;
     }
 
-    @Bean
+    /*@Bean
     public FinalRedisSessionManager finalRedisSessionManager() {
         return new FinalRedisSessionManager();
-    }
+    }*/
 }

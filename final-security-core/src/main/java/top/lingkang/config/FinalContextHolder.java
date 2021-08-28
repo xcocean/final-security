@@ -21,10 +21,11 @@ public class FinalContextHolder {
     }
 
     /**
-     * 用户登录
+     * 用户登录 返回登录的会话
+     * @return FinalSession
      */
-    public static void login(String id) {
-        FinalManager.login(id);
+    public static FinalSession login(String id) {
+        return FinalManager.login(id);
     }
 
     /**

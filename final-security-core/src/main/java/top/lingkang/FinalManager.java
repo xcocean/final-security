@@ -6,6 +6,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import top.lingkang.config.FinalSecurityProperties;
 import top.lingkang.constants.MessageConstants;
 import top.lingkang.error.FinalExceptionHandler;
+import top.lingkang.error.FinalInitException;
 import top.lingkang.error.NotLoginException;
 import top.lingkang.error.TokenException;
 import top.lingkang.http.FinalRequest;
@@ -108,14 +109,14 @@ public class FinalManager {
 
     // -----------------  login 相关 ---------------------------------------- start
 
-    public static void login(String id) {
+    public static FinalSession login(String id) {
         AssertUtils.isNotNull(id, "登录id不能为空！");
-        createFinalSession(id);
+        return createFinalSession(id);
     }
 
     public static boolean isLogin(String token) {
         if (StringUtils.isEmpty(token)) {
-            throw new NotLoginException(MessageConstants.tokenNotNull);
+            throw new NotLoginException(MessageConstants.TOKEN_CANNOT_NULL);
         }
         // 检查token是否有效
         FinalManager.checkToken(token);
@@ -143,12 +144,14 @@ public class FinalManager {
     public static void checkToken(String token) {
         FinalSession finalSession = sessionManager.getFinalSession(token);
         if (finalSession == null) {
-            throw new TokenException(MessageConstants.tokenInvalidMsg);
+            throw new TokenException(MessageConstants.TOKEN_INVALID);
         }
+
+        // 检查是否失效了
         if (!finalSession.isValidInternal(sessionMaxValid)) {
             // 调用 session 监听
             sessionListener.delete(finalSession);
-            throw new TokenException(MessageConstants.TokenValidInvalidMsg);
+            throw new TokenException(MessageConstants.TOKEN_EXPIRE);
         }
 
         // 更新session访问时间
@@ -162,6 +165,9 @@ public class FinalManager {
         return sessionManager.hasToken(getToken());
     }
 
+    /**
+     * 获取token
+     */
     public static String getToken() {
         // ThreadLocal 中获取
         Object requestToken = getServletRequestAttributes().getAttribute(finalSecurityProperties.getTokenName(), RequestAttributes.SCOPE_REQUEST);
@@ -181,7 +187,7 @@ public class FinalManager {
             return token;
         }
 
-        throw new TokenException(MessageConstants.requestNotToken);
+        throw new TokenException(MessageConstants.REQUEST_NOT_EXIST_TOKEN);
     }
 
     // -----------------  login 相关 ---------------------------------------- end
@@ -198,7 +204,7 @@ public class FinalManager {
             return finalSession;
 
         //AssertUtils.isNotNull(null, "当前会话还未登录！请先登录");
-        throw new TokenException(MessageConstants.notLoginMsg);
+        throw new TokenException(MessageConstants.NOT_LOGIN);
     }
 
     /**
@@ -213,6 +219,8 @@ public class FinalManager {
         if (byId != null) {
             // 登录了更新session的最后访问时间
             byId.updateLastAccessTime();
+            sessionManager.updateLastAccessTime(byId.getToken());
+            // 将token放到当前线程的变量中
             servletRequestAttributes.setAttribute(finalSecurityProperties.getTokenName(), byId.getToken(), RequestAttributes.SCOPE_REQUEST);
             // 添加到cookie中
             TokenUtils.addToken(servletRequestAttributes.getResponse(), finalSecurityProperties.getTokenName(), byId.getToken());
@@ -239,6 +247,9 @@ public class FinalManager {
     // -----------------  权限 相关 ---------------------------------------- start
 
     public static void addRoles(List<String> roles) {
+        if (roles.isEmpty()) {
+            throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
+        }
         sessionManager.addFinalRoles(getToken(), roles);
     }
 

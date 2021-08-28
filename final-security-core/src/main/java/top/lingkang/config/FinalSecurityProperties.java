@@ -4,6 +4,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 /**
  * @author lingkang
  * @date 2021/8/10 15:17
@@ -53,5 +55,15 @@ public class FinalSecurityProperties {
 
     public void setExcludePath(String[] excludePath) {
         this.excludePath = excludePath;
+    }
+
+    @Override
+    public String toString() {
+        return "FinalSecurityProperties{" +
+                "tokenName='" + tokenName + '\'' +
+                ", excludePath=" + Arrays.toString(excludePath) +
+                ", sessionMaxValid=" + sessionMaxValid +
+                ", accessUpdateSessionTime=" + accessUpdateSessionTime +
+                '}';
     }
 }

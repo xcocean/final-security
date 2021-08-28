@@ -21,20 +21,6 @@ import java.util.UUID;
  * @description 加密工具类
  */
 public class FinalPasswordUtils {
-    public static void main(String[] args) throws Exception {
-        // 文本
-        String text = "final-security";
-
-        // 使用Base64编码
-        String base64Text = FinalPasswordUtils.base64Encoder(text);
-        System.out.println("Base64编码后：" + base64Text);
-
-        // 使用Base64解码
-        String text2 = FinalPasswordUtils.base64Decoder(base64Text);
-        System.out.println("Base64解码后：" + text2);
-
-    }
-
     // ----------------- 1、 基本加密 -----------------------------------------
 
     // MD5 sha1 十六进制的字符

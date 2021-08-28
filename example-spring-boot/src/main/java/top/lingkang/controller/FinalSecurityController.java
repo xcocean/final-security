@@ -22,9 +22,7 @@ public class FinalSecurityController {
         FinalContextHolder.login("lk");
         FinalSession finalSession = FinalContextHolder.getFinalSession();
         System.out.println(finalSession.getToken());
-        System.out.println(finalSession.getAttribute("a"));
-        finalSession.setAttribute("a", finalSession.getToken());
-        System.out.println(finalSession.getToken());
+        finalSession.setAttribute("a", "login添加的参数a："+finalSession.getToken());
         List<String> role = new ArrayList<>();
         role.add("user");
         FinalContextHolder.addRoles(role);
@@ -33,6 +31,8 @@ public class FinalSecurityController {
 
     @GetMapping("/")
     public Object index() {
+        Object a = FinalContextHolder.getFinalSession().getAttribute("a");
+        System.out.println(a);
         return "123";
     }
 
