@@ -30,6 +30,13 @@ public interface SessionManager {
     // 根据token获取权限
     FinalPermission getFinalPermission(String token);
 
+    void updateFinalRoles(String token, FinalRoles finalRoles);
+
+    // 根据token添加角色
+    void addFinalPermission(String token, List<String> roles);
+
+    void updateFinalPermission(String token, FinalPermission permission);
+
     // 根据token移除会话
     void removeSession(String token);
 

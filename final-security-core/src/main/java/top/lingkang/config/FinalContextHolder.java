@@ -1,8 +1,9 @@
 package top.lingkang.config;
 
 import top.lingkang.FinalManager;
+import top.lingkang.security.FinalPermission;
+import top.lingkang.security.FinalRoles;
 import top.lingkang.session.FinalSession;
-import top.lingkang.utils.AssertUtils;
 
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class FinalContextHolder {
 
     /**
      * 用户登录 返回登录的会话
+     *
      * @return FinalSession
      */
     public static FinalSession login(String id) {
@@ -56,12 +58,53 @@ public class FinalContextHolder {
         return FinalManager.getFinalRequest().getFinalSession().getId();
     }
 
+    /**
+     * 当前登录者添加角色
+     */
     public static void addRoles(List<String> roles) {
         FinalManager.addRoles(roles);
     }
 
-    public static void addPermission(List<String> permission) {
+    /**
+     * 当前登录者添加角色
+     */
+    public static void addRoles(String... roles) {
+        FinalManager.addRoles(roles);
+    }
 
+    /**
+     * 获取当前用户的角色
+     *
+     * @return
+     */
+    public static FinalRoles getFinalRoles() {
+        return FinalManager.getFinalRoles();
+    }
+
+    public static void updateFinalRoles(FinalRoles finalRoles) {
+        FinalManager.updateFinalRoles(finalRoles);
+    }
+
+    /**
+     * 当前登录者添加权限
+     */
+    public static void addPermission(List<String> permission) {
+        FinalManager.addPermission(permission);
+    }
+
+    /**
+     * 当前登录者添加权限
+     */
+    public static void addPermission(String... permission) {
+        FinalManager.addPermission(permission);
+    }
+
+    public static FinalPermission getPermission() {
+        return FinalManager.getPermission();
+    }
+
+    public static void updatePermission(FinalPermission permission) {
+        FinalManager.updatePermission(permission);
     }
 
     public static long getSessionMaxValid() {

@@ -16,7 +16,7 @@ import java.util.HashMap;
  */
 @Configuration
 public class FinalSecurityConfig {
-    @Bean
+    /*@Bean
     public FinalHttpSecurity finalHttpSecurity() {
         FinalHttpSecurity finalHttpSecurity = new FinalHttpSecurity();
         HashMap<String, CheckAuth> map = new HashMap<String, CheckAuth>();
@@ -24,7 +24,7 @@ public class FinalSecurityConfig {
         finalHttpSecurity.setCheckAuthHashMap(map);
         finalHttpSecurity.setExcludePath("/login");
         return finalHttpSecurity;
-    }
+    }*/
 
     /*@Bean
     public FinalRedisSessionManager finalRedisSessionManager() {

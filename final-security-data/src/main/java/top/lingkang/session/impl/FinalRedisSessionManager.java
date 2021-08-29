@@ -61,8 +61,23 @@ public class FinalRedisSessionManager implements SessionManager {
     }
 
     @Override
+    public void updateFinalRoles(String token, FinalRoles finalRoles) {
+
+    }
+
+    @Override
     public FinalPermission getFinalPermission(String token) {
         return null;
+    }
+
+    @Override
+    public void addFinalPermission(String token, List<String> roles) {
+
+    }
+
+    @Override
+    public void updateFinalPermission(String token, FinalPermission permission) {
+
     }
 
     @Override

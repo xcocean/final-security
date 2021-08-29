@@ -2,6 +2,7 @@ package top.lingkang.session.impl;
 
 import top.lingkang.security.FinalPermission;
 import top.lingkang.security.FinalRoles;
+import top.lingkang.security.impl.DefaultFinalPermission;
 import top.lingkang.security.impl.DefaultFinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
@@ -50,8 +51,8 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public void addFinalRoles(String token, List<String> roles) {
         FinalRoles finalRoles = this.roles.get(token);
-        if (finalRoles==null){
-            finalRoles=new DefaultFinalRoles();
+        if (finalRoles == null) {
+            finalRoles = new DefaultFinalRoles();
         }
         finalRoles.addRoles(roles);
         this.roles.put(token, finalRoles);
@@ -60,6 +61,26 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public FinalPermission getFinalPermission(String token) {
         return permission.get(token);
+    }
+
+    @Override
+    public void updateFinalRoles(String token, FinalRoles finalRoles) {
+        roles.put(token, finalRoles);
+    }
+
+    @Override
+    public void addFinalPermission(String token, List<String> roles) {
+        FinalPermission finalPermission = this.permission.get(token);
+        if (finalPermission == null) {
+            finalPermission = new DefaultFinalPermission();
+        }
+        finalPermission.addPermission(roles);
+        this.permission.put(token, finalPermission);
+    }
+
+    @Override
+    public void updateFinalPermission(String token, FinalPermission permission) {
+        this.permission.put(token, permission);
     }
 
     @Override

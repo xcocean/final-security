@@ -13,15 +13,19 @@ import top.lingkang.http.FinalRequest;
 import top.lingkang.http.FinalResponse;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.http.impl.FinalResponseSpringMVC;
+import top.lingkang.security.FinalPermission;
+import top.lingkang.security.FinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSession;
+import top.lingkang.utils.ArraysUtils;
 import top.lingkang.utils.AssertUtils;
 import top.lingkang.utils.StringUtils;
 import top.lingkang.utils.TokenUtils;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -246,11 +250,68 @@ public class FinalManager {
 
     // -----------------  权限 相关 ---------------------------------------- start
 
+    /**
+     * 当前用户添加角色
+     */
+    public static void addRoles(String... roles) {
+        if (ArraysUtils.isEmpty(roles)) {
+            throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
+        }
+        addRoles(Arrays.asList(roles));
+    }
+
+    /**
+     * 当前用户添加角色
+     */
     public static void addRoles(List<String> roles) {
         if (roles.isEmpty()) {
             throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
         }
-        sessionManager.addFinalRoles(getToken(), roles);
+        sessionManager.addFinalRoles(checkGetToken(), roles);
+    }
+
+    public static FinalRoles getFinalRoles() {
+        return sessionManager.getFinalRoles(checkGetToken());
+    }
+
+    public static void updateFinalRoles(FinalRoles finalRoles) {
+        sessionManager.updateFinalRoles(checkGetToken(), finalRoles);
+    }
+
+    /**
+     * 当前用户添加权限
+     */
+    public static void addPermission(String... permission) {
+        if (ArraysUtils.isEmpty(permission)) {
+            throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_PERMISSION);
+        }
+        addPermission(Arrays.asList(permission));
+    }
+
+    /**
+     * 当前用户添加权限
+     */
+    public static void addPermission(List<String> permission) {
+        if (permission.isEmpty()) {
+            throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_PERMISSION);
+        }
+        sessionManager.addFinalPermission(checkGetToken(), permission);
+    }
+
+    public static FinalPermission getPermission() {
+        return sessionManager.getFinalPermission(checkGetToken());
+    }
+
+    public static void updatePermission(FinalPermission permission) {
+        sessionManager.updateFinalPermission(checkGetToken(), permission);
+    }
+
+    private static String checkGetToken() {
+        String token = getToken();
+        if (StringUtils.isEmpty(token)) {
+            throw new FinalInitException(MessageConstants.NOT_LOGIN);
+        }
+        return token;
     }
 
     // -----------------  权限 相关 ---------------------------------------- end

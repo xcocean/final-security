@@ -14,13 +14,16 @@ import top.lingkang.error.FinalExceptionHandler;
 import top.lingkang.error.impl.DefaultFinalExceptionHandler;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.http.impl.FinalResponseSpringMVC;
+import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
+import top.lingkang.security.impl.DefaultCheckAuth;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSessionManager;
 import top.lingkang.session.impl.DefaultFinalTokenGenerate;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -90,9 +93,15 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
         if (beanByClass != null) {
             return beanByClass;
         }
+
         FinalHttpSecurity finalHttpSecurity = getFinalSecurityConfig().getFinalHttpSecurity();
         if (finalHttpSecurity == null) {
-            return new FinalHttpSecurity();
+            FinalHttpSecurity httpSecurity = new FinalHttpSecurity();
+            HashMap<String, CheckAuth> authHashMap = new HashMap<>();
+            // 默认需要登录
+            authHashMap.put("/*", new DefaultCheckAuth().checkLogin());
+            httpSecurity.setCheckAuthHashMap(authHashMap);
+            return httpSecurity;
         }
         return finalHttpSecurity;
     }

@@ -19,4 +19,6 @@ public final class MessageConstants {
     public static final String UNAUTHORIZED_MSG = "Unauthorized, 未授权的资源！";
 
     public static final String CANNOT_CONFIG_EMPTY_ROLE = "cannot config empty role, 不能配置空角色！";
+
+    public static final String CANNOT_CONFIG_EMPTY_PERMISSION = "cannot config empty permission, 不能配置空权限！";
 }
