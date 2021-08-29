@@ -5,16 +5,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.lingkang.config.FinalSecurityProperties;
 import top.lingkang.constants.MessageConstants;
-import top.lingkang.error.FinalExceptionHandler;
-import top.lingkang.error.FinalInitException;
-import top.lingkang.error.NotLoginException;
-import top.lingkang.error.TokenException;
+import top.lingkang.error.*;
 import top.lingkang.http.FinalRequest;
 import top.lingkang.http.FinalResponse;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.http.impl.FinalResponseSpringMVC;
-import top.lingkang.security.FinalPermission;
-import top.lingkang.security.FinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.SessionListener;
@@ -25,8 +20,10 @@ import top.lingkang.utils.AssertUtils;
 import top.lingkang.utils.StringUtils;
 import top.lingkang.utils.TokenUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 
 /**
  * @author lingkang
@@ -120,7 +117,7 @@ public class FinalManager {
 
     public static boolean isLogin(String token) {
         if (StringUtils.isEmpty(token)) {
-            throw new NotLoginException(MessageConstants.TOKEN_CANNOT_NULL);
+            throw new FinalNotLoginException(MessageConstants.TOKEN_CANNOT_NULL);
         }
         // 检查token是否有效
         FinalManager.checkToken(token);
@@ -148,14 +145,14 @@ public class FinalManager {
     public static void checkToken(String token) {
         FinalSession finalSession = sessionManager.getFinalSession(token);
         if (finalSession == null) {
-            throw new TokenException(MessageConstants.TOKEN_INVALID);
+            throw new FinalTokenException(MessageConstants.TOKEN_INVALID);
         }
 
         // 检查是否失效了
         if (!finalSession.isValidInternal(sessionMaxValid)) {
             // 调用 session 监听
             sessionListener.delete(finalSession);
-            throw new TokenException(MessageConstants.TOKEN_EXPIRE);
+            throw new FinalTokenException(MessageConstants.TOKEN_EXPIRE);
         }
 
         // 更新session访问时间
@@ -191,7 +188,7 @@ public class FinalManager {
             return token;
         }
 
-        throw new TokenException(MessageConstants.REQUEST_NOT_EXIST_TOKEN);
+        throw new FinalTokenException(MessageConstants.REQUEST_NOT_EXIST_TOKEN);
     }
 
     // -----------------  login 相关 ---------------------------------------- end
@@ -208,7 +205,7 @@ public class FinalManager {
             return finalSession;
 
         //AssertUtils.isNotNull(null, "当前会话还未登录！请先登录");
-        throw new TokenException(MessageConstants.NOT_LOGIN);
+        throw new FinalTokenException(MessageConstants.NOT_LOGIN);
     }
 
     /**
@@ -267,15 +264,24 @@ public class FinalManager {
         if (roles.isEmpty()) {
             throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
         }
-        sessionManager.addFinalRoles(checkGetToken(), roles);
+        String token = checkGetToken();
+        List<String> rol = sessionManager.getRoles(token);
+        if (rol.isEmpty()) {
+            rol = new ArrayList<>();
+        }
+        rol.addAll(roles);
+        sessionManager.addRoles(token, new ArrayList<>(new TreeSet<>(rol)));
     }
 
-    public static FinalRoles getFinalRoles() {
-        return sessionManager.getFinalRoles(checkGetToken());
+    public static List<String> getRoles() {
+        return sessionManager.getRoles(checkGetToken());
     }
 
-    public static void updateFinalRoles(FinalRoles finalRoles) {
-        sessionManager.updateFinalRoles(checkGetToken(), finalRoles);
+    public static void updateRoles(List<String> roles) {
+        if (roles.isEmpty()){
+            throw new FinalException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
+        }
+        sessionManager.updateRoles(checkGetToken(), roles);
     }
 
     /**
@@ -295,15 +301,24 @@ public class FinalManager {
         if (permission.isEmpty()) {
             throw new FinalInitException(MessageConstants.CANNOT_CONFIG_EMPTY_PERMISSION);
         }
-        sessionManager.addFinalPermission(checkGetToken(), permission);
+        String token = checkGetToken();
+        List<String> per = sessionManager.getPermission(token);
+        if (per.isEmpty()) {
+            per = new ArrayList<>();
+        }
+        per.addAll(permission);
+        sessionManager.addPermission(token, new ArrayList<>(new TreeSet<>(per)));
     }
 
-    public static FinalPermission getPermission() {
-        return sessionManager.getFinalPermission(checkGetToken());
+    public static List<String> getPermission() {
+        return sessionManager.getPermission(checkGetToken());
     }
 
-    public static void updatePermission(FinalPermission permission) {
-        sessionManager.updateFinalPermission(checkGetToken(), permission);
+    public static void updatePermission(List<String> permission) {
+        if (permission.isEmpty()){
+            throw new FinalException(MessageConstants.CANNOT_CONFIG_EMPTY_PERMISSION);
+        }
+        sessionManager.updatePermission(checkGetToken(), permission);
     }
 
     private static String checkGetToken() {

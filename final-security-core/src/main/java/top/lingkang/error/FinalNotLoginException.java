@@ -5,8 +5,8 @@ package top.lingkang.error;
  * @date 2021/8/16 11:37
  * @description
  */
-public class NotLoginException extends RuntimeException {
-    public NotLoginException(String message) {
+public class FinalNotLoginException extends RuntimeException {
+    public FinalNotLoginException(String message) {
         super(message);
     }
 }

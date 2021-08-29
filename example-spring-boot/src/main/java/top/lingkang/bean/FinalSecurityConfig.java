@@ -16,18 +16,19 @@ import java.util.HashMap;
  */
 @Configuration
 public class FinalSecurityConfig {
-    /*@Bean
+    @Bean
     public FinalHttpSecurity finalHttpSecurity() {
         FinalHttpSecurity finalHttpSecurity = new FinalHttpSecurity();
         HashMap<String, CheckAuth> map = new HashMap<String, CheckAuth>();
-        map.put("/*", new DefaultCheckAuth().checkLogin().hasRoles("user"));
+        /*map.put("/*", new DefaultCheckAuth().checkLogin().hasRoles("user"));
         finalHttpSecurity.setCheckAuthHashMap(map);
-        finalHttpSecurity.setExcludePath("/login");
+        finalHttpSecurity.setExcludePath("/login");*/
+        finalHttpSecurity.setExcludePath("/*");
         return finalHttpSecurity;
-    }*/
+    }
 
-    /*@Bean
+    @Bean
     public FinalRedisSessionManager finalRedisSessionManager() {
         return new FinalRedisSessionManager();
-    }*/
+    }
 }

@@ -1,9 +1,5 @@
 package top.lingkang.session.impl;
 
-import top.lingkang.security.FinalPermission;
-import top.lingkang.security.FinalRoles;
-import top.lingkang.security.impl.DefaultFinalPermission;
-import top.lingkang.security.impl.DefaultFinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
@@ -19,8 +15,8 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class DefaultFinalSessionManager implements SessionManager {
     private static ConcurrentMap<String, FinalSession> session = new ConcurrentHashMap<String, FinalSession>();
-    private static ConcurrentMap<String, FinalRoles> roles = new ConcurrentHashMap<String, FinalRoles>();
-    private static ConcurrentMap<String, FinalPermission> permission = new ConcurrentHashMap<String, FinalPermission>();
+    private static ConcurrentMap<String, List<String>> roles = new ConcurrentHashMap<String, List<String>>();
+    private static ConcurrentMap<String, List<String>> permission = new ConcurrentHashMap<String, List<String>>();
 
 
     @Override
@@ -44,42 +40,32 @@ public class DefaultFinalSessionManager implements SessionManager {
     }
 
     @Override
-    public FinalRoles getFinalRoles(String token) {
+    public List<String> getRoles(String token) {
         return roles.get(token);
     }
 
     @Override
-    public void addFinalRoles(String token, List<String> roles) {
-        FinalRoles finalRoles = this.roles.get(token);
-        if (finalRoles == null) {
-            finalRoles = new DefaultFinalRoles();
-        }
-        finalRoles.addRoles(roles);
-        this.roles.put(token, finalRoles);
+    public void addRoles(String token, List<String> roles) {
+        this.roles.put(token, roles);
     }
 
     @Override
-    public FinalPermission getFinalPermission(String token) {
+    public List<String> getPermission(String token) {
         return permission.get(token);
     }
 
     @Override
-    public void updateFinalRoles(String token, FinalRoles finalRoles) {
-        roles.put(token, finalRoles);
+    public void updateRoles(String token, List<String> roles) {
+        this.roles.put(token, roles);
     }
 
     @Override
-    public void addFinalPermission(String token, List<String> roles) {
-        FinalPermission finalPermission = this.permission.get(token);
-        if (finalPermission == null) {
-            finalPermission = new DefaultFinalPermission();
-        }
-        finalPermission.addPermission(roles);
-        this.permission.put(token, finalPermission);
+    public void addPermission(String token, List<String> permission) {
+        this.permission.put(token, permission);
     }
 
     @Override
-    public void updateFinalPermission(String token, FinalPermission permission) {
+    public void updatePermission(String token, List<String> permission) {
         this.permission.put(token, permission);
     }
 

@@ -1,7 +1,7 @@
 package top.lingkang.security.impl;
 
 import top.lingkang.FinalManager;
-import top.lingkang.error.NotLoginException;
+import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalAuthConfig;
 
@@ -35,7 +35,7 @@ public class DefaultCheckAuth implements CheckAuth {
         return true;
     }
 
-    public CheckAuth checkLogin() throws NotLoginException {
+    public CheckAuth checkLogin() throws FinalNotLoginException {
         checkLogin = true;
         return this;
     }

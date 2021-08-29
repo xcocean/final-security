@@ -9,11 +9,9 @@ import javax.servlet.http.HttpServletResponse;
  * @description
  */
 public interface FinalExceptionHandler {
-    void notLoginException(NotLoginException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    void notLoginException(FinalNotLoginException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
-    void tokenException(TokenException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
+    void tokenException(FinalTokenException e, HttpServletRequest request, HttpServletResponse response) throws Exception;
 
-    void permissionException(PermissionException e,HttpServletRequest request, HttpServletResponse response)throws Exception;
-
-    void otherException(Exception e,HttpServletRequest request, HttpServletResponse response);
+    void permissionException(FinalPermissionException e, HttpServletRequest request, HttpServletResponse response)throws Exception;
 }

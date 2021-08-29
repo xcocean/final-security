@@ -3,6 +3,7 @@ package top.lingkang.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import top.lingkang.constants.FinalDefaultConstants;
 
 import java.util.Arrays;
 
@@ -15,15 +16,15 @@ import java.util.Arrays;
 @Component
 @ConfigurationProperties(prefix = "final.security")
 public class FinalSecurityProperties {
-    private String tokenName = "fs-token";
+    private String tokenName = FinalDefaultConstants.tokenName;
 
     private String[] excludePath = {};
 
     // 默认session最大存活时间 默认 30分钟
-    private long sessionMaxValid = 1800000L;
+    private long sessionMaxValid = FinalDefaultConstants.sessionMaxValid;
 
     // 每次访问是否更新会话时间，默认 true 即每次访问都会更新token的失效时间为最大
-    private boolean accessUpdateSessionTime = true;
+    private boolean accessUpdateSessionTime = FinalDefaultConstants.accessUpdateSessionTime;
 
     public boolean isAccessUpdateSessionTime() {
         return accessUpdateSessionTime;

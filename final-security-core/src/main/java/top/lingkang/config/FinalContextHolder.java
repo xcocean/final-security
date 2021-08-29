@@ -1,8 +1,6 @@
 package top.lingkang.config;
 
 import top.lingkang.FinalManager;
-import top.lingkang.security.FinalPermission;
-import top.lingkang.security.FinalRoles;
 import top.lingkang.session.FinalSession;
 
 import java.util.List;
@@ -77,12 +75,12 @@ public class FinalContextHolder {
      *
      * @return
      */
-    public static FinalRoles getFinalRoles() {
-        return FinalManager.getFinalRoles();
+    public static List<String> getFinalRoles() {
+        return FinalManager.getRoles();
     }
 
-    public static void updateFinalRoles(FinalRoles finalRoles) {
-        FinalManager.updateFinalRoles(finalRoles);
+    public static void updateRoles(List<String> roles) {
+        FinalManager.updateRoles(roles);
     }
 
     /**
@@ -99,11 +97,11 @@ public class FinalContextHolder {
         FinalManager.addPermission(permission);
     }
 
-    public static FinalPermission getPermission() {
+    public static List<String> getPermission() {
         return FinalManager.getPermission();
     }
 
-    public static void updatePermission(FinalPermission permission) {
+    public static void updatePermission(List<String> permission) {
         FinalManager.updatePermission(permission);
     }
 

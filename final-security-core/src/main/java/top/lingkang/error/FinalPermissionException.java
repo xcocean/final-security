@@ -5,8 +5,8 @@ package top.lingkang.error;
  * @date 2021/8/19 16:41
  * @description
  */
-public class PermissionException extends RuntimeException {
-    public PermissionException(String message) {
+public class FinalPermissionException extends RuntimeException {
+    public FinalPermissionException(String message) {
         super(message);
     }
 }

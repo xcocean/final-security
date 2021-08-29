@@ -2,11 +2,11 @@ package top.lingkang.security.impl;
 
 import top.lingkang.FinalManager;
 import top.lingkang.constants.MessageConstants;
-import top.lingkang.error.PermissionException;
+import top.lingkang.error.FinalPermissionException;
 import top.lingkang.security.FinalAuthConfig;
-import top.lingkang.security.FinalPermission;
-import top.lingkang.security.FinalRoles;
 import top.lingkang.utils.AuthUtils;
+
+import java.util.List;
 
 /**
  * @author lingkang
@@ -25,70 +25,70 @@ public class DefaultFinalAuthConfig implements FinalAuthConfig {
     }
 
     public void hasRoles(String... roles) {
-        FinalRoles finalRoles = FinalManager.getSessionManager().getFinalRoles(token);
-        if (finalRoles == null) {
-            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+        List<String> rol = FinalManager.getSessionManager().getRoles(token);
+        if (rol.isEmpty()) {
+            throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String role : roles) {
-            for (String has : finalRoles.getRoles()) {
+            for (String has : rol) {
                 if (AuthUtils.patternMatch(has, role)) {
                     return;
                 }
             }
         }
-        throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+        throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
     }
 
     public void hasAllRoles(String... roles) {
-        FinalRoles finalRoles = FinalManager.getSessionManager().getFinalRoles(token);
-        if (finalRoles == null) {
-            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+        List<String> rol = FinalManager.getSessionManager().getRoles(token);
+        if (rol.isEmpty()) {
+            throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String role : roles) {
             boolean exist = false;
-            for (String has : finalRoles.getRoles()) {
+            for (String has : rol) {
                 if (AuthUtils.patternMatch(has, role)) {
                     exist = true;
                     break;
                 }
             }
             if (!exist)
-                throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+                throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
     }
 
     @Override
     public void hasPermission(String... permission) {
-        FinalPermission finalPermission = FinalManager.getSessionManager().getFinalPermission(token);
-        if (finalPermission == null) {
-            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+        List<String> pers = FinalManager.getSessionManager().getPermission(token);
+        if (pers.isEmpty()) {
+            throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String per : permission) {
-            for (String has : finalPermission.getPermission()) {
+            for (String has : pers) {
                 if (AuthUtils.patternMatch(has, per)) {
                     return;
                 }
             }
         }
-        throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+        throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
     }
 
     @Override
     public void hasAllPermission(String... permission) {
-        FinalPermission finalPermission = FinalManager.getSessionManager().getFinalPermission(token);
+        List<String> finalPermission = FinalManager.getSessionManager().getPermission(token);
         if (finalPermission == null) {
-            throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+            throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
         for (String per : permission) {
             boolean ok = false;
-            for (String has : finalPermission.getPermission()) {
+            for (String has : finalPermission) {
                 if (AuthUtils.patternMatch(has, per)) {
                     ok = true;
                     break;
                 }
             }
             if (!ok)
-                throw new PermissionException(MessageConstants.UNAUTHORIZED_MSG);
+                throw new FinalPermissionException(MessageConstants.UNAUTHORIZED_MSG);
         }
     }
 }

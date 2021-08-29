@@ -5,9 +5,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import top.lingkang.FinalManager;
 import top.lingkang.config.FinalSecurityProperties;
-import top.lingkang.error.NotLoginException;
-import top.lingkang.error.PermissionException;
-import top.lingkang.error.TokenException;
+import top.lingkang.constants.FinalDefaultConstants;
+import top.lingkang.error.FinalException;
+import top.lingkang.error.FinalNotLoginException;
+import top.lingkang.error.FinalPermissionException;
+import top.lingkang.error.FinalTokenException;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
 
@@ -42,6 +44,9 @@ public class RequestFilter implements Filter {
         if (properties.getExcludePath() == null) {
             excludePath = Arrays.asList(properties.getExcludePath());
         }
+        System.out.println(FinalDefaultConstants.logo);
+        System.out.println("final-security : v1.0.0.RELEASE");
+        System.out.println("Gitee: https://gitee.com/lingkang_top/final-security");
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -79,22 +84,23 @@ public class RequestFilter implements Filter {
                 HttpServletResponse response = (HttpServletResponse) servletResponse;
                 handlerException(request, response, e);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                throw new ServletException(ex);
+                throw new FinalException(ex);
             }
         }
     }
 
     // 异常处理
     private void handlerException(HttpServletRequest request, HttpServletResponse response, Exception e) throws Exception {
-        if (e instanceof PermissionException) {
-            FinalManager.getFinalExceptionHandler().permissionException((PermissionException) e, request, response);
-        } else if (e instanceof NotLoginException) {
-            FinalManager.getFinalExceptionHandler().notLoginException((NotLoginException) e, request, response);
-        } else if (e instanceof TokenException) {
-            FinalManager.getFinalExceptionHandler().tokenException((TokenException) e, request, response);
+        if (e instanceof FinalPermissionException) {
+            FinalManager.getFinalExceptionHandler().permissionException((FinalPermissionException) e, request, response);
+        } else if (e instanceof FinalNotLoginException) {
+            FinalManager.getFinalExceptionHandler().notLoginException((FinalNotLoginException) e, request, response);
+        } else if (e instanceof FinalTokenException) {
+            FinalManager.getFinalExceptionHandler().tokenException((FinalTokenException) e, request, response);
         } else {
-            FinalManager.getFinalExceptionHandler().otherException(e, request, response);
+            throw new FinalException(e);
         }
     }
+
+    // 辅助处理 ----------------------------------
 }

@@ -101,6 +101,7 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
             // 默认需要登录
             authHashMap.put("/*", new DefaultCheckAuth().checkLogin());
             httpSecurity.setCheckAuthHashMap(authHashMap);
+            httpSecurity.setExcludePath("/login");
             return httpSecurity;
         }
         return finalHttpSecurity;

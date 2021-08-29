@@ -1,8 +1,5 @@
 package top.lingkang.session;
 
-import top.lingkang.security.FinalPermission;
-import top.lingkang.security.FinalRoles;
-
 import java.util.List;
 
 /**
@@ -22,20 +19,20 @@ public interface SessionManager {
     FinalSession getFinalSessionById(String id);
 
     // 根据token获取角色
-    FinalRoles getFinalRoles(String token);
+    List<String> getRoles(String token);
 
     // 根据token添加角色
-    void addFinalRoles(String token, List<String> roles);
+    void addRoles(String token, List<String> roles);
 
     // 根据token获取权限
-    FinalPermission getFinalPermission(String token);
+    List<String> getPermission(String token);
 
-    void updateFinalRoles(String token, FinalRoles finalRoles);
+    void updateRoles(String token, List<String> roles);
 
     // 根据token添加角色
-    void addFinalPermission(String token, List<String> roles);
+    void addPermission(String token, List<String> permission);
 
-    void updateFinalPermission(String token, FinalPermission permission);
+    void updatePermission(String token, List<String> permission);
 
     // 根据token移除会话
     void removeSession(String token);

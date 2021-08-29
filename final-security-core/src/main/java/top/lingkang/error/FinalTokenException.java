@@ -5,8 +5,8 @@ package top.lingkang.error;
  * @date 2021/8/19 17:23
  * @description
  */
-public class TokenException extends RuntimeException {
-    public TokenException(String message) {
+public class FinalTokenException extends RuntimeException {
+    public FinalTokenException(String message) {
         super(message);
     }
 }

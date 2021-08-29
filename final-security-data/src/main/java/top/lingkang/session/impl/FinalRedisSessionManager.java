@@ -3,9 +3,6 @@ package top.lingkang.session.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import top.lingkang.FinalManager;
-import top.lingkang.security.FinalPermission;
-import top.lingkang.security.FinalRoles;
-import top.lingkang.security.impl.DefaultFinalRoles;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
@@ -28,7 +25,11 @@ public class FinalRedisSessionManager implements SessionManager {
 
     @Override
     public FinalSession getFinalSession(String token) {
-        return (FinalSession) redisTemplate.opsForValue().get(prefix_session + token);
+        Object o = redisTemplate.opsForValue().get(prefix_session + token);
+        if (o != null) {
+            return (FinalSession) o;
+        }
+        return null;
     }
 
     @Override
@@ -46,38 +47,51 @@ public class FinalRedisSessionManager implements SessionManager {
     }
 
     @Override
-    public FinalRoles getFinalRoles(String token) {
-        return (FinalRoles) redisTemplate.opsForValue().get(prefix_roles + token);
-    }
-
-    @Override
-    public void addFinalRoles(String token, List<String> roles) {
-        FinalRoles finalRoles = getFinalRoles(token);
-        if (finalRoles == null) {
-            finalRoles = new DefaultFinalRoles();
+    public List<String> getRoles(String token) {
+        Object o = redisTemplate.opsForValue().get(prefix_roles + token);
+        if (o != null) {
+            return (List<String>) o;
         }
-        finalRoles.addRoles(roles);
-        redisTemplate.opsForValue().set(prefix_roles + token, finalRoles, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
-    }
-
-    @Override
-    public void updateFinalRoles(String token, FinalRoles finalRoles) {
-
-    }
-
-    @Override
-    public FinalPermission getFinalPermission(String token) {
         return null;
     }
 
     @Override
-    public void addFinalPermission(String token, List<String> roles) {
-
+    public void addRoles(String token, List<String> roles) {
+        redisTemplate.opsForValue().set(prefix_roles + token, roles, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public void updateFinalPermission(String token, FinalPermission permission) {
+    public void updateRoles(String token, List<String> roles) {
+        Long expire = redisTemplate.getExpire(prefix_roles + token);
+        if (expire < -1) {
+            // 不存在，创建
+            addRoles(prefix_roles + token, roles);
+        }
+        redisTemplate.opsForValue().set(prefix_roles + token, roles, expire, TimeUnit.MILLISECONDS);
+    }
 
+    @Override
+    public List<String> getPermission(String token) {
+        Object o = redisTemplate.opsForValue().get(prefix_permission + token);
+        if (o != null) {
+            return (List<String>) o;
+        }
+        return null;
+    }
+
+    @Override
+    public void addPermission(String token, List<String> permission) {
+        redisTemplate.opsForValue().set(prefix_permission + token, permission, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void updatePermission(String token, List<String> permission) {
+        Long expire = redisTemplate.getExpire(prefix_permission + token);
+        if (expire < -1) {
+            // 不存在，创建
+            addPermission(prefix_permission + token, permission);
+        }
+        redisTemplate.opsForValue().set(prefix_permission + token, permission, expire, TimeUnit.MILLISECONDS);
     }
 
     @Override

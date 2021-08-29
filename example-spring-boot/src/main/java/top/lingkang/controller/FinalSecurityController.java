@@ -38,6 +38,7 @@ public class FinalSecurityController {
 
     @GetMapping("/test")
     public Object test() {
+        FinalContextHolder.updateRoles(new ArrayList<>());
         return "test";
     }
 
