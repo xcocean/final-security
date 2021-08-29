@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
 import top.lingkang.session.impl.FinalRedisSessionManager;
@@ -33,6 +34,7 @@ public class FinalSecurityConfig {
 
     @Bean
     public FinalRedisSessionManager finalRedisSessionManager() {
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
         return new FinalRedisSessionManager(redisTemplate);
     }
 }

@@ -3,6 +3,7 @@ package top.lingkang.session.impl;
 import top.lingkang.session.FinalSession;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @description
  */
 public class DefaultFinalSession implements FinalSession, Serializable {
-    private final Map<String, Object> data = new ConcurrentHashMap<String, Object>();
+    private static final long serialVersionUID = 1L;
+    private final Map<String, Object> data = new HashMap<>();
     private String token;
     private String id;
     private volatile long creationTime, lastAccessTime;
