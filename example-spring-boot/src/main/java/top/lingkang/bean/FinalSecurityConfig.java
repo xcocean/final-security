@@ -1,10 +1,11 @@
 package top.lingkang.bean;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.RedisTemplate;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
-import top.lingkang.security.impl.DefaultCheckAuth;
 import top.lingkang.session.impl.FinalRedisSessionManager;
 
 import java.util.HashMap;
@@ -27,8 +28,11 @@ public class FinalSecurityConfig {
         return finalHttpSecurity;
     }
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Bean
     public FinalRedisSessionManager finalRedisSessionManager() {
-        return new FinalRedisSessionManager();
+        return new FinalRedisSessionManager(redisTemplate);
     }
 }

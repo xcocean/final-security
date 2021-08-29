@@ -1,6 +1,5 @@
 package top.lingkang.session.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import top.lingkang.FinalManager;
 import top.lingkang.session.FinalSession;
@@ -15,8 +14,11 @@ public class FinalRedisSessionManager implements SessionManager {
     private static final String prefix_permission = "permission:";
     private static final String prefix_session = "session:";
     private static final String prefix_roles = "roles:";
-    @Autowired
-    private RedisTemplate redisTemplate;
+    private final RedisTemplate redisTemplate;
+
+    public FinalRedisSessionManager(RedisTemplate redisTemplate) {
+        this.redisTemplate = redisTemplate;
+    }
 
     @Override
     public void putFinalSession(String token, FinalSession finalSession) {
@@ -65,9 +67,10 @@ public class FinalRedisSessionManager implements SessionManager {
         Long expire = redisTemplate.getExpire(prefix_roles + token);
         if (expire < -1) {
             // 不存在，创建
-            addRoles(prefix_roles + token, roles);
+            addRoles(token, roles);
+        } else {
+            redisTemplate.opsForValue().set(prefix_roles + token, roles, expire, TimeUnit.MILLISECONDS);
         }
-        redisTemplate.opsForValue().set(prefix_roles + token, roles, expire, TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -89,9 +92,10 @@ public class FinalRedisSessionManager implements SessionManager {
         Long expire = redisTemplate.getExpire(prefix_permission + token);
         if (expire < -1) {
             // 不存在，创建
-            addPermission(prefix_permission + token, permission);
+            addPermission(token, permission);
+        } else {
+            redisTemplate.opsForValue().set(prefix_permission + token, permission, expire, TimeUnit.MILLISECONDS);
         }
-        redisTemplate.opsForValue().set(prefix_permission + token, permission, expire, TimeUnit.MILLISECONDS);
     }
 
     @Override

@@ -266,7 +266,7 @@ public class FinalManager {
         }
         String token = checkGetToken();
         List<String> rol = sessionManager.getRoles(token);
-        if (rol.isEmpty()) {
+        if (ArraysUtils.isEmpty(rol)) {
             rol = new ArrayList<>();
         }
         rol.addAll(roles);
@@ -278,7 +278,7 @@ public class FinalManager {
     }
 
     public static void updateRoles(List<String> roles) {
-        if (roles.isEmpty()){
+        if (ArraysUtils.isEmpty(roles)){
             throw new FinalException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
         }
         sessionManager.updateRoles(checkGetToken(), roles);
@@ -303,7 +303,7 @@ public class FinalManager {
         }
         String token = checkGetToken();
         List<String> per = sessionManager.getPermission(token);
-        if (per.isEmpty()) {
+        if (ArraysUtils.isEmpty(per)) {
             per = new ArrayList<>();
         }
         per.addAll(permission);

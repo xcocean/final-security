@@ -36,14 +36,14 @@
             <artifactId>final-security-core</artifactId>
         </dependency>
 
-        <!--<dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>top.lingkang</groupId>
-            <artifactId>final-security-data-redis</artifactId>
+            <artifactId>final-security-data</artifactId>
         </dependency>
 
         <dependency>

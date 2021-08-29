@@ -31,7 +31,7 @@
 
             <dependency>
                 <groupId>top.lingkang</groupId>
-                <artifactId>final-security-data-redis</artifactId>
+                <artifactId>final-security-data</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>
 
