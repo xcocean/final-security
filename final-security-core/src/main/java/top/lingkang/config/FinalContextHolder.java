@@ -79,9 +79,34 @@ public class FinalContextHolder {
         return FinalManager.getRoles();
     }
 
+    /**
+     * 更新当前用户角色
+     */
     public static void updateRoles(List<String> roles) {
         FinalManager.updateRoles(roles);
     }
+
+    /**
+     * 更新指定token的角色
+     */
+    public static void updateRoles(String token,List<String> roles){
+        FinalManager.updateRoles(token,roles);
+    }
+
+    /**
+     * 删除当前用户的角色
+     */
+    public static void deleteRoles(){
+        FinalManager.deleteRoles();
+    }
+
+    /**
+     * 删除指定token的角色
+     */
+    public static void deleteRoles(String token){
+        FinalManager.deleteRoles(token);
+    }
+
 
     /**
      * 当前登录者添加权限
@@ -103,6 +128,14 @@ public class FinalContextHolder {
 
     public static void updatePermission(List<String> permission) {
         FinalManager.updatePermission(permission);
+    }
+
+    public static void deletePermission(){
+        FinalManager.deletePermission();
+    }
+
+    public static void deletePermission(String token){
+        FinalManager.deletePermission(token);
     }
 
     public static long getSessionMaxValid() {

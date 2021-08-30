@@ -278,10 +278,22 @@ public class FinalManager {
     }
 
     public static void updateRoles(List<String> roles) {
-        if (ArraysUtils.isEmpty(roles)){
+        updateRoles(checkGetToken(), roles);
+    }
+
+    public static void updateRoles(String token, List<String> roles) {
+        if (ArraysUtils.isEmpty(roles)) {
             throw new FinalException(MessageConstants.CANNOT_CONFIG_EMPTY_ROLE);
         }
-        sessionManager.updateRoles(checkGetToken(), roles);
+        sessionManager.updateRoles(token, roles);
+    }
+
+    public static void deleteRoles() {
+        deleteRoles(checkGetToken());
+    }
+
+    public static void deleteRoles(String token) {
+        sessionManager.deleteRoles(token);
     }
 
     /**
@@ -314,11 +326,36 @@ public class FinalManager {
         return sessionManager.getPermission(checkGetToken());
     }
 
+    /**
+     * 更新当前用户的权限
+     */
     public static void updatePermission(List<String> permission) {
-        if (permission.isEmpty()){
+        sessionManager.updatePermission(checkGetToken(), permission);
+    }
+
+    /**
+     * 更新指定token的权限
+     */
+    public static void updatePermission(String token, List<String> permission) {
+        if (permission.isEmpty()) {
             throw new FinalException(MessageConstants.CANNOT_CONFIG_EMPTY_PERMISSION);
         }
-        sessionManager.updatePermission(checkGetToken(), permission);
+        sessionManager.updatePermission(token, permission);
+    }
+
+
+    /**
+     * 删除当前用户的权限
+     */
+    public static void deletePermission() {
+        deletePermission(checkGetToken());
+    }
+
+    /**
+     * 删除指定token的权限
+     */
+    public static void deletePermission(String token) {
+        sessionManager.deletePermission(token);
     }
 
     private static String checkGetToken() {

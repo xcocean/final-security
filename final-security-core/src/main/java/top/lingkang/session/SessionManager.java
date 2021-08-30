@@ -29,10 +29,14 @@ public interface SessionManager {
 
     void updateRoles(String token, List<String> roles);
 
+    void deleteRoles(String token);
+
     // 根据token添加角色
     void addPermission(String token, List<String> permission);
 
     void updatePermission(String token, List<String> permission);
+
+    void deletePermission(String token);
 
     // 根据token移除会话
     void removeSession(String token);

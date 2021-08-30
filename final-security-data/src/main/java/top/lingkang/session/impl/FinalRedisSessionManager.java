@@ -2,6 +2,8 @@ package top.lingkang.session.impl;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import top.lingkang.FinalManager;
+import top.lingkang.constants.MessageConstants;
+import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
@@ -74,6 +76,11 @@ public class FinalRedisSessionManager implements SessionManager {
     }
 
     @Override
+    public void deleteRoles(String token) {
+        redisTemplate.delete(prefix_roles + token);
+    }
+
+    @Override
     public List<String> getPermission(String token) {
         Object o = redisTemplate.opsForValue().get(prefix_permission + token);
         if (o != null) {
@@ -99,6 +106,11 @@ public class FinalRedisSessionManager implements SessionManager {
     }
 
     @Override
+    public void deletePermission(String token) {
+        redisTemplate.delete(prefix_permission + token);
+    }
+
+    @Override
     public void removeSession(String token) {
         redisTemplate.delete(prefix_session + token);
         redisTemplate.delete(prefix_roles + token);
@@ -114,6 +126,9 @@ public class FinalRedisSessionManager implements SessionManager {
     public void updateLastAccessTime(String token) {
         // 会话
         FinalSession finalSession = getFinalSession(token);
+        if (finalSession==null){
+            throw new FinalTokenException(MessageConstants.TOKEN_INVALID);
+        }
         finalSession.updateLastAccessTime();
         this.putFinalSession(token, finalSession);
 

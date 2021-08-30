@@ -1,5 +1,7 @@
 package top.lingkang.session.impl;
 
+import top.lingkang.constants.MessageConstants;
+import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
@@ -60,6 +62,11 @@ public class DefaultFinalSessionManager implements SessionManager {
     }
 
     @Override
+    public void deleteRoles(String token) {
+        roles.remove(token);
+    }
+
+    @Override
     public void addPermission(String token, List<String> permission) {
         this.permission.put(token, permission);
     }
@@ -67,6 +74,11 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public void updatePermission(String token, List<String> permission) {
         this.permission.put(token, permission);
+    }
+
+    @Override
+    public void deletePermission(String token) {
+        permission.remove(token);
     }
 
     @Override
@@ -83,6 +95,9 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public void updateLastAccessTime(String token) {
         FinalSession finalSession = session.get(token);
+        if (finalSession==null){
+            throw new FinalTokenException(MessageConstants.TOKEN_INVALID);
+        }
         finalSession.updateLastAccessTime();
         session.put(token, finalSession);
     }
