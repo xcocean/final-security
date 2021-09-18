@@ -35,8 +35,6 @@ public class FinalManager {
     private static SessionManager sessionManager;
     public static SessionListener sessionListener;
 
-    private static FinalRequest finalRequest;
-    private static FinalResponse finalResponse;
     private static FinalSecurityProperties finalSecurityProperties;
     private static FinalTokenGenerate finalTokenGenerate;
     private static FinalExceptionHandler finalExceptionHandler;
@@ -50,6 +48,10 @@ public class FinalManager {
         FinalManager.sessionMaxValid = sessionMaxValid;
     }
 
+    private static ServletRequestAttributes getServletRequestAttributes() {
+        return (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+    }
+
     public static FinalRequest getFinalRequest() {
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         AssertUtils.isNull(servletRequestAttributes, "获取request上下文失败！");
@@ -57,12 +59,9 @@ public class FinalManager {
     }
 
     public static FinalResponse getFinalResponse() {
-        if (finalResponse instanceof FinalResponseSpringMVC) {
-            ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            return new FinalResponseSpringMVC(servletRequestAttributes.getResponse());
-        }
-        AssertUtils.isNull(null, "获取response上下文失败！");
-        return null;
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        AssertUtils.isNull(servletRequestAttributes, "获取response上下文失败！");
+        return new FinalResponseSpringMVC(servletRequestAttributes.getResponse());
     }
 
     public static SessionManager getSessionManager() {
@@ -71,14 +70,6 @@ public class FinalManager {
 
     public static void setSessionManager(SessionManager sessionManager) {
         FinalManager.sessionManager = sessionManager;
-    }
-
-    public static void setFinalResponse(FinalResponse finalResponse) {
-        FinalManager.finalResponse = finalResponse;
-    }
-
-    public static void setFinalRequest(FinalRequest finalRequest) {
-        FinalManager.finalRequest = finalRequest;
     }
 
     public static FinalSecurityProperties getFinalSecurityProperties() {
@@ -204,6 +195,10 @@ public class FinalManager {
         FinalManager.sessionListener = sessionListener;
     }
 
+    public static FinalSession getFinalSession() {
+        return getFinalSession(getToken());
+    }
+
     public static FinalSession getFinalSession(String token) {
         FinalSession finalSession = sessionManager.getFinalSession(token);
         if (finalSession != null)
@@ -245,6 +240,22 @@ public class FinalManager {
         // 通知监听
         FinalManager.sessionListener.create(id, token);
         return finalSession;
+    }
+
+    public static long getSessionExpire() {
+        return getSessionExpire(getToken());
+    }
+
+    public static long getSessionExpire(String token) {
+        return sessionManager.getExpire(token);
+    }
+
+    public static void updateSessionExpire() {
+        updateSessionExpire(getToken());
+    }
+
+    public static void updateSessionExpire(String token) {
+        sessionManager.updateLastAccessTime(token);
     }
 
 
@@ -373,8 +384,4 @@ public class FinalManager {
 
     // -----------------  权限 相关 ---------------------------------------- end
 
-
-    private static ServletRequestAttributes getServletRequestAttributes() {
-        return (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    }
 }

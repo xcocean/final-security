@@ -46,4 +46,7 @@ public interface SessionManager {
 
     // 更新最后访问时间
     void updateLastAccessTime(String token);
+
+    // 获取 token 时效
+    long getExpire(String token);
 }

@@ -7,9 +7,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
+import top.lingkang.session.FinalTokenGenerate;
 import top.lingkang.session.impl.FinalRedisSessionManager;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * @author lingkang
@@ -36,5 +38,15 @@ public class FinalSecurityConfig {
     public FinalRedisSessionManager finalRedisSessionManager() {
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         return new FinalRedisSessionManager(redisTemplate);
+    }
+
+    @Bean
+    public FinalTokenGenerate generate(){
+        return new FinalTokenGenerate() {
+            @Override
+            public String generateToken() {
+                return UUID.randomUUID().toString();
+            }
+        };
     }
 }

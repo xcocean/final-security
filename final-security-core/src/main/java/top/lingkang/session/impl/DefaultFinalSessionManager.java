@@ -95,10 +95,15 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public void updateLastAccessTime(String token) {
         FinalSession finalSession = session.get(token);
-        if (finalSession==null){
+        if (finalSession == null) {
             throw new FinalTokenException(MessageConstants.TOKEN_INVALID);
         }
         finalSession.updateLastAccessTime();
         session.put(token, finalSession);
+    }
+
+    @Override
+    public long getExpire(String token) {
+        return 0L;
     }
 }

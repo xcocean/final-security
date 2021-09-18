@@ -126,7 +126,7 @@ public class FinalRedisSessionManager implements SessionManager {
     public void updateLastAccessTime(String token) {
         // 会话
         FinalSession finalSession = getFinalSession(token);
-        if (finalSession==null){
+        if (finalSession == null) {
             throw new FinalTokenException(MessageConstants.TOKEN_INVALID);
         }
         finalSession.updateLastAccessTime();
@@ -136,5 +136,11 @@ public class FinalRedisSessionManager implements SessionManager {
         redisTemplate.expire(prefix_roles + token, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
         // 权限
         redisTemplate.expire(prefix_permission + token, FinalManager.getSessionMaxValid(), TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public long getExpire(String token) {
+        Long expire = redisTemplate.getExpire(prefix_session + token);
+        return expire == null ? -1L : expire;
     }
 }

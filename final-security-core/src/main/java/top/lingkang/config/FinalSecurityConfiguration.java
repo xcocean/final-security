@@ -61,9 +61,6 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
     public void FinalSecurityInit() {
         // 添加配置
         addFinalSecurityProperties();
-        // 初始化http请求上下文
-        addHttpServletRequest();
-        addHttpServletResponse();
 
         // 自定义配置大于默认
         FinalSecurityConfig finalSecurityConfig = getFinalSecurityConfig();
@@ -132,15 +129,6 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
         if (beanByClass != null) {
             FinalManager.setSessionListener(beanByClass);
         }
-    }
-
-
-    private void addHttpServletRequest() {
-        FinalManager.setFinalRequest(new FinalRequestSpringMVC());
-    }
-
-    private void addHttpServletResponse() {
-        FinalManager.setFinalResponse(new FinalResponseSpringMVC());
     }
 
     private void addSessionTokenGenerate(FinalTokenGenerate finalTokenGenerate) {

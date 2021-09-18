@@ -78,7 +78,6 @@ public class RequestFilter implements Filter {
 
             // 2、校验无异常，通过
             filterChain.doFilter(request, servletResponse);
-            return;
         } catch (Exception e) {
             try {
                 HttpServletResponse response = (HttpServletResponse) servletResponse;

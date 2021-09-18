@@ -1,5 +1,6 @@
-package top.lingkang.error.impl;
+package top.lingkang.bean;
 
+import org.springframework.stereotype.Component;
 import top.lingkang.error.FinalExceptionHandler;
 import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalPermissionException;
@@ -10,10 +11,11 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lingkang
- * @date 2021/8/17 9:40
+ * @date 2021/9/19 2:30
  * @description
  */
-public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
+@Component
+public class MyFinalExceptionHandler implements FinalExceptionHandler {
     public void notLoginException(FinalNotLoginException e, HttpServletRequest request, HttpServletResponse response) throws Exception {
         response.setHeader("Content-type", "application/json; charset=utf-8");
         response.getWriter().print("{\"code\":403,\"message\":\"" + e.getMessage() + "\"}");

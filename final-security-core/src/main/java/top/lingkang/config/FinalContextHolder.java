@@ -12,11 +12,20 @@ import java.util.List;
  */
 public class FinalContextHolder {
 
+    public static String getToken() {
+        return FinalManager.getToken();
+    }
+
     /**
      * 获取会话
      */
     public static FinalSession getFinalSession() {
-        return FinalManager.getFinalRequest().getFinalSession();
+        return FinalManager.getFinalSession();
+    }
+
+    public static FinalSession getFinalSession(String token) {
+        // 找不到时抛出异常
+        return FinalManager.getFinalSession(token);
     }
 
     /**
@@ -89,21 +98,21 @@ public class FinalContextHolder {
     /**
      * 更新指定token的角色
      */
-    public static void updateRoles(String token,List<String> roles){
-        FinalManager.updateRoles(token,roles);
+    public static void updateRoles(String token, List<String> roles) {
+        FinalManager.updateRoles(token, roles);
     }
 
     /**
      * 删除当前用户的角色
      */
-    public static void deleteRoles(){
+    public static void deleteRoles() {
         FinalManager.deleteRoles();
     }
 
     /**
      * 删除指定token的角色
      */
-    public static void deleteRoles(String token){
+    public static void deleteRoles(String token) {
         FinalManager.deleteRoles(token);
     }
 
@@ -130,11 +139,11 @@ public class FinalContextHolder {
         FinalManager.updatePermission(permission);
     }
 
-    public static void deletePermission(){
+    public static void deletePermission() {
         FinalManager.deletePermission();
     }
 
-    public static void deletePermission(String token){
+    public static void deletePermission(String token) {
         FinalManager.deletePermission(token);
     }
 
@@ -142,4 +151,31 @@ public class FinalContextHolder {
         return FinalManager.getSessionMaxValid();
     }
 
+    /**
+     * 获取当前用户的
+     */
+    public static long getSessionExpire() {
+        return FinalManager.getSessionExpire();
+    }
+
+    /**
+     * 获取指定 token 的 session 时效时间
+     */
+    public static long getSessionExpire(String token) {
+        return FinalManager.getSessionExpire(token);
+    }
+
+    /**
+     * 更新当前用户的会话失效时间
+     */
+    public static void updateSessionExpire() {
+        FinalManager.updateSessionExpire();
+    }
+
+    /**
+     * 更新指定token的会话失效时间
+     */
+    public static void updateSessionExpire(String token) {
+        FinalManager.updateSessionExpire(token);
+    }
 }
