@@ -41,7 +41,7 @@ public class FinalRedisSessionManager implements SessionManager {
         Set<String> keys = redisTemplate.keys(prefix_session + "*");
         if (keys != null) {
             for (String key : keys) {
-                FinalSession session = (FinalSession) redisTemplate.opsForValue().get(prefix_session + key);
+                FinalSession session = (FinalSession) redisTemplate.opsForValue().get(key);
                 if (session.getId().equals(id)) {
                     return session;
                 }

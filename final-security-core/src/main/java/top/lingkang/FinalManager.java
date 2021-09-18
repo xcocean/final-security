@@ -51,12 +51,9 @@ public class FinalManager {
     }
 
     public static FinalRequest getFinalRequest() {
-        if (finalRequest instanceof FinalRequestSpringMVC) {
-            ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-            return new FinalRequestSpringMVC(servletRequestAttributes.getRequest());
-        }
-        AssertUtils.isNull(null, "获取request上下文失败！");
-        return null;
+        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        AssertUtils.isNull(servletRequestAttributes, "获取request上下文失败！");
+        return new FinalRequestSpringMVC(servletRequestAttributes.getRequest());
     }
 
     public static FinalResponse getFinalResponse() {
@@ -170,24 +167,32 @@ public class FinalManager {
      * 获取token
      */
     public static String getToken() {
-        // ThreadLocal 中获取
-        Object requestToken = getServletRequestAttributes().getAttribute(finalSecurityProperties.getTokenName(), RequestAttributes.SCOPE_REQUEST);
-        if (requestToken != null) {
-            return (String) requestToken;
+        ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
+        FinalRequestSpringMVC requestSpringMVC = new FinalRequestSpringMVC(servletRequestAttributes.getRequest());
+
+        // cookie中获取
+        String token = requestSpringMVC.getCookieValue(finalSecurityProperties.getTokenName());
+        if (token != null) {
+            return token;
         }
 
         // 请求域中获取
-        String token = getFinalRequest().getHttpServletRequest().getParameter(finalSecurityProperties.getTokenName());
+        token = requestSpringMVC.getParam(finalSecurityProperties.getTokenName());
         if (token != null) {
             return token;
         }
 
-        // cookie中获取
-        token = getFinalRequest().getCookieValue(finalSecurityProperties.getTokenName());
+        // 请求头中获取
+        token = requestSpringMVC.getHeader(finalSecurityProperties.getTokenName());
         if (token != null) {
             return token;
         }
 
+        // ThreadLocal 中获取
+        Object requestToken = servletRequestAttributes.getAttribute(finalSecurityProperties.getTokenName(), RequestAttributes.SCOPE_REQUEST);
+        if (requestToken != null) {
+            return (String) requestToken;
+        }
         throw new FinalTokenException(MessageConstants.REQUEST_NOT_EXIST_TOKEN);
     }
 

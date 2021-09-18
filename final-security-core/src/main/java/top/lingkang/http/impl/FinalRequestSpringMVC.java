@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 public class FinalRequestSpringMVC implements FinalRequest {
 
     private HttpServletRequest request;
-    private FinalSession finalSession;
 
     public FinalRequestSpringMVC(HttpServletRequest request) {
         this.request = request;
