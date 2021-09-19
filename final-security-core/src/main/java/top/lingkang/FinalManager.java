@@ -103,6 +103,14 @@ public class FinalManager {
         return createFinalSession(id);
     }
 
+    public static String getId(){
+        return getId(getToken());
+    }
+
+    public static String getId(String token){
+        return sessionManager.getFinalSession(token).getId();
+    }
+
     public static boolean isLogin(String token) {
         if (StringUtils.isEmpty(token)) {
             throw new FinalNotLoginException(MessageConstants.TOKEN_CANNOT_NULL);

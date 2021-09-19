@@ -44,6 +44,10 @@ public class FinalContextHolder {
         return FinalManager.isLogin();
     }
 
+    public static boolean isLogin(String token) {
+        return FinalManager.isLogin(token);
+    }
+
     /**
      * 注销当前登录的用户
      */
@@ -62,7 +66,11 @@ public class FinalContextHolder {
      * 获取当前登录者的id
      */
     public static String getId() {
-        return FinalManager.getFinalRequest().getFinalSession().getId();
+        return FinalManager.getId();
+    }
+
+    public static String getId(String token) {
+        return FinalManager.getId(token);
     }
 
     /**

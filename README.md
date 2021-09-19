@@ -1,12 +1,13 @@
 # final-security
 
 ## 介绍
-一个基于spring的权限认证框架，正在不断完善中...<br/>
+一个基于spring boot 2.x 轻量级权限认证框架<br/>
 ## 区分
 关于final-security的session与运行容器（tomcat等）的 JSESSIONID 关系：final-security维护的session与tomcat维护的会话相互独立开。<br/>
 final-security的FinalSession是request的封装，实际应用中请使用FinalSession
 
 ## 使用
+拉取项目，使用Maven打包，将`final-security-core-1.0.0.jar`引入springboot项目
 ```
 // 登录 建议id为全局唯一
 FinalContextHolder.login(String.valueOf(user.getId()));
