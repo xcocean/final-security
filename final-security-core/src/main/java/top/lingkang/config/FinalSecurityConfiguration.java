@@ -12,8 +12,6 @@ import org.springframework.core.annotation.Order;
 import top.lingkang.FinalManager;
 import top.lingkang.error.FinalExceptionHandler;
 import top.lingkang.error.impl.DefaultFinalExceptionHandler;
-import top.lingkang.http.impl.FinalRequestSpringMVC;
-import top.lingkang.http.impl.FinalResponseSpringMVC;
 import top.lingkang.security.CheckAuth;
 import top.lingkang.security.FinalHttpSecurity;
 import top.lingkang.security.impl.DefaultCheckAuth;
@@ -22,6 +20,7 @@ import top.lingkang.session.SessionListener;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSessionManager;
 import top.lingkang.session.impl.DefaultFinalTokenGenerate;
+import top.lingkang.session.impl.DefaultSessionListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -128,6 +127,8 @@ public class FinalSecurityConfiguration implements ApplicationContextAware {
         SessionListener beanByClass = getBeanByClass(SessionListener.class);
         if (beanByClass != null) {
             FinalManager.setSessionListener(beanByClass);
+        } else {
+            FinalManager.setSessionListener(new DefaultSessionListener());
         }
     }
 
