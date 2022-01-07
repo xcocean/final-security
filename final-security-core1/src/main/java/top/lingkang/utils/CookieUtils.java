@@ -10,9 +10,10 @@ import javax.servlet.http.HttpServletResponse;
  * @description
  */
 public class CookieUtils {
-    public static void addToken(HttpServletResponse response, String name, String value) {
+    public static void addToken(HttpServletResponse response, String name, String value,int expiry) {
         Cookie cookie = new Cookie(name, value);
         cookie.setPath("/");
+        cookie.setMaxAge(expiry);// 秒
         response.addCookie(cookie);
     }
 

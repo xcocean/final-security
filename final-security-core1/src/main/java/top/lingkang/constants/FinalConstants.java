@@ -5,7 +5,7 @@ package top.lingkang.constants;
  * Created by 2022/1/7
  */
 public class FinalConstants {
-    public static final String NOT_LOGIN_EXCEPTION="not_login_exception";
+    public static final String NOT_LOGIN_EXCEPTION="You haven't signed in yet";
 
-    public static final String NOT_EXIST_TOKEN="not_exist_token";
+    public static final String NOT_EXIST_TOKEN="Invalid token or token does not exist";
 }

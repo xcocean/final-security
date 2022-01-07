@@ -7,6 +7,7 @@ import top.lingkang.FinalManager;
 import top.lingkang.config.FinalSecurityProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalNotLoginException;
+import top.lingkang.error.FinalTokenException;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -39,15 +40,18 @@ public class FinalSecurityFilter implements Filter {
                 return;
             }
         }
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
         try {
-
             throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_EXCEPTION);
         } catch (Exception e) {
-            e.printStackTrace();
-            if (e instanceof FinalNotLoginException) {
+            HttpServletResponse response = (HttpServletResponse) servletResponse;
+            if (e instanceof FinalNotLoginException) {// 未登录处理
                 manager.getConfig().getExceptionHandler().notLoginException((FinalNotLoginException) e, request, response);
+                return;
+            } else if (e instanceof FinalTokenException) {// 无token处理
+                manager.getConfig().getExceptionHandler().tokenException((FinalTokenException) e, request, response);
+                return;
             }
+            e.printStackTrace();
         }
     }
 
