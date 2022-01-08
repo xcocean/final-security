@@ -20,7 +20,7 @@ public class FinalSecurityProperties implements Serializable {
     private Integer maxValidRefresh = 1296000000;// 15天
 
     // 排除路径
-    private String[] excludePath = {};
+    private String[] excludePath = {"/login", "/logout"};
 
     // 登录相关
     private Boolean useCookie = true;// 使用cookie存储 token

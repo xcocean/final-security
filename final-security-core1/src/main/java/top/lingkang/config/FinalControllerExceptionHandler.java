@@ -3,6 +3,7 @@ package top.lingkang.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import top.lingkang.FinalManager;
 import top.lingkang.error.FinalBaseException;
 import top.lingkang.error.FinalTokenException;
 
@@ -16,12 +17,12 @@ import javax.servlet.http.HttpServletResponse;
 @RestControllerAdvice
 public class FinalControllerExceptionHandler {
     @Autowired
-    private FinalSecurityConfig securityConfig;
+    private FinalManager manager;
 
     @ExceptionHandler(FinalBaseException.class)
     public Object FinalBaseException(FinalBaseException e, HttpServletRequest request, HttpServletResponse response) {
         if (e instanceof FinalTokenException)
-            securityConfig.getExceptionHandler().tokenException((FinalTokenException) e, request, response);
+            manager.getExceptionHandler().tokenException((FinalTokenException) e, request, response);
         return null;
     }
 }

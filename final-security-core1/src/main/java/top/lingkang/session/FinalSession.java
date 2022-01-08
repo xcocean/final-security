@@ -27,5 +27,7 @@ public interface FinalSession {
 
     void updateLastAccessTime();
 
+    long getLastAccessTime();
+
     long getCreateTime();
 }

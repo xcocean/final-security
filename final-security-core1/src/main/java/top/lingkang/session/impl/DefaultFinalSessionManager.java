@@ -99,11 +99,15 @@ public class DefaultFinalSessionManager implements SessionManager {
             throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         }
         finalSession.updateLastAccessTime();
-        session.put(token, finalSession);
+        //session.put(token, finalSession);
     }
 
     @Override
-    public long getExpire(String token) {
-        return 0L;
+    public long getLastAccessTime(String token) {
+        FinalSession session = DefaultFinalSessionManager.session.get(token);
+        if (session == null) {
+            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
+        }
+        return session.getLastAccessTime();
     }
 }

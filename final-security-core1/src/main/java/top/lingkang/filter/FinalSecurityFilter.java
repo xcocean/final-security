@@ -2,17 +2,20 @@ package top.lingkang.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.AntPathMatcher;
 import top.lingkang.FinalManager;
-import top.lingkang.config.FinalSecurityProperties;
+import top.lingkang.base.FinalAuth;
+import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalTokenException;
+import top.lingkang.utils.AuthUtils;
+import top.lingkang.utils.SpringBeanUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * @author lingkang
@@ -20,44 +23,61 @@ import java.io.IOException;
  */
 @Component
 public class FinalSecurityFilter implements Filter {
-    private final AntPathMatcher matcher = new AntPathMatcher();
     @Autowired
     private FinalManager manager;
-
-    @Autowired
-    private FinalSecurityProperties properties;
 
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
         String path = request.getServletPath();
 
         // 排除
-        for (String url : properties.getExcludePath()) {
-            if (matcher.match(url, path)) {
+        for (String url : manager.getHttpSecurity().getExcludePath()) {
+            if (AuthUtils.matcher(url, path)) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
         }
         try {
-            throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_EXCEPTION);
+            // 检查令牌时长情况
+            String token = manager.getToken();
+            long last = manager.getSessionManager().getLastAccessTime(token);
+            if (AuthUtils.checkReserveTime(180000L, manager.getProperties().getMaxValid(), last)) {// 180s 预留时间
+                // 不满足预留时间，注销。
+                manager.getSessionManager().removeSession(token);
+                throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
+            }
+
+            for (Map.Entry<String, FinalAuth> entry : manager.getHttpSecurity().getCheckAuths().entrySet()) {
+                if (AuthUtils.matcher(entry.getKey(), path)) {
+                    entry.getValue().check();
+                }
+            }
         } catch (Exception e) {
-            HttpServletResponse response = (HttpServletResponse) servletResponse;
             if (e instanceof FinalNotLoginException) {// 未登录处理
-                manager.getConfig().getExceptionHandler().notLoginException((FinalNotLoginException) e, request, response);
+                manager.getExceptionHandler().notLoginException((FinalNotLoginException) e, request, response);
                 return;
             } else if (e instanceof FinalTokenException) {// 无token处理
-                manager.getConfig().getExceptionHandler().tokenException((FinalTokenException) e, request, response);
+                if (SpringBeanUtils.getBean(FinalExceptionHandler.class) == null &&
+                        manager.getHttpSecurity().getExcludePath().contains(FinalConstants.LOGIN_PATH)) {
+                    //转发到登录
+                    AuthUtils.requestDispatcher(FinalConstants.LOGIN_PATH, request, response);
+                    return;
+                }
+                manager.getExceptionHandler().tokenException((FinalTokenException) e, request, response);
                 return;
             }
             e.printStackTrace();
         }
+
+        //放行
+        filterChain.doFilter(request, response);
     }
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
     }
 
     @Override

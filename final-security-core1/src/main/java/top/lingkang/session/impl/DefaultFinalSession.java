@@ -70,6 +70,11 @@ public class DefaultFinalSession implements FinalSession, Serializable {
         lastAccessTime = System.currentTimeMillis();
     }
 
+    @Override
+    public long getLastAccessTime() {
+        return lastAccessTime;
+    }
+
     public long getCreateTime() {
         return creationTime;
     }

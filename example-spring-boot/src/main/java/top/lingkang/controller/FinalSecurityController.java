@@ -1,12 +1,12 @@
 package top.lingkang.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.helper.FinalHolder;
 import top.lingkang.session.FinalSession;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +30,7 @@ public class FinalSecurityController {
     }
 
     @GetMapping("/")
-    public Object index(HttpServletRequest request) {
-        System.out.println(request.getContentType());
+    public Object index() {
         FinalSession session = FinalHolder.getSession();
         System.out.println(session.getData());
         return "123";
