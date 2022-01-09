@@ -6,16 +6,16 @@ import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author lingkang
  * @date 2021/8/20 10:14
- * @description
+ * @description 会话管理，存储于内存中
  */
 public class DefaultFinalSessionManager implements SessionManager {
+    private static ConcurrentMap<String, String> idAndToken = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, FinalSession> session = new ConcurrentHashMap<String, FinalSession>();
     private static ConcurrentMap<String, List<String>> roles = new ConcurrentHashMap<String, List<String>>();
     private static ConcurrentMap<String, List<String>> permission = new ConcurrentHashMap<String, List<String>>();
@@ -24,6 +24,7 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public void addFinalSession(String token, FinalSession finalSession) {
         session.put(token, finalSession);
+        idAndToken.put(finalSession.getId(), token);
     }
 
     @Override
@@ -33,12 +34,7 @@ public class DefaultFinalSessionManager implements SessionManager {
 
     @Override
     public FinalSession getSessionById(String id) {
-        for (Map.Entry<String, FinalSession> map : session.entrySet()) {
-            if (map.getValue().getId().equals(id)) {
-                return map.getValue();
-            }
-        }
-        return null;
+        return session.get(idAndToken.get(id));
     }
 
     @Override
@@ -83,7 +79,10 @@ public class DefaultFinalSessionManager implements SessionManager {
 
     @Override
     public void removeSession(String token) {
-        session.remove(token);
+        FinalSession remove = session.remove(token);
+        if (remove != null) {
+            idAndToken.remove(remove.getId());
+        }
         roles.remove(token);
         permission.remove(token);
     }
@@ -99,12 +98,11 @@ public class DefaultFinalSessionManager implements SessionManager {
             throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         }
         finalSession.updateLastAccessTime();
-        //session.put(token, finalSession);
     }
 
     @Override
     public long getLastAccessTime(String token) {
-        FinalSession session = DefaultFinalSessionManager.session.get(token);
+        FinalSession session = this.session.get(token);
         if (session == null) {
             throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         }

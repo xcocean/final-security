@@ -12,6 +12,4 @@ public class FinalConstants {
     public static final String UNAUTHORIZED_MSG = "Unauthorized, 未授权的资源！";
 
 
-
-    public static final String LOGIN_PATH="/login";
 }

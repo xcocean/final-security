@@ -18,6 +18,8 @@ public class FinalSecurityProperties implements Serializable {
     // 失效时间
     private Integer maxValid = 1800000;// 30分钟
     private Integer maxValidRefresh = 1296000000;// 15天
+    private Boolean prepareCheck = true;
+    private Long prepareTime = 180000L;// 预留3分钟执行后续操操作
 
     // 排除路径
     private String[] excludePath = {"/login", "/logout"};
@@ -25,7 +27,6 @@ public class FinalSecurityProperties implements Serializable {
     // 登录相关
     private Boolean useCookie = true;// 使用cookie存储 token
     private Boolean onlyOne = false;// 只允许登录唯一用户，第二个登录会kill掉第一个的token
-    private Boolean shareToken = false;// 多个同时登录时，生成token值是否一致
 
 
     public String getTokenName() {
@@ -92,11 +93,19 @@ public class FinalSecurityProperties implements Serializable {
         this.onlyOne = onlyOne;
     }
 
-    public Boolean getShareToken() {
-        return shareToken;
+    public Boolean getPrepareCheck() {
+        return prepareCheck;
     }
 
-    public void setShareToken(Boolean shareToken) {
-        this.shareToken = shareToken;
+    public void setPrepareCheck(Boolean prepareCheck) {
+        this.prepareCheck = prepareCheck;
+    }
+
+    public Long getPrepareTime() {
+        return prepareTime;
+    }
+
+    public void setPrepareTime(Long prepareTime) {
+        this.prepareTime = prepareTime;
     }
 }

@@ -1,5 +1,7 @@
 package top.lingkang;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -22,6 +24,7 @@ import top.lingkang.config.FinalSecurityConfiguration;
 import top.lingkang.config.FinalSecurityProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
+import top.lingkang.filter.FinalSecurityFilter;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
@@ -40,7 +43,7 @@ import java.util.Arrays;
 @Configuration
 @EnableConfigurationProperties(FinalSecurityProperties.class)
 public class FinalManager implements ApplicationRunner {
-
+    private static final Log log = LogFactory.getLog(FinalManager.class);
     @Autowired
     private FinalSecurityProperties securityProperties;
 
@@ -55,28 +58,38 @@ public class FinalManager implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+        // 异常处理
         if ((exceptionHandler = SpringBeanUtils.getBean(FinalExceptionHandler.class)) == null) {
             exceptionHandler = new DefaultFinalExceptionHandler();
         }
+        // 令牌生成规则
         if ((tokenGenerate = SpringBeanUtils.getBean(FinalTokenGenerate.class)) == null) {
             tokenGenerate = new DefaultFinalTokenGenerate();
         }
+        // 会话管理
         if ((sessionManager = SpringBeanUtils.getBean(SessionManager.class)) == null) {
             sessionManager = new DefaultFinalSessionManager();
         }
+        // 会话监听
         if ((sessionListener = SpringBeanUtils.getBean(FinalSessionListener.class)) == null) {
             sessionListener = new DefaultFinalSessionListener();
         }
+        // http过滤鉴权
         if ((httpSecurity = SpringBeanUtils.getBean(FinalHttpSecurity.class)) == null) {
             httpSecurity = new DefaultFinalHttpSecurity();
             httpSecurity.setExcludePath(Arrays.asList(securityProperties.getExcludePath()));
         }
+        // 自定义配置
         if ((configuration = SpringBeanUtils.getBean(FinalSecurityConfiguration.class)) == null) {
             configuration = new FinalSecurityConfiguration();
             configuration.setProperties(securityProperties);
         }
         properties = configuration.getProperties();
+
+        log.info("init user final-security:  " + login("final-security"));
+        log.info("final-security v1.0.1 load finish");
     }
+
 
     public FinalSession getSession() {
         return getSession(getToken());
@@ -94,14 +107,12 @@ public class FinalManager implements ApplicationRunner {
         return sessionManager.existsToken(token);
     }
 
-    public void login(String id) {
+    public String login(String id) {
         if (properties.getOnlyOne()) { // 用户只能存在一个会话
             FinalSession session = sessionManager.getSessionById(id);
             if (session != null) {
                 sessionManager.removeSession(session.getToken());
             }
-        } else {
-            // 用户可以存在多个token
         }
 
         String refreshToken = null;
@@ -128,19 +139,23 @@ public class FinalManager implements ApplicationRunner {
         sessionManager.addFinalSession(token, session);// 共享会话时，会出现会话覆盖
 
         // 将token放到当前线程的变量中
-        servletRequestAttributes.setAttribute(properties.getTokenName(), token, RequestAttributes.SCOPE_REQUEST);
+        if (servletRequestAttributes != null){
+            servletRequestAttributes.setAttribute(properties.getTokenName(), token, RequestAttributes.SCOPE_REQUEST);
 
-        if (properties.getUseCookie()) {// 将令牌放到cookie中
-            CookieUtils.addToken(
-                    servletRequestAttributes.getResponse(),
-                    properties.getTokenName(),
-                    token,
-                    properties.getMaxValid()
-            );
+            if (properties.getUseCookie()) {// 将令牌放到cookie中
+                CookieUtils.addToken(
+                        servletRequestAttributes.getResponse(),
+                        properties.getTokenName(),
+                        token,
+                        properties.getMaxValid()
+                );
+            }
+
+            // 会话创建监听
+            sessionListener.create(token, id, servletRequestAttributes.getRequest());
         }
 
-        // 会话创建监听
-        sessionListener.create(token, id, servletRequestAttributes.getRequest());
+        return token;
     }
 
     /**
