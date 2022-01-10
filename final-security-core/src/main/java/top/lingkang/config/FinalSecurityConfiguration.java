@@ -15,12 +15,13 @@ import top.lingkang.session.impl.DefaultFinalSessionManager;
  * @author lingkang
  * @date 2022/1/8
  */
-public class FinalSecurityConfiguration extends FinalProperties{
+public class FinalSecurityConfiguration {
     private FinalExceptionHandler exceptionHandler=new DefaultFinalExceptionHandler();
     private FinalTokenGenerate tokenGenerate=new DefaultFinalTokenGenerate();
     private SessionManager sessionManager=new DefaultFinalSessionManager();
     private FinalSessionListener sessionListener=new DefaultFinalSessionListener();
     private  FinalHttpSecurity httpSecurity=new DefaultFinalHttpSecurity();
+    private FinalProperties properties;
 
     public FinalExceptionHandler getExceptionHandler() {
         return exceptionHandler;
@@ -60,5 +61,13 @@ public class FinalSecurityConfiguration extends FinalProperties{
 
     public void setHttpSecurity(FinalHttpSecurity httpSecurity) {
         this.httpSecurity = httpSecurity;
+    }
+
+    public FinalProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(FinalProperties properties) {
+        this.properties = properties;
     }
 }

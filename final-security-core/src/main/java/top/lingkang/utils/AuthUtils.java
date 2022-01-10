@@ -98,7 +98,7 @@ public class AuthUtils {
         if (resource == null || resource.length == 0) {
             resource = new FinalFilterChain[]{newChain};
         } else {
-            resource = Arrays.copyOf(resource, resource.length);
+            resource = Arrays.copyOf(resource, resource.length + 1);
             resource[resource.length - 1] = newChain;
         }
         return resource;

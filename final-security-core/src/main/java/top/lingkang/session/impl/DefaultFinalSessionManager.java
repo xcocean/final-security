@@ -1,6 +1,7 @@
 package top.lingkang.session.impl;
 
 import top.lingkang.constants.FinalConstants;
+import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
@@ -20,7 +21,6 @@ public class DefaultFinalSessionManager implements SessionManager {
     private static ConcurrentMap<String, List<String>> roles = new ConcurrentHashMap<String, List<String>>();
     private static ConcurrentMap<String, List<String>> permission = new ConcurrentHashMap<String, List<String>>();
 
-
     @Override
     public void addFinalSession(String token, FinalSession finalSession) {
         session.put(token, finalSession);
@@ -29,12 +29,18 @@ public class DefaultFinalSessionManager implements SessionManager {
 
     @Override
     public FinalSession getSession(String token) {
-        return session.get(token);
+        FinalSession session = this.session.get(token);
+        if (session==null)
+            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
+        return session;
     }
 
     @Override
     public FinalSession getSessionById(String id) {
-        return session.get(idAndToken.get(id));
+        FinalSession session = DefaultFinalSessionManager.session.get(idAndToken.get(id));
+        if (session == null)
+            throw new FinalNotLoginException(FinalConstants.NOT_EXIST_TOKEN);
+        return session;
     }
 
     @Override

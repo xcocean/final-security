@@ -2,7 +2,6 @@ package top.lingkang;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -64,7 +63,10 @@ public class FinalManager implements ApplicationRunner {
         sessionManager = configuration.getSessionManager();
         sessionListener = configuration.getSessionListener();
         httpSecurity = configuration.getHttpSecurity();
-        BeanUtils.copyProperties(configuration, properties);
+        properties = configuration.getProperties();
+        if (properties == null) {
+            properties = finalProperties;
+        }
 
         initFilterChain();
 
@@ -78,7 +80,6 @@ public class FinalManager implements ApplicationRunner {
         }
         filterChains = AuthUtils.addFilterChain(filterChains, new FinalAccessFilter(this));
     }
-
 
     public FinalSession getSession() {
         return getSession(getToken());
@@ -185,6 +186,8 @@ public class FinalManager implements ApplicationRunner {
         return (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     }
 
+    // 配置区 start ----------------------------------
+
     public FinalExceptionHandler getExceptionHandler() {
         return exceptionHandler;
     }
@@ -220,4 +223,6 @@ public class FinalManager implements ApplicationRunner {
     public FinalProperties getProperties() {
         return properties;
     }
+
+    // 配置区 end ----------------------------------
 }
