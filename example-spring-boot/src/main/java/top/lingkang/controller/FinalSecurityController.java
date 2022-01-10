@@ -26,8 +26,6 @@ import java.util.List;
 public class FinalSecurityController {
     @Autowired //注入方式
     private ApplicationContext applicationContext;
-    @Autowired
-    private FilterRegistrationBean filterRegistrationBean;
 
     @GetMapping("login")
     public Object login() {
@@ -42,10 +40,6 @@ public class FinalSecurityController {
 
     @GetMapping("/")
     public Object index() {
-        Filter filter = filterRegistrationBean.getFilter();
-        System.out.println(filter.getClass());
-        System.out.println(filterRegistrationBean.isEnabled());
-        filterRegistrationBean.setEnabled(false);
         //获取BeanFactory
         DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
         FinalSecurityFilter bean = SpringBeanUtils.getBean(FinalSecurityFilter.class);

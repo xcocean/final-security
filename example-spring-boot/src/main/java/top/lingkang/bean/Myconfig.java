@@ -2,11 +2,11 @@ package top.lingkang.bean;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.lingkang.base.FinalHttpSecurity;
+import top.lingkang.base.FinalSessionListener;
+import top.lingkang.base.impl.DefaultFinalSessionListener;
 import top.lingkang.config.FinalSecurityConfiguration;
-import top.lingkang.config.FinalSecurityProperties;
 
-import java.util.Arrays;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author lingkang
@@ -16,11 +16,13 @@ import java.util.Arrays;
 public class Myconfig {
 
     @Bean
-    public FinalSecurityConfiguration configuration(){
-        FinalSecurityConfiguration configuration=new FinalSecurityConfiguration();
-        FinalSecurityProperties properties = new FinalSecurityProperties();
-        properties.setExcludePath(new String[]{"/login"});
-        configuration.setProperties(properties);
+    public FinalSecurityConfiguration configuration() {
+        FinalSecurityConfiguration configuration = new FinalSecurityConfiguration();
+//        FinalSecurityProperties properties = new FinalSecurityProperties();
+//        properties.setExcludePath(new String[]{"/login","/health"});
+//        configuration.setProperties(properties);
+        configuration.setSessionListener(new DefaultFinalSessionListener());
         return configuration;
     }
+
 }

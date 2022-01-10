@@ -1,5 +1,7 @@
 package top.lingkang.config;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -16,11 +18,13 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestControllerAdvice
 public class FinalControllerExceptionHandler {
+    private static final Log log= LogFactory.getLog(FinalControllerExceptionHandler.class);
     @Autowired
     private FinalManager manager;
 
     @ExceptionHandler(FinalBaseException.class)
     public Object FinalBaseException(FinalBaseException e, HttpServletRequest request, HttpServletResponse response) {
+        // log.error("controller exist final-security error");
         if (e instanceof FinalTokenException)
             manager.getExceptionHandler().tokenException((FinalTokenException) e, request, response);
         return null;

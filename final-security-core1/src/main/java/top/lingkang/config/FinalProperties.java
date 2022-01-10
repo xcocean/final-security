@@ -1,6 +1,7 @@
 package top.lingkang.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 
@@ -8,8 +9,9 @@ import java.io.Serializable;
  * @author lingkang
  * Created by 2022/1/7
  */
+@Component(value = "finalProperties")
 @ConfigurationProperties(prefix = "final.security")
-public class FinalSecurityProperties implements Serializable {
+public class FinalProperties implements Serializable {
     // 令牌名称
     private String tokenName = "fs-token";
     private String tokenNameRequest = "access_token";

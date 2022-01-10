@@ -6,3 +6,5 @@ spring:
     encoding:
       charset: UTF-8
 
+server:
+  port: 8081

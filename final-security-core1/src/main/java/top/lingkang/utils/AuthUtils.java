@@ -3,9 +3,11 @@ package top.lingkang.utils;
 import org.springframework.util.AntPathMatcher;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
+import top.lingkang.filter.FinalFilterChain;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -90,5 +92,15 @@ public class AuthUtils {
      */
     public static boolean checkReserveTime(long length, long maxValid, long lastAccessTime) {
         return lastAccessTime + maxValid - System.currentTimeMillis() < length;
+    }
+
+    public static FinalFilterChain[] addFilterChain(FinalFilterChain[] resource, FinalFilterChain newChain) {
+        if (resource == null || resource.length == 0) {
+            resource = new FinalFilterChain[]{newChain};
+        } else {
+            resource = Arrays.copyOf(resource, resource.length);
+            resource[resource.length - 1] = newChain;
+        }
+        return resource;
     }
 }

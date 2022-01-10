@@ -2,7 +2,7 @@ package top.lingkang;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,24 +16,22 @@ import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpSecurity;
 import top.lingkang.base.FinalSessionListener;
 import top.lingkang.base.FinalTokenGenerate;
-import top.lingkang.base.impl.DefaultFinalExceptionHandler;
-import top.lingkang.base.impl.DefaultFinalHttpSecurity;
-import top.lingkang.base.impl.DefaultFinalSessionListener;
-import top.lingkang.base.impl.DefaultFinalTokenGenerate;
+import top.lingkang.config.FinalProperties;
 import top.lingkang.config.FinalSecurityConfiguration;
-import top.lingkang.config.FinalSecurityProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
-import top.lingkang.filter.FinalSecurityFilter;
+import top.lingkang.filter.FinalAccessFilter;
+import top.lingkang.filter.FinalFilterChain;
+import top.lingkang.filter.FinalPrepareFilter;
 import top.lingkang.http.impl.FinalRequestSpringMVC;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSession;
-import top.lingkang.session.impl.DefaultFinalSessionManager;
+import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.CookieUtils;
 import top.lingkang.utils.SpringBeanUtils;
 
-import java.util.Arrays;
+import javax.annotation.Resource;
 
 /**
  * @author lingkang
@@ -41,53 +39,44 @@ import java.util.Arrays;
  */
 @ComponentScan("top.lingkang")
 @Configuration
-@EnableConfigurationProperties(FinalSecurityProperties.class)
+@EnableConfigurationProperties(FinalProperties.class)
 public class FinalManager implements ApplicationRunner {
     private static final Log log = LogFactory.getLog(FinalManager.class);
-    @Autowired
-    private FinalSecurityProperties securityProperties;
+    @Resource
+    private FinalProperties finalProperties;
 
     private FinalExceptionHandler exceptionHandler;
     private FinalTokenGenerate tokenGenerate;
     private SessionManager sessionManager;
     private FinalSessionListener sessionListener;
     private FinalHttpSecurity httpSecurity;
-    private FinalSecurityProperties properties;
-
+    private FinalProperties properties = new FinalProperties();
     private FinalSecurityConfiguration configuration;
+    private FinalFilterChain[] filterChains;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // 异常处理
-        if ((exceptionHandler = SpringBeanUtils.getBean(FinalExceptionHandler.class)) == null) {
-            exceptionHandler = new DefaultFinalExceptionHandler();
-        }
-        // 令牌生成规则
-        if ((tokenGenerate = SpringBeanUtils.getBean(FinalTokenGenerate.class)) == null) {
-            tokenGenerate = new DefaultFinalTokenGenerate();
-        }
-        // 会话管理
-        if ((sessionManager = SpringBeanUtils.getBean(SessionManager.class)) == null) {
-            sessionManager = new DefaultFinalSessionManager();
-        }
-        // 会话监听
-        if ((sessionListener = SpringBeanUtils.getBean(FinalSessionListener.class)) == null) {
-            sessionListener = new DefaultFinalSessionListener();
-        }
-        // http过滤鉴权
-        if ((httpSecurity = SpringBeanUtils.getBean(FinalHttpSecurity.class)) == null) {
-            httpSecurity = new DefaultFinalHttpSecurity();
-            httpSecurity.setExcludePath(Arrays.asList(securityProperties.getExcludePath()));
-        }
-        // 自定义配置
         if ((configuration = SpringBeanUtils.getBean(FinalSecurityConfiguration.class)) == null) {
             configuration = new FinalSecurityConfiguration();
-            configuration.setProperties(securityProperties);
         }
-        properties = configuration.getProperties();
+        exceptionHandler = configuration.getExceptionHandler();
+        tokenGenerate = configuration.getTokenGenerate();
+        sessionManager = configuration.getSessionManager();
+        sessionListener = configuration.getSessionListener();
+        httpSecurity = configuration.getHttpSecurity();
+        BeanUtils.copyProperties(configuration, properties);
 
-        log.info("init user final-security:  " + login("final-security"));
+        initFilterChain();
+
+        log.info("final-security init user:  " + login("user"));
         log.info("final-security v1.0.1 load finish");
+    }
+
+    private void initFilterChain() {
+        if (properties.getPrepareCheck()) {
+            filterChains = AuthUtils.addFilterChain(filterChains, new FinalPrepareFilter(this));
+        }
+        filterChains = AuthUtils.addFilterChain(filterChains, new FinalAccessFilter(this));
     }
 
 
@@ -139,7 +128,7 @@ public class FinalManager implements ApplicationRunner {
         sessionManager.addFinalSession(token, session);// 共享会话时，会出现会话覆盖
 
         // 将token放到当前线程的变量中
-        if (servletRequestAttributes != null){
+        if (servletRequestAttributes != null) {
             servletRequestAttributes.setAttribute(properties.getTokenName(), token, RequestAttributes.SCOPE_REQUEST);
 
             if (properties.getUseCookie()) {// 将令牌放到cookie中
@@ -200,10 +189,6 @@ public class FinalManager implements ApplicationRunner {
         return exceptionHandler;
     }
 
-    public FinalSecurityProperties getSecurityProperties() {
-        return securityProperties;
-    }
-
     public FinalTokenGenerate getTokenGenerate() {
         return tokenGenerate;
     }
@@ -220,11 +205,19 @@ public class FinalManager implements ApplicationRunner {
         return httpSecurity;
     }
 
-    public FinalSecurityProperties getProperties() {
-        return properties;
-    }
-
     public FinalSecurityConfiguration getConfiguration() {
         return configuration;
+    }
+
+    public FinalFilterChain[] getFilterChains() {
+        return filterChains;
+    }
+
+    public void setFilterChains(FinalFilterChain[] filterChains) {
+        this.filterChains = filterChains;
+    }
+
+    public FinalProperties getProperties() {
+        return properties;
     }
 }

@@ -1,31 +1,29 @@
-package top.lingkang.base.impl;
+package top.lingkang.filter;
 
 import top.lingkang.FinalManager;
-import top.lingkang.base.FinalFilterCheck;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.utils.AuthUtils;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+
 /**
  * @author lingkang
- * @date 2022/1/9
+ * Created by 2022/1/10
  */
-public class DefaultFinalFilterCheck implements FinalFilterCheck {
-
+public class FinalPrepareFilter implements FinalFilterChain {
     private FinalManager manager;
 
-    public DefaultFinalFilterCheck(FinalManager manager) {
+    public FinalPrepareFilter(FinalManager manager) {
         this.manager = manager;
     }
 
     @Override
-    public String checkTokenExists() throws FinalTokenException {
-        return manager.getToken();
-    }
-
-    @Override
-    public void checkTokenPrepare(String token) throws FinalTokenException {
-        long last = manager.getSession(token).getLastAccessTime();
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) {
+        // 检查令牌时长情况
+        String token = manager.getToken();
+        long last = manager.getSessionManager().getLastAccessTime(token);
         if (AuthUtils.checkReserveTime(manager.getProperties().getPrepareTime(), manager.getProperties().getMaxValid(), last)) {// 180s 预留时间
             // 不满足预留时间，注销。
             manager.getSessionManager().removeSession(token);
