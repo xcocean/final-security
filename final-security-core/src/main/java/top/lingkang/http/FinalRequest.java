@@ -16,7 +16,7 @@ public interface FinalRequest {
 
     String getParam(String name);
 
-    void setAttribute(String name,Object value);
+    void setAttribute(String name, Object value);
 
     FinalSession getFinalSession();
 

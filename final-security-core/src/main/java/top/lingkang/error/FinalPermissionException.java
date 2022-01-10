@@ -2,10 +2,9 @@ package top.lingkang.error;
 
 /**
  * @author lingkang
- * @date 2021/8/19 16:41
- * @description
+ * @date 2022/1/8
  */
-public class FinalPermissionException extends RuntimeException {
+public class FinalPermissionException extends FinalBaseException{
     public FinalPermissionException(String message) {
         super(message);
     }

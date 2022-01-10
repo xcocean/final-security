@@ -1,18 +1,17 @@
 package top.lingkang.session;
 
-import java.io.Serializable;
+import java.util.Map;
 
 /**
  * @author lingkang
- * @date 2021/8/11 15:16
- * @description
+ * Created by 2022/1/7
  */
 public interface FinalSession {
-    long getCreationTime();
-
     String getId();
 
     String getToken();
+
+    String getRefreshToken();
 
     Object getAttribute(String var1);
 
@@ -20,8 +19,15 @@ public interface FinalSession {
 
     void removeAttribute(String var1);
 
+    Map<String, Object> getData();
+
+    void setData(Map<String, Object> data);
+
     boolean isValidInternal(long time);
 
     void updateLastAccessTime();
 
+    long getLastAccessTime();
+
+    long getCreateTime();
 }

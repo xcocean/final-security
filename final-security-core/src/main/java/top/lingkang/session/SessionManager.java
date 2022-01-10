@@ -10,13 +10,13 @@ import java.util.List;
 public interface SessionManager {
 
     // 添加会话
-    void putFinalSession(String token, FinalSession finalSession);
+    void addFinalSession(String token, FinalSession finalSession);
 
     // 根据token获取会话
-    FinalSession getFinalSession(String token);
+    FinalSession getSession(String token);
 
     // 根据登录者id获取会话
-    FinalSession getFinalSessionById(String id);
+    FinalSession getSessionById(String id);
 
     // 根据token获取角色
     List<String> getRoles(String token);
@@ -42,11 +42,11 @@ public interface SessionManager {
     void removeSession(String token);
 
     // 是否存在 token
-    boolean hasToken(String token);
+    boolean existsToken(String token);
 
     // 更新最后访问时间
     void updateLastAccessTime(String token);
 
-    // 获取 token 时效
-    long getExpire(String token);
+    // 获取 token 最后访问时间
+    long getLastAccessTime(String token);
 }

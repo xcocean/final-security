@@ -1,49 +1,49 @@
 package top.lingkang.http.impl;
 
-import top.lingkang.FinalManager;
 import top.lingkang.http.FinalRequest;
 import top.lingkang.session.FinalSession;
-import top.lingkang.utils.TokenUtils;
+import top.lingkang.utils.CookieUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author lingkang
- * @date 2021/8/13 16:10
- * @description
+ * Created by 2022/1/7
  */
 public class FinalRequestSpringMVC implements FinalRequest {
-
     private HttpServletRequest request;
 
     public FinalRequestSpringMVC(HttpServletRequest request) {
         this.request = request;
     }
 
-    public FinalRequestSpringMVC() {
-    }
-
+    @Override
     public String getHeader(String name) {
         return request.getHeader(name);
     }
 
+    @Override
     public String getCookieValue(String name) {
-        return TokenUtils.getTokenByCookie(name, request.getCookies());
+        return CookieUtils.getTokenByCookie(name, request.getCookies());
     }
 
+    @Override
     public String getParam(String name) {
         return request.getParameter(name);
     }
 
+    @Override
     public void setAttribute(String name, Object value) {
-        request.setAttribute(name, value);
+
     }
 
+    @Override
     public FinalSession getFinalSession() {
-        return FinalManager.getFinalSession(FinalManager.getToken());
+        return null;
     }
 
+    @Override
     public HttpServletRequest getHttpServletRequest() {
-        return this.request;
+        return null;
     }
 }

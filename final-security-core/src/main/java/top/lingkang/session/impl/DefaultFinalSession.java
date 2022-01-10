@@ -5,7 +5,6 @@ import top.lingkang.session.FinalSession;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author lingkang
@@ -14,14 +13,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class DefaultFinalSession implements FinalSession, Serializable {
     private static final long serialVersionUID = 1L;
-    private final Map<String, Object> data = new HashMap<>();
+    private Map<String, Object> data = new HashMap<>();
     private String token;
+    private String refreshToken;
     private String id;
     private volatile long creationTime, lastAccessTime;
 
-    public DefaultFinalSession(String id, String token) {
+    public DefaultFinalSession(String id, String token, String refreshToken) {
         this.id = id;
         this.token = token;
+        this.refreshToken = refreshToken;
         this.creationTime = this.lastAccessTime = System.currentTimeMillis();
     }
 
@@ -37,6 +38,10 @@ public class DefaultFinalSession implements FinalSession, Serializable {
         return token;
     }
 
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
     public Object getAttribute(String var1) {
         return data.get(var1);
     }
@@ -49,11 +54,28 @@ public class DefaultFinalSession implements FinalSession, Serializable {
         data.remove(var1);
     }
 
+    public Map<String, Object> getData() {
+        return data;
+    }
+
+    public void setData(Map<String, Object> data) {
+        this.data = data;
+    }
+
     public boolean isValidInternal(long time) {
         return System.currentTimeMillis() - lastAccessTime < time;
     }
 
     public void updateLastAccessTime() {
         lastAccessTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public long getLastAccessTime() {
+        return lastAccessTime;
+    }
+
+    public long getCreateTime() {
+        return creationTime;
     }
 }

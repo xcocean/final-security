@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>top.lingkang</groupId>
-            <artifactId>final-security-core1</artifactId>
+            <artifactId>final-security-core</artifactId>
         </dependency>
 
         <!--<dependency>

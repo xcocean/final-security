@@ -2,10 +2,9 @@ package top.lingkang.error;
 
 /**
  * @author lingkang
- * @date 2021/8/16 11:37
- * @description
+ * Created by 2022/1/7
  */
-public class FinalNotLoginException extends RuntimeException {
+public class FinalNotLoginException extends FinalBaseException{
     public FinalNotLoginException(String message) {
         super(message);
     }
