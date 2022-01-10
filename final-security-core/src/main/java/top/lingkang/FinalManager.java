@@ -31,6 +31,9 @@ import top.lingkang.utils.CookieUtils;
 import top.lingkang.utils.SpringBeanUtils;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author lingkang
@@ -41,17 +44,17 @@ import javax.annotation.Resource;
 @EnableConfigurationProperties(FinalProperties.class)
 public class FinalManager implements ApplicationRunner {
     private static final Log log = LogFactory.getLog(FinalManager.class);
+
     @Resource
     private FinalProperties finalProperties;
-
     private FinalExceptionHandler exceptionHandler;
     private FinalTokenGenerate tokenGenerate;
     private SessionManager sessionManager;
     private FinalSessionListener sessionListener;
     private FinalHttpSecurity httpSecurity;
-    private FinalProperties properties = new FinalProperties();
-    private FinalSecurityConfiguration configuration;
+    private FinalProperties properties;
     private FinalFilterChain[] filterChains;
+    private FinalSecurityConfiguration configuration;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
@@ -64,14 +67,26 @@ public class FinalManager implements ApplicationRunner {
         sessionListener = configuration.getSessionListener();
         httpSecurity = configuration.getHttpSecurity();
         properties = configuration.getProperties();
-        if (properties == null) {
+        if (properties != null) {
+            log.warn("\nNote that application The configuration in YML is overwritten by a custom bean, \n" +
+                    "注意，application.yml 中的 final.security._ 配置被自定义Bean（FinalSecurityConfiguration）覆盖");
+        } else {
             properties = finalProperties;
         }
 
+        initExcludePath();
         initFilterChain();
 
         log.info("final-security init user:  " + login("user"));
         log.info("final-security v1.0.1 load finish");
+    }
+
+    private void initExcludePath() {
+        if (httpSecurity.getExcludePath() != null) {
+            Set<String> exc = new HashSet<>(Arrays.asList(properties.getExcludePath()));
+            exc.addAll(new HashSet<>(httpSecurity.getExcludePath()));
+            properties.setExcludePath(exc.toArray(new String[exc.size()]));
+        }
     }
 
     private void initFilterChain() {
@@ -137,7 +152,7 @@ public class FinalManager implements ApplicationRunner {
                         servletRequestAttributes.getResponse(),
                         properties.getTokenName(),
                         token,
-                        properties.getMaxValid()
+                        properties.getMaxValid() / 1000
                 );
             }
 

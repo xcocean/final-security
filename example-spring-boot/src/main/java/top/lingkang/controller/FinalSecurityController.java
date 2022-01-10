@@ -2,10 +2,8 @@ package top.lingkang.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.filter.FinalSecurityFilter;
@@ -13,7 +11,6 @@ import top.lingkang.helper.FinalHolder;
 import top.lingkang.session.FinalSession;
 import top.lingkang.utils.SpringBeanUtils;
 
-import javax.servlet.Filter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,12 +37,6 @@ public class FinalSecurityController {
 
     @GetMapping("/")
     public Object index() {
-        //获取BeanFactory
-        DefaultListableBeanFactory defaultListableBeanFactory = (DefaultListableBeanFactory) applicationContext.getAutowireCapableBeanFactory();
-        FinalSecurityFilter bean = SpringBeanUtils.getBean(FinalSecurityFilter.class);
-        if (bean!=null)
-            //删除bean.
-            defaultListableBeanFactory.removeBeanDefinition("finalSecurityFilter");
         FinalSession session = FinalHolder.getSession();
         System.out.println(session.getData());
         return "123";

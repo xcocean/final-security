@@ -4,9 +4,11 @@ import top.lingkang.FinalManager;
 import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.utils.AuthUtils;
+import top.lingkang.utils.CookieUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -25,7 +27,7 @@ public class FinalSecurityFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         String path = request.getServletPath();
         // 排除
-        for (String url : manager.getHttpSecurity().getExcludePath()) {
+        for (String url : manager.getProperties().getExcludePath()) {
             if (AuthUtils.matcher(url, path)) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
@@ -40,6 +42,9 @@ public class FinalSecurityFilter implements Filter {
             if (e instanceof FinalNotLoginException) {// 未登录处理
                 manager.getExceptionHandler().notLoginException((FinalNotLoginException) e, servletRequest, servletResponse);
             } else if (e instanceof FinalTokenException) {// 无token处理
+                if (manager.getProperties().getUseCookie()) {
+                    CookieUtils.tokenToZeroAge(manager.getProperties().getTokenName(), (HttpServletResponse) servletResponse);
+                }
                 manager.getExceptionHandler().tokenException((FinalTokenException) e, servletRequest, servletResponse);
             } else {// 其他异常
                 manager.getExceptionHandler().exception(e, servletRequest, servletResponse);

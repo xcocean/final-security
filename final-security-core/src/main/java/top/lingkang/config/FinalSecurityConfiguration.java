@@ -67,6 +67,9 @@ public class FinalSecurityConfiguration {
         return properties;
     }
 
+    /**
+     * 注意：使用此配置将会覆盖 yml中配置
+     */
     public void setProperties(FinalProperties properties) {
         this.properties = properties;
     }

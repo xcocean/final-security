@@ -11,7 +11,7 @@
 
     <modules>
         <module>final-security-core</module>
-        <module>final-security-oauth-server</module>
+        <module>final-security-oauth</module>
         <module>example-spring-boot</module>
         <module>final-security-data</module>
     </modules>
