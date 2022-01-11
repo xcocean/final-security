@@ -1,18 +1,13 @@
 package top.lingkang.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
-import top.lingkang.filter.FinalSecurityFilter;
 import top.lingkang.helper.FinalHolder;
 import top.lingkang.session.FinalSession;
-import top.lingkang.utils.SpringBeanUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author lingkang
@@ -21,18 +16,17 @@ import java.util.List;
  */
 @RestController
 public class FinalSecurityController {
-    @Autowired //注入方式
-    private ApplicationContext applicationContext;
 
     @GetMapping("login")
     public Object login() {
         FinalHolder.login("lk");
+        FinalHolder.addRoles("user", "admin", "system");
+        FinalHolder.addPermission("get", "update", "delete");
         FinalSession finalSession = FinalHolder.getSession();
         System.out.println(finalSession.getToken());
         finalSession.setAttribute("a", "login添加的参数a：" + finalSession.getToken());
-        List<String> role = new ArrayList<>();
-        role.add("user");
-        return new ModelAndView("redirect:/");
+        //return new ModelAndView("redirect:/");
+        return "ok";
     }
 
     @GetMapping("/")
@@ -48,6 +42,7 @@ public class FinalSecurityController {
         objects.add("66");
         return "test";
     }
+
 
     @GetMapping("logout")
     public Object logout() {

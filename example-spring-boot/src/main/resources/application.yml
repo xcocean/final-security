@@ -1,7 +1,6 @@
 final:
   security:
-    token-name: lingkang
-    exclude-path:
+    exclude-path: /login,logout
 
 spring:
   http:

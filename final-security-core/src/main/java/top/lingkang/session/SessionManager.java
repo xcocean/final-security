@@ -1,7 +1,5 @@
 package top.lingkang.session;
 
-import java.util.List;
-
 /**
  * @author lingkang
  * @date 2021/8/20 10:11
@@ -19,22 +17,22 @@ public interface SessionManager {
     FinalSession getSessionById(String id);
 
     // 根据token获取角色
-    List<String> getRoles(String token);
+    String[] getRoles(String token);
 
     // 根据token添加角色
-    void addRoles(String token, List<String> roles);
+    void addRoles(String token, String... roles);
 
     // 根据token获取权限
-    List<String> getPermission(String token);
+    String[] getPermission(String token);
 
-    void updateRoles(String token, List<String> roles);
+    void updateRoles(String token, String... roles);
 
     void deleteRoles(String token);
 
     // 根据token添加角色
-    void addPermission(String token, List<String> permission);
+    void addPermission(String token, String... permission);
 
-    void updatePermission(String token, List<String> permission);
+    void updatePermission(String token, String... permission);
 
     void deletePermission(String token);
 

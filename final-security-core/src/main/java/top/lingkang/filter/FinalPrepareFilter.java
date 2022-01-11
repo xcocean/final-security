@@ -5,8 +5,8 @@ import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.utils.AuthUtils;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lingkang
@@ -20,7 +20,7 @@ public class FinalPrepareFilter implements FinalFilterChain {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) {
+    public void doFilter(HttpServletRequest request, HttpServletResponse response) {
         // 检查令牌时长情况
         String token = manager.getToken();
         long last = manager.getSessionManager().getLastAccessTime(token);

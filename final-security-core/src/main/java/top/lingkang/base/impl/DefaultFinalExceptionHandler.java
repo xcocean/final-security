@@ -4,11 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StringUtils;
 import top.lingkang.base.FinalExceptionHandler;
-import top.lingkang.error.FinalNotLoginException;
-import top.lingkang.error.FinalTokenException;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,18 +16,24 @@ import java.io.IOException;
 public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
     private static final Log log = LogFactory.getLog(DefaultFinalExceptionHandler.class);
 
-    public void notLoginException(FinalNotLoginException e, ServletRequest servletRequest, ServletResponse servletResponse) throws RuntimeException {
-        printError(e, (HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, "403");
+    @Override
+    public void tokenException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+        printError(e, request, response, "501");
     }
 
     @Override
-    public void tokenException(FinalTokenException e, ServletRequest servletRequest, ServletResponse servletResponse) throws RuntimeException {
-        printError(e, (HttpServletRequest) servletRequest, (HttpServletResponse) servletResponse, "501");
+    public void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+        printError(e, request, response, "403");
     }
 
     @Override
-    public void exception(Exception e, ServletRequest servletRequest, ServletResponse servletResponse) throws RuntimeException {
+    public void exception(Exception e, HttpServletRequest request, HttpServletResponse response) {
         e.printStackTrace();
+        try {
+            response.getWriter().println(e.getMessage());
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
     }
 
     private void printError(Exception e, HttpServletRequest request, HttpServletResponse response, String code) {

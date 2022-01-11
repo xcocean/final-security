@@ -1,19 +1,16 @@
 package top.lingkang.base;
 
-import top.lingkang.error.FinalNotLoginException;
-import top.lingkang.error.FinalTokenException;
-
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lingkang
  * Created by 2022/1/7
  */
 public interface FinalExceptionHandler {
-    void notLoginException(FinalNotLoginException e, ServletRequest servletRequest, ServletResponse servletResponse) throws RuntimeException;
+    void tokenException(Exception e, HttpServletRequest request, HttpServletResponse response);
 
-    void tokenException(FinalTokenException e, ServletRequest servletRequest, ServletResponse servletResponse) throws RuntimeException;
+    void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response);
 
-    void exception(Exception e, ServletRequest servletRequest, ServletResponse servletResponse) throws RuntimeException;
+    void exception(Exception e, HttpServletRequest request, HttpServletResponse response);
 }

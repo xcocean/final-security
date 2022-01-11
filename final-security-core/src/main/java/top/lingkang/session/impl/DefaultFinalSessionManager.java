@@ -1,7 +1,6 @@
 package top.lingkang.session.impl;
 
 import top.lingkang.constants.FinalConstants;
-import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
@@ -18,8 +17,8 @@ import java.util.concurrent.ConcurrentMap;
 public class DefaultFinalSessionManager implements SessionManager {
     private static ConcurrentMap<String, String> idAndToken = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, FinalSession> session = new ConcurrentHashMap<String, FinalSession>();
-    private static ConcurrentMap<String, List<String>> roles = new ConcurrentHashMap<String, List<String>>();
-    private static ConcurrentMap<String, List<String>> permission = new ConcurrentHashMap<String, List<String>>();
+    private static ConcurrentMap<String, String[]> roles = new ConcurrentHashMap<String, String[]>();
+    private static ConcurrentMap<String, String[]> permission = new ConcurrentHashMap<String, String[]>();
 
     @Override
     public void addFinalSession(String token, FinalSession finalSession) {
@@ -39,27 +38,27 @@ public class DefaultFinalSessionManager implements SessionManager {
     public FinalSession getSessionById(String id) {
         FinalSession session = DefaultFinalSessionManager.session.get(idAndToken.get(id));
         if (session == null)
-            throw new FinalNotLoginException(FinalConstants.NOT_EXIST_TOKEN);
+            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         return session;
     }
 
     @Override
-    public List<String> getRoles(String token) {
+    public String[] getRoles(String token) {
         return roles.get(token);
     }
 
     @Override
-    public void addRoles(String token, List<String> roles) {
+    public void addRoles(String token, String... roles) {
         this.roles.put(token, roles);
     }
 
     @Override
-    public List<String> getPermission(String token) {
+    public String[] getPermission(String token) {
         return permission.get(token);
     }
 
     @Override
-    public void updateRoles(String token, List<String> roles) {
+    public void updateRoles(String token, String... roles) {
         this.roles.put(token, roles);
     }
 
@@ -69,12 +68,12 @@ public class DefaultFinalSessionManager implements SessionManager {
     }
 
     @Override
-    public void addPermission(String token, List<String> permission) {
+    public void addPermission(String token, String... permission) {
         this.permission.put(token, permission);
     }
 
     @Override
-    public void updatePermission(String token, List<String> permission) {
+    public void updatePermission(String token, String... permission) {
         this.permission.put(token, permission);
     }
 

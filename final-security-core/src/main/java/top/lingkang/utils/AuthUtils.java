@@ -21,9 +21,11 @@ public class AuthUtils {
         return matcher.match(pattern, path);
     }
 
-    public static void checkRole(String[] roles, List<String> has) {
+    public static void checkRole(String[] roles, String[] has) {
         if (roles == null)
             return;
+        if (has==null)
+            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             for (String h : has) {
                 if (matcher(h, r))
@@ -33,9 +35,11 @@ public class AuthUtils {
         throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
     }
 
-    public static void checkAndRole(String[] roles, List<String> has) {
+    public static void checkAndRole(String[] roles, String[] has) {
         if (roles == null)
             return;
+        if (has==null)
+            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             boolean no = true;
             for (String h : has) {
@@ -50,9 +54,11 @@ public class AuthUtils {
         }
     }
 
-    public static void checkPermission(String[] permission, List<String> has) {
+    public static void checkPermission(String[] permission, String[] has) {
         if (permission == null)
             return;
+        if (has==null)
+            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String p : permission) {
             for (String h : has) {
                 if (matcher(h, p))
@@ -62,9 +68,11 @@ public class AuthUtils {
         throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
     }
 
-    public static void checkAndPermission(String[] permission, List<String> has) {
+    public static void checkAndPermission(String[] permission, String[] has) {
         if (permission == null)
             return;
+        if (has==null)
+            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String p : permission) {
             boolean no = true;
             for (String h : has) {

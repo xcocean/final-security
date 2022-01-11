@@ -7,10 +7,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpSecurity;
 import top.lingkang.base.FinalSessionListener;
@@ -22,7 +18,8 @@ import top.lingkang.error.FinalTokenException;
 import top.lingkang.filter.FinalAccessFilter;
 import top.lingkang.filter.FinalFilterChain;
 import top.lingkang.filter.FinalPrepareFilter;
-import top.lingkang.http.impl.FinalRequestSpringMVC;
+import top.lingkang.http.FinalContextHolder;
+import top.lingkang.http.FinalRequestContext;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSession;
@@ -68,7 +65,7 @@ public class FinalManager implements ApplicationRunner {
         httpSecurity = configuration.getHttpSecurity();
         properties = configuration.getProperties();
         if (properties != null) {
-            log.warn("\nNote that application The configuration in YML is overwritten by a custom bean, \n" +
+            log.info("\nNote that application The configuration in YML is overwritten by a custom bean, \n" +
                     "注意，application.yml 中的 final.security._ 配置被自定义Bean（FinalSecurityConfiguration）覆盖");
         } else {
             properties = finalProperties;
@@ -94,22 +91,6 @@ public class FinalManager implements ApplicationRunner {
             filterChains = AuthUtils.addFilterChain(filterChains, new FinalPrepareFilter(this));
         }
         filterChains = AuthUtils.addFilterChain(filterChains, new FinalAccessFilter(this));
-    }
-
-    public FinalSession getSession() {
-        return getSession(getToken());
-    }
-
-    public FinalSession getSession(String token) {
-        return sessionManager.getSession(token);
-    }
-
-    public boolean isLogin() {
-        return isLogin(getToken());
-    }
-
-    public boolean isLogin(String token) {
-        return sessionManager.existsToken(token);
     }
 
     public String login(String id) {
@@ -140,25 +121,29 @@ public class FinalManager implements ApplicationRunner {
         FinalSession session = new DefaultFinalSession(id, token, refreshToken);
 
         // 添加会话
-        ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
+        // ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
         sessionManager.addFinalSession(token, session);// 共享会话时，会出现会话覆盖
 
         // 将token放到当前线程的变量中
-        if (servletRequestAttributes != null) {
-            servletRequestAttributes.setAttribute(properties.getTokenName(), token, RequestAttributes.SCOPE_REQUEST);
+        FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
+        if (requestContext != null) {
+            requestContext.setToken(token);
 
-            if (properties.getUseCookie()) {// 将令牌放到cookie中
+            // 将令牌放到cookie中
+            if (properties.getUseCookie()) {
                 CookieUtils.addToken(
-                        servletRequestAttributes.getResponse(),
+                        requestContext.getResponse(),
                         properties.getTokenName(),
                         token,
                         properties.getMaxValid() / 1000
                 );
             }
-
-            // 会话创建监听
-            sessionListener.create(token, id, servletRequestAttributes.getRequest());
+        } else {
+            FinalContextHolder.setRequestContext(new FinalRequestContext(token));
         }
+
+        // 会话创建监听
+        sessionListener.create(token, id, requestContext == null ? null : requestContext.getRequest());
 
         return token;
     }
@@ -168,37 +153,39 @@ public class FinalManager implements ApplicationRunner {
      */
     public String getToken() {
         // ThreadLocal 中获取
-        ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
-        Object requestToken = servletRequestAttributes.getAttribute(properties.getTokenName(), RequestAttributes.SCOPE_REQUEST);
-        if (requestToken != null) {
-            return (String) requestToken;
+        FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
+        if (requestContext == null) {
+            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         }
 
-        FinalRequestSpringMVC requestSpringMVC = new FinalRequestSpringMVC(servletRequestAttributes.getRequest());
+        String token = requestContext.getToken();
+        if (token != null) {
+            return token;
+        }
+
 
         // 请求头中获取
-        String token = requestSpringMVC.getHeader(properties.getTokenNameHeader());
-        if (!StringUtils.isEmpty(token)) {
+        token = requestContext.getRequest().getHeader(properties.getTokenNameHeader());
+        if (token != null) {
+            requestContext.setToken(token);
             return token;
         }
 
         // cookie中获取
-        token = requestSpringMVC.getCookieValue(properties.getTokenName());
-        if (!StringUtils.isEmpty(token)) {
+        token = CookieUtils.getTokenByCookie(properties.getTokenName(), requestContext.getRequest().getCookies());
+        if (token != null) {
+            requestContext.setToken(token);
             return token;
         }
 
         // 请求域中获取
-        token = requestSpringMVC.getParam(properties.getTokenNameRequest());
-        if (!StringUtils.isEmpty(token)) {
+        token = requestContext.getRequest().getParameter(properties.getTokenNameRequest());
+        if (token != null) {
+            requestContext.setToken(token);
             return token;
         }
 
         throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
-    }
-
-    private static ServletRequestAttributes getServletRequestAttributes() {
-        return (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
     }
 
     // 配置区 start ----------------------------------

@@ -3,8 +3,6 @@ package top.lingkang.base;
 import top.lingkang.helper.FinalHolder;
 import top.lingkang.utils.AuthUtils;
 
-import java.util.List;
-
 /**
  * @author lingkang
  * @date 2021/8/20 16:35
@@ -16,34 +14,34 @@ public class FinalAuth {
     public void check() {
         String token = FinalHolder.getToken();
         if (role != null || andRole != null) {
-            List<String> has = FinalHolder.getRole(token);
+            String[] has = FinalHolder.getRole(token);
             AuthUtils.checkRole(role, has);
             AuthUtils.checkAndRole(andRole, has);
         }
 
         if (permission != null || andPermission != null) {
-            List<String> has = FinalHolder.getPermission(token);
+            String[] has = FinalHolder.getPermission(token);
             AuthUtils.checkPermission(permission, has);
             AuthUtils.checkAndPermission(andPermission, has);
         }
     }
 
-    public FinalAuth existsRoles(String... roles) {
+    public FinalAuth hasRoles(String... roles) {
         role = roles;
         return this;
     }
 
-    public FinalAuth existsAllRoles(String... roles) {
+    public FinalAuth hasAllRoles(String... roles) {
         andRole = roles;
         return this;
     }
 
-    public FinalAuth existsPermission(String... permission) {
+    public FinalAuth hasPermission(String... permission) {
         this.permission = permission;
         return this;
     }
 
-    public FinalAuth existsAllPermission(String... permission) {
+    public FinalAuth hasAllPermission(String... permission) {
         andPermission = permission;
         return this;
     }

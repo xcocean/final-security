@@ -4,8 +4,6 @@ import top.lingkang.FinalManager;
 import top.lingkang.session.FinalSession;
 import top.lingkang.utils.SpringBeanUtils;
 
-import java.util.List;
-
 /**
  * @author lingkang
  * Created by 2022/1/7
@@ -18,38 +16,54 @@ public abstract class FinalHolder {
     }
 
     public static boolean isLogin() {
-        return manager.isLogin();
+        return isLogin(getToken());
     }
 
     public static boolean isLogin(String token) {
-        return manager.isLogin(token);
+        return manager.getSessionManager().existsToken(token);
+    }
+
+    public static void logout(String token) {
+        manager.getSessionManager().removeSession(token);
+    }
+
+    public static void logout() {
+        manager.getSessionManager().removeSession(getToken());
     }
 
     public static FinalSession getSession() {
-        return manager.getSession();
+        return getSession(getToken());
     }
 
     public static FinalSession getSession(String token) {
-        return manager.getSession(token);
+        return manager.getSessionManager().getSession(token);
     }
 
     public static String getToken() {
         return manager.getToken();
     }
 
-    public static List<String> getRole(String token) {
+    public static String[] getRole(String token) {
         return manager.getSessionManager().getRoles(token);
     }
 
-    public static List<String> getRole() {
+    public static String[] getRole() {
         return getRole(getToken());
     }
 
-    public static List<String> getPermission(String token) {
+    public static String[] getPermission(String token) {
         return manager.getSessionManager().getPermission(token);
     }
 
-    public static List<String> getPermission() {
+    public static String[] getPermission() {
         return getPermission(getToken());
+    }
+
+    public static void addRoles(String... role) {
+        manager.getSessionManager().addRoles(getToken(), role);
+    }
+
+    public static void addPermission(String... permission) {
+        manager.getSessionManager().addPermission(getToken(), permission);
     }
 }

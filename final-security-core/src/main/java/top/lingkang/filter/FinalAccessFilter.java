@@ -7,6 +7,7 @@ import top.lingkang.utils.AuthUtils;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
@@ -21,12 +22,9 @@ public class FinalAccessFilter implements FinalFilterChain {
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse) {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String path = request.getServletPath();
-
+    public void doFilter(HttpServletRequest request, HttpServletResponse response) {
         for (Map.Entry<String, FinalAuth> entry : manager.getHttpSecurity().getCheckAuths().entrySet()) {
-            if (AuthUtils.matcher(entry.getKey(), path)) {
+            if (AuthUtils.matcher(entry.getKey(), request.getServletPath())) {
                 entry.getValue().check();
             }
         }
