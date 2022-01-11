@@ -1,7 +1,5 @@
 package top.lingkang.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.lingkang.helper.FinalHolder;
@@ -19,13 +17,19 @@ public class FinalSecurityController {
 
     @GetMapping("login")
     public Object login() {
-        FinalHolder.login("lk");
+        FinalHolder.login("lk", true);
         FinalHolder.addRoles("user", "admin", "system");
         FinalHolder.addPermission("get", "update", "delete");
         FinalSession finalSession = FinalHolder.getSession();
         System.out.println(finalSession.getToken());
         finalSession.setAttribute("a", "login添加的参数a：" + finalSession.getToken());
         //return new ModelAndView("redirect:/");
+        return "ok";
+    }
+
+    @GetMapping("logout")
+    public Object logout() {
+        FinalHolder.logout();
         return "ok";
     }
 
@@ -41,11 +45,5 @@ public class FinalSecurityController {
         ArrayList<String> objects = new ArrayList<>();
         objects.add("66");
         return "test";
-    }
-
-
-    @GetMapping("logout")
-    public Object logout() {
-        return "id";
     }
 }

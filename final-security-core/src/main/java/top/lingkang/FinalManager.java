@@ -2,32 +2,29 @@ package top.lingkang;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import top.lingkang.base.FinalExceptionHandler;
-import top.lingkang.base.FinalHttpSecurity;
-import top.lingkang.base.FinalSessionListener;
-import top.lingkang.base.FinalTokenGenerate;
+import top.lingkang.base.*;
 import top.lingkang.config.FinalProperties;
 import top.lingkang.config.FinalSecurityConfiguration;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.filter.FinalAccessFilter;
+import top.lingkang.filter.FinalBaseFilter;
 import top.lingkang.filter.FinalFilterChain;
-import top.lingkang.filter.FinalPrepareFilter;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSession;
 import top.lingkang.utils.AuthUtils;
+import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
 import top.lingkang.utils.SpringBeanUtils;
 
-import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -38,19 +35,21 @@ import java.util.Set;
  */
 @ComponentScan("top.lingkang")
 @Configuration
-@EnableConfigurationProperties(FinalProperties.class)
+//@EnableConfigurationProperties(FinalProperties.class)
 public class FinalManager implements ApplicationRunner {
     private static final Log log = LogFactory.getLog(FinalManager.class);
 
-    @Resource
-    private FinalProperties finalProperties;
     private FinalExceptionHandler exceptionHandler;
     private FinalTokenGenerate tokenGenerate;
     private SessionManager sessionManager;
     private FinalSessionListener sessionListener;
     private FinalHttpSecurity httpSecurity;
+    @Autowired
     private FinalProperties properties;
     private FinalFilterChain[] filterChains;
+    private FinalRememberHandler rememberHandler;
+
+
     private FinalSecurityConfiguration configuration;
 
     @Override
@@ -63,13 +62,8 @@ public class FinalManager implements ApplicationRunner {
         sessionManager = configuration.getSessionManager();
         sessionListener = configuration.getSessionListener();
         httpSecurity = configuration.getHttpSecurity();
-        properties = configuration.getProperties();
-        if (properties != null) {
-            log.info("\nNote that application The configuration in YML is overwritten by a custom bean, \n" +
-                    "注意，application.yml 中的 final.security._ 配置被自定义Bean（FinalSecurityConfiguration）覆盖");
-        } else {
-            properties = finalProperties;
-        }
+        rememberHandler = configuration.getRememberHandler();
+        BeanUtils.copyProperty(configuration.getConfigProperties(), properties, true);
 
         initExcludePath();
         initFilterChain();
@@ -87,13 +81,17 @@ public class FinalManager implements ApplicationRunner {
     }
 
     private void initFilterChain() {
-        if (properties.getPrepareCheck()) {
-            filterChains = AuthUtils.addFilterChain(filterChains, new FinalPrepareFilter(this));
-        }
-        filterChains = AuthUtils.addFilterChain(filterChains, new FinalAccessFilter(this));
+        filterChains = AuthUtils.addFilterChain(
+                filterChains,
+                new FinalBaseFilter(this),
+                new FinalAccessFilter(this));
     }
 
     public String login(String id) {
+        return login(id, false);
+    }
+
+    public String login(String id, boolean remember) {
         if (properties.getOnlyOne()) { // 用户只能存在一个会话
             FinalSession session = sessionManager.getSessionById(id);
             if (session != null) {
@@ -101,13 +99,11 @@ public class FinalManager implements ApplicationRunner {
             }
         }
 
-        String refreshToken = null;
         String token = null;
         try {
             FinalSession session = sessionManager.getSession(getToken());
             if (session != null) {
                 token = session.getToken();
-                refreshToken = session.getRefreshToken();
                 sessionManager.removeSession(session.getToken());
             }
         } catch (Exception e) {
@@ -116,13 +112,13 @@ public class FinalManager implements ApplicationRunner {
         // 生成会话，如果存在token则覆盖会话
         if (token == null)
             token = tokenGenerate.generateToken();
-        if (refreshToken == null)
-            refreshToken = tokenGenerate.generateRefreshToken();
-        FinalSession session = new DefaultFinalSession(id, token, refreshToken);
+
+        FinalSession session = new DefaultFinalSession(id, token);
 
         // 添加会话
         // ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
         sessionManager.addFinalSession(token, session);// 共享会话时，会出现会话覆盖
+
 
         // 将token放到当前线程的变量中
         FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
@@ -135,11 +131,29 @@ public class FinalManager implements ApplicationRunner {
                         requestContext.getResponse(),
                         properties.getTokenName(),
                         token,
-                        properties.getMaxValid() / 1000
+                        (int) (properties.getMaxValid() / 1000L)
                 );
             }
         } else {
             FinalContextHolder.setRequestContext(new FinalRequestContext(token));
+        }
+
+        // 记住我
+        if (remember) {
+            String rememberToken = tokenGenerate.generateRemember();
+            FinalSession rememberSession = new DefaultFinalSession(properties.getRememberTokenPrefix() + id,
+                    properties.getRememberTokenPrefix() + rememberToken);
+            sessionManager.addFinalSession(rememberSession.getToken(), rememberSession);
+
+            // 将记住我令牌放到cookie中
+            if (requestContext != null && properties.getUseCookie()) {
+                CookieUtils.addToken(
+                        requestContext.getResponse(),
+                        properties.getRememberName(),
+                        rememberSession.getToken(),
+                        (int) (properties.getMaxValidRemember() / 1000L)
+                );
+            }
         }
 
         // 会话创建监听
@@ -188,6 +202,34 @@ public class FinalManager implements ApplicationRunner {
         throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
     }
 
+    public String getRememberToken() {
+        // ThreadLocal 中获取
+        FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
+        if (requestContext == null) {
+            return null;
+        }
+
+        // 请求头中获取
+        String rememberToken = requestContext.getRequest().getHeader(properties.getRememberName());
+        if (rememberToken != null) {
+            return rememberToken;
+        }
+
+        // cookie中获取
+        rememberToken = CookieUtils.getTokenByCookie(properties.getRememberName(), requestContext.getRequest().getCookies());
+        if (rememberToken != null) {
+            return rememberToken;
+        }
+
+        // 请求域中获取
+        rememberToken = requestContext.getRequest().getParameter(properties.getRememberName());
+        if (rememberToken != null) {
+            return rememberToken;
+        }
+
+        return null;
+    }
+
     // 配置区 start ----------------------------------
 
     public FinalExceptionHandler getExceptionHandler() {
@@ -224,6 +266,10 @@ public class FinalManager implements ApplicationRunner {
 
     public FinalProperties getProperties() {
         return properties;
+    }
+
+    public FinalRememberHandler getRememberHandler() {
+        return rememberHandler;
     }
 
     // 配置区 end ----------------------------------

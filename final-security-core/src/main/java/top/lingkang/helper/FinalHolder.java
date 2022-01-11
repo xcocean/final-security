@@ -15,6 +15,10 @@ public abstract class FinalHolder {
         manager.login(id);
     }
 
+    public static void login(String id, boolean remember) {
+        manager.login(id, remember);
+    }
+
     public static boolean isLogin() {
         return isLogin(getToken());
     }

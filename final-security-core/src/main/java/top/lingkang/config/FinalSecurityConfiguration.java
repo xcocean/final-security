@@ -1,9 +1,6 @@
 package top.lingkang.config;
 
-import top.lingkang.base.FinalExceptionHandler;
-import top.lingkang.base.FinalHttpSecurity;
-import top.lingkang.base.FinalSessionListener;
-import top.lingkang.base.FinalTokenGenerate;
+import top.lingkang.base.*;
 import top.lingkang.base.impl.DefaultFinalExceptionHandler;
 import top.lingkang.base.impl.DefaultFinalHttpSecurity;
 import top.lingkang.base.impl.DefaultFinalSessionListener;
@@ -16,12 +13,21 @@ import top.lingkang.session.impl.DefaultFinalSessionManager;
  * @date 2022/1/8
  */
 public class FinalSecurityConfiguration {
-    private FinalExceptionHandler exceptionHandler=new DefaultFinalExceptionHandler();
-    private FinalTokenGenerate tokenGenerate=new DefaultFinalTokenGenerate();
-    private SessionManager sessionManager=new DefaultFinalSessionManager();
-    private FinalSessionListener sessionListener=new DefaultFinalSessionListener();
-    private  FinalHttpSecurity httpSecurity=new DefaultFinalHttpSecurity();
-    private FinalProperties properties;
+    private FinalExceptionHandler exceptionHandler = new DefaultFinalExceptionHandler();
+    private FinalTokenGenerate tokenGenerate = new DefaultFinalTokenGenerate();
+    private SessionManager sessionManager = new DefaultFinalSessionManager();
+    private FinalSessionListener sessionListener = new DefaultFinalSessionListener();
+    private FinalHttpSecurity httpSecurity = new DefaultFinalHttpSecurity();
+    private FinalRememberHandler rememberHandler;
+    private FinalConfigProperties configProperties;
+
+    public FinalRememberHandler getRememberHandler() {
+        return rememberHandler;
+    }
+
+    public void setRememberHandler(FinalRememberHandler rememberHandler) {
+        this.rememberHandler = rememberHandler;
+    }
 
     public FinalExceptionHandler getExceptionHandler() {
         return exceptionHandler;
@@ -63,14 +69,11 @@ public class FinalSecurityConfiguration {
         this.httpSecurity = httpSecurity;
     }
 
-    public FinalProperties getProperties() {
-        return properties;
+    public FinalConfigProperties getConfigProperties() {
+        return configProperties;
     }
 
-    /**
-     * 注意：使用此配置将会覆盖 yml中配置
-     */
-    public void setProperties(FinalProperties properties) {
-        this.properties = properties;
+    public void setConfigProperties(FinalConfigProperties configProperties) {
+        this.configProperties = configProperties;
     }
 }

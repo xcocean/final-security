@@ -5,6 +5,7 @@ import top.lingkang.error.FinalPermissionException;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
+import top.lingkang.session.FinalSession;
 import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.CookieUtils;
 
@@ -12,6 +13,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * @author lingkang
@@ -19,6 +21,7 @@ import java.io.IOException;
  */
 public class FinalSecurityFilter implements Filter {
     private FinalManager manager;
+    private static HashSet<String> cacheExcludePath = new HashSet<>();
 
     public FinalSecurityFilter(FinalManager manager) {
         this.manager = manager;
@@ -32,9 +35,14 @@ public class FinalSecurityFilter implements Filter {
         FinalContextHolder.setRequestContext(new FinalRequestContext(request, response));
         try {
             String path = request.getServletPath();
+            if (cacheExcludePath.contains(path)) {
+                filterChain.doFilter(servletRequest, servletResponse);
+                return;
+            }
             // 排除
             for (String url : manager.getProperties().getExcludePath()) {
                 if (AuthUtils.matcher(url, path)) {
+                    cacheExcludePath.add(path);
                     filterChain.doFilter(servletRequest, servletResponse);
                     return;
                 }
@@ -50,7 +58,31 @@ public class FinalSecurityFilter implements Filter {
         } catch (Exception e) {
             if (e instanceof FinalTokenException) {// 无token处理
                 if (manager.getProperties().getUseCookie()) {
-                    CookieUtils.tokenToZeroAge(manager.getProperties().getTokenName(), (HttpServletResponse) servletResponse);
+                    CookieUtils.tokenToZeroAge(manager.getProperties().getTokenName(), response);
+                }
+                // 记住我处理
+                String remember = manager.getRememberToken();
+                if (remember != null) {
+                    FinalSession session = null;
+                    try {
+                        session = manager.getSessionManager().getSession(remember);
+                    } catch (Exception ex) {
+                    }
+                    if (session != null &&
+                            manager.getRememberHandler().doLogin(
+                                    session.getId().substring(manager.getProperties().getRememberTokenPrefix().length()),
+                                    session,
+                                    request,
+                                    response
+                            )) {
+                        filterChain.doFilter(servletRequest, servletResponse);
+                        return;
+                    } else {
+                        // 移除记住我,,从cookie中
+                        if (manager.getProperties().getUseCookie()) {
+                            CookieUtils.tokenToZeroAge(manager.getProperties().getRememberName(), response);
+                        }
+                    }
                 }
                 manager.getExceptionHandler().tokenException(e, request, response);
             } else if (e instanceof FinalPermissionException) {

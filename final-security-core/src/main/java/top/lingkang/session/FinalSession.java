@@ -11,8 +11,6 @@ public interface FinalSession {
 
     String getToken();
 
-    String getRefreshToken();
-
     Object getAttribute(String var1);
 
     void setAttribute(String var1, Object var2);

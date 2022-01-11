@@ -18,4 +18,9 @@ public class DefaultFinalTokenGenerate implements FinalTokenGenerate {
     public String generateRefreshToken() {
         return generateToken();
     }
+
+    @Override
+    public String generateRemember() {
+        return generateToken();
+    }
 }

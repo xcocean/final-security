@@ -8,4 +8,6 @@ public interface FinalTokenGenerate {
     String generateToken();
 
     String generateRefreshToken();
+
+    String generateRemember();
 }

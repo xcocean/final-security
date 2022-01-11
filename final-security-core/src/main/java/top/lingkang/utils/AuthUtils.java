@@ -8,7 +8,6 @@ import top.lingkang.filter.FinalFilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author lingkang
@@ -24,7 +23,7 @@ public class AuthUtils {
     public static void checkRole(String[] roles, String[] has) {
         if (roles == null)
             return;
-        if (has==null)
+        if (has == null)
             throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             for (String h : has) {
@@ -38,7 +37,7 @@ public class AuthUtils {
     public static void checkAndRole(String[] roles, String[] has) {
         if (roles == null)
             return;
-        if (has==null)
+        if (has == null)
             throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             boolean no = true;
@@ -57,7 +56,7 @@ public class AuthUtils {
     public static void checkPermission(String[] permission, String[] has) {
         if (permission == null)
             return;
-        if (has==null)
+        if (has == null)
             throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String p : permission) {
             for (String h : has) {
@@ -71,7 +70,7 @@ public class AuthUtils {
     public static void checkAndPermission(String[] permission, String[] has) {
         if (permission == null)
             return;
-        if (has==null)
+        if (has == null)
             throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String p : permission) {
             boolean no = true;
@@ -96,18 +95,30 @@ public class AuthUtils {
     }
 
     /**
-     * 检查预留时间，返回true表示时间不满足后续操作
+     * 检查预留时间，返回true表示预留时间不满足
      */
-    public static boolean checkReserveTime(long length, long maxValid, long lastAccessTime) {
-        return lastAccessTime + maxValid - System.currentTimeMillis() < length;
+    public static boolean checkReserveTime(long prepareTime, long maxTime, long lastAccessTime) {
+        return System.currentTimeMillis() - lastAccessTime - maxTime < prepareTime;
     }
 
-    public static FinalFilterChain[] addFilterChain(FinalFilterChain[] resource, FinalFilterChain newChain) {
+    /**
+     * 超过最大有效时间返回true
+     */
+    public static boolean checkTokenValid(long lastTime, long maxTime) {
+        return System.currentTimeMillis() - lastTime > maxTime;
+    }
+
+    public static FinalFilterChain[] addFilterChain(FinalFilterChain[] resource, FinalFilterChain... newChain) {
         if (resource == null || resource.length == 0) {
-            resource = new FinalFilterChain[]{newChain};
+            resource = newChain;
         } else {
+            int sourcesLen = resource.length;
             resource = Arrays.copyOf(resource, resource.length + 1);
-            resource[resource.length - 1] = newChain;
+            int init = 0;
+            for (int i = sourcesLen - 1; i < resource.length; i++) {
+                resource[i] = newChain[init];
+                init++;
+            }
         }
         return resource;
     }

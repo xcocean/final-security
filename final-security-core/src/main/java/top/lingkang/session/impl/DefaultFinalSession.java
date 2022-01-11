@@ -15,14 +15,12 @@ public class DefaultFinalSession implements FinalSession, Serializable {
     private static final long serialVersionUID = 1L;
     private Map<String, Object> data = new HashMap<>();
     private String token;
-    private String refreshToken;
     private String id;
     private volatile long creationTime, lastAccessTime;
 
-    public DefaultFinalSession(String id, String token, String refreshToken) {
+    public DefaultFinalSession(String id, String token) {
         this.id = id;
         this.token = token;
-        this.refreshToken = refreshToken;
         this.creationTime = this.lastAccessTime = System.currentTimeMillis();
     }
 
@@ -36,10 +34,6 @@ public class DefaultFinalSession implements FinalSession, Serializable {
 
     public String getToken() {
         return token;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
     }
 
     public Object getAttribute(String var1) {

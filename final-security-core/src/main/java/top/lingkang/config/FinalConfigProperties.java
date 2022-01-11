@@ -1,37 +1,30 @@
 package top.lingkang.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
-import java.io.Serializable;
-
 /**
  * @author lingkang
  * Created by 2022/1/7
  */
-@Component
-@ConfigurationProperties(prefix = "final.security")
-public class FinalProperties implements Serializable {
+public class FinalConfigProperties {
     // 令牌名称
-    private String tokenName = "fs-token";
-    private String tokenNameRequest = "access_token";
-    private String tokenNameHeader = "Authorization";
-    private String rememberName = "rn";// 记住我的名称
-    private String rememberTokenPrefix="remember-";// 记住我的令牌前缀
+    private String tokenName;
+    private String tokenNameRequest;
+    private String tokenNameHeader;
+    private String rememberName;// 记住我的名称
+    private String rememberTokenPrefix;// 记住我的令牌前缀  默认"remember-"
 
     // 失效时间
-    private Long maxValid = 1800000L;// 30分钟
-    private Long maxValidRemember = 2592000000L;// 30天
-    private Boolean prepareCheck = true;
-    private Long prepareTime = 180000L;// 预留3分钟执行后续操操作
-    private Boolean tokenAccessContinue = false;// 每次访问都更新令牌失效时间
+    private Long maxValid;// 30分钟
+    private Long maxValidRemember;// 30天
+    private Boolean prepareCheck;
+    private Long prepareTime;// 预留3分钟执行后续操操作
+    private Boolean tokenAccessContinue;// 每次访问都更新令牌失效时间,,即访问续时，默认false
 
     // 排除路径
-    private String[] excludePath = {"/login", "/logout"};
+    private String[] excludePath;
 
     // 登录相关
-    private Boolean useCookie = true;// 使用cookie存储 token
-    private Boolean onlyOne = false;// 只允许登录唯一用户，第二个登录会kill掉第一个的token
+    private Boolean useCookie;// 使用cookie存储 token
+    private Boolean onlyOne;// 只允许登录唯一用户，第二个登录会kill掉第一个的token
 
 
     public String getRememberTokenPrefix() {
@@ -40,6 +33,14 @@ public class FinalProperties implements Serializable {
 
     public void setRememberTokenPrefix(String rememberTokenPrefix) {
         this.rememberTokenPrefix = rememberTokenPrefix;
+    }
+
+    public String getRememberName() {
+        return rememberName;
+    }
+
+    public void setRememberName(String rememberName) {
+        this.rememberName = rememberName;
     }
 
     public String getTokenName() {
@@ -128,13 +129,5 @@ public class FinalProperties implements Serializable {
 
     public void setTokenAccessContinue(Boolean tokenAccessContinue) {
         this.tokenAccessContinue = tokenAccessContinue;
-    }
-
-    public String getRememberName() {
-        return rememberName;
-    }
-
-    public void setRememberName(String rememberName) {
-        this.rememberName = rememberName;
     }
 }
