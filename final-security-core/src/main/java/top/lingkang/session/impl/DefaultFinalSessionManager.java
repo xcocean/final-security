@@ -5,7 +5,6 @@ import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -29,7 +28,7 @@ public class DefaultFinalSessionManager implements SessionManager {
     @Override
     public FinalSession getSession(String token) {
         FinalSession session = this.session.get(token);
-        if (session==null)
+        if (session == null)
             throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         return session;
     }

@@ -27,6 +27,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+            <version>${spring.boot.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>top.lingkang</groupId>
             <artifactId>final-security-core</artifactId>
         </dependency>

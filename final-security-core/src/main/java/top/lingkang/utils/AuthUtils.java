@@ -98,7 +98,7 @@ public class AuthUtils {
      * 检查预留时间，返回true表示预留时间不满足
      */
     public static boolean checkReserveTime(long prepareTime, long maxTime, long lastAccessTime) {
-        return System.currentTimeMillis() - lastAccessTime - maxTime < prepareTime;
+        return lastAccessTime + maxTime - System.currentTimeMillis() < prepareTime;
     }
 
     /**

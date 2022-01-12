@@ -4,14 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.lingkang.base.FinalAuth;
 import top.lingkang.base.FinalHttpSecurity;
-import top.lingkang.base.FinalRememberHandler;
 import top.lingkang.base.impl.DefaultFinalHttpSecurity;
 import top.lingkang.base.impl.DefaultFinalSessionListener;
-import top.lingkang.helper.FinalHolder;
-import top.lingkang.session.FinalSession;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 /**
@@ -20,7 +15,10 @@ import java.util.HashMap;
  */
 @Configuration
 public class Myconfig {
-    @Bean
+
+
+
+    /*@Bean
     public FinalSecurityConfiguration configuration() {
         FinalSecurityConfiguration configuration = new FinalSecurityConfiguration();
         FinalConfigProperties configProperties = new FinalConfigProperties();
@@ -36,13 +34,13 @@ public class Myconfig {
         configuration.setHttpSecurity(httpSecurity);
         configuration.setSessionListener(new DefaultFinalSessionListener());
 
-        /*configuration.setRememberHandler(new FinalRememberHandler() {
+        *//*configuration.setRememberHandler(new FinalRememberHandler() {
             @Override
             public boolean doLogin(String id, FinalSession rememberSession, HttpServletRequest request, HttpServletResponse response) {
                 FinalHolder.login(id);// 登录
                 return true;
             }
-        });*/
+        });*//*
         return configuration;
-    }
+    }*/
 }

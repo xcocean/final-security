@@ -26,6 +26,16 @@ public class FinalConfigProperties {
     private Boolean useCookie;// 使用cookie存储 token
     private Boolean onlyOne;// 只允许登录唯一用户，第二个登录会kill掉第一个的token
 
+    // 会话相关
+    private Boolean useViewSession;// 是否使用视图会话，默认关闭，例如在 jsp中，通过 ${sessionScope.finalSecurity.role }获得角色数组
+
+    public Boolean getUseViewSession() {
+        return useViewSession;
+    }
+
+    public void setUseViewSession(Boolean useViewSession) {
+        this.useViewSession = useViewSession;
+    }
 
     public String getRememberTokenPrefix() {
         return rememberTokenPrefix;

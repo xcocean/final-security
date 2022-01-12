@@ -5,7 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import top.lingkang.annotation.FinalCheck;
-import top.lingkang.helper.FinalHolder;
+import top.lingkang.holder.FinalHolder;
 import top.lingkang.utils.AuthUtils;
 
 import java.util.Optional;

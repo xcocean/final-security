@@ -1,6 +1,6 @@
 package top.lingkang.base;
 
-import top.lingkang.helper.FinalHolder;
+import top.lingkang.holder.FinalHolder;
 import top.lingkang.utils.AuthUtils;
 
 /**

@@ -2,7 +2,8 @@ package top.lingkang.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.lingkang.helper.FinalHolder;
+import org.springframework.web.servlet.ModelAndView;
+import top.lingkang.holder.FinalHolder;
 import top.lingkang.session.FinalSession;
 
 import java.util.ArrayList;
@@ -38,6 +39,11 @@ public class FinalSecurityController {
         FinalSession session = FinalHolder.getSession();
         System.out.println(session.getData());
         return "123";
+    }
+
+    @GetMapping("index")
+    public Object indexHtml(){
+        return new ModelAndView("index");
     }
 
     @GetMapping("/test")

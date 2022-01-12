@@ -1,6 +1,7 @@
 final:
   security:
-    exclude-path: /login,logout
+    exclude-path: /login,/logout
+    use-view-session: true
 
 spring:
   http:

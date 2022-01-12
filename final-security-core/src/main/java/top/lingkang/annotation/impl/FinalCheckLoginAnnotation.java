@@ -3,7 +3,7 @@ package top.lingkang.annotation.impl;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import top.lingkang.helper.FinalHolder;
+import top.lingkang.holder.FinalHolder;
 
 /**
  * @author lingkang

@@ -8,22 +8,22 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import top.lingkang.base.*;
+import top.lingkang.base.impl.*;
+import top.lingkang.config.FinalConfigProperties;
 import top.lingkang.config.FinalProperties;
-import top.lingkang.config.FinalSecurityConfiguration;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.filter.FinalAccessFilter;
 import top.lingkang.filter.FinalBaseFilter;
 import top.lingkang.filter.FinalFilterChain;
+import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
-import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
-import top.lingkang.session.impl.DefaultFinalSession;
+import top.lingkang.session.impl.DefaultFinalSessionManager;
 import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
-import top.lingkang.utils.SpringBeanUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,40 +35,43 @@ import java.util.Set;
  */
 @ComponentScan("top.lingkang")
 @Configuration
-//@EnableConfigurationProperties(FinalProperties.class)
 public class FinalManager implements ApplicationRunner {
     private static final Log log = LogFactory.getLog(FinalManager.class);
-
+    @Autowired(required = false)
     private FinalExceptionHandler exceptionHandler;
+    @Autowired(required = false)
     private FinalTokenGenerate tokenGenerate;
+    @Autowired(required = false)
     private SessionManager sessionManager;
+    @Autowired(required = false)
     private FinalSessionListener sessionListener;
+    @Autowired(required = false)
     private FinalHttpSecurity httpSecurity;
     @Autowired
     private FinalProperties properties;
     private FinalFilterChain[] filterChains;
+    @Autowired(required = false)
     private FinalRememberHandler rememberHandler;
+    @Autowired(required = false)
+    private FinalConfigProperties configProperties;
 
-
-    private FinalSecurityConfiguration configuration;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if ((configuration = SpringBeanUtils.getBean(FinalSecurityConfiguration.class)) == null) {
-            configuration = new FinalSecurityConfiguration();
-        }
-        exceptionHandler = configuration.getExceptionHandler();
-        tokenGenerate = configuration.getTokenGenerate();
-        sessionManager = configuration.getSessionManager();
-        sessionListener = configuration.getSessionListener();
-        httpSecurity = configuration.getHttpSecurity();
-        rememberHandler = configuration.getRememberHandler();
-        BeanUtils.copyProperty(configuration.getConfigProperties(), properties, true);
+        if (exceptionHandler == null) exceptionHandler = new DefaultFinalExceptionHandler();
+        if (tokenGenerate == null) tokenGenerate = new DefaultFinalTokenGenerate();
+        if (sessionManager == null) sessionManager = new DefaultFinalSessionManager();
+        if (sessionListener == null) sessionListener = new DefaultFinalSessionListener();
+        if (httpSecurity == null) httpSecurity = new DefaultFinalHttpSecurity();
+        if (rememberHandler == null) rememberHandler = new DefaultFinalRememberHandler();
+        if (configProperties == null) configProperties = new FinalConfigProperties();
+
+        BeanUtils.copyProperty(configProperties, properties, true);
 
         initExcludePath();
         initFilterChain();
 
-        log.info("final-security init user:  " + login("user"));
+        log.info("final-security init user:  " + FinalHolder.login("user"));
         log.info("final-security v1.0.1 load finish");
     }
 
@@ -87,81 +90,6 @@ public class FinalManager implements ApplicationRunner {
                 new FinalAccessFilter(this));
     }
 
-    public String login(String id) {
-        return login(id, false);
-    }
-
-    public String login(String id, boolean remember) {
-        if (properties.getOnlyOne()) { // 用户只能存在一个会话
-            FinalSession session = sessionManager.getSessionById(id);
-            if (session != null) {
-                sessionManager.removeSession(session.getToken());
-            }
-        }
-
-        String token = null;
-        try {
-            FinalSession session = sessionManager.getSession(getToken());
-            if (session != null) {
-                token = session.getToken();
-                sessionManager.removeSession(session.getToken());
-            }
-        } catch (Exception e) {
-        }
-
-        // 生成会话，如果存在token则覆盖会话
-        if (token == null)
-            token = tokenGenerate.generateToken();
-
-        FinalSession session = new DefaultFinalSession(id, token);
-
-        // 添加会话
-        // ServletRequestAttributes servletRequestAttributes = getServletRequestAttributes();
-        sessionManager.addFinalSession(token, session);// 共享会话时，会出现会话覆盖
-
-
-        // 将token放到当前线程的变量中
-        FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
-        if (requestContext != null) {
-            requestContext.setToken(token);
-
-            // 将令牌放到cookie中
-            if (properties.getUseCookie()) {
-                CookieUtils.addToken(
-                        requestContext.getResponse(),
-                        properties.getTokenName(),
-                        token,
-                        (int) (properties.getMaxValid() / 1000L)
-                );
-            }
-        } else {
-            FinalContextHolder.setRequestContext(new FinalRequestContext(token));
-        }
-
-        // 记住我
-        if (remember) {
-            String rememberToken = tokenGenerate.generateRemember();
-            FinalSession rememberSession = new DefaultFinalSession(properties.getRememberTokenPrefix() + id,
-                    properties.getRememberTokenPrefix() + rememberToken);
-            sessionManager.addFinalSession(rememberSession.getToken(), rememberSession);
-
-            // 将记住我令牌放到cookie中
-            if (requestContext != null && properties.getUseCookie()) {
-                CookieUtils.addToken(
-                        requestContext.getResponse(),
-                        properties.getRememberName(),
-                        rememberSession.getToken(),
-                        (int) (properties.getMaxValidRemember() / 1000L)
-                );
-            }
-        }
-
-        // 会话创建监听
-        sessionListener.create(token, id, requestContext == null ? null : requestContext.getRequest());
-
-        return token;
-    }
-
     /**
      * 获取token
      */
@@ -176,7 +104,6 @@ public class FinalManager implements ApplicationRunner {
         if (token != null) {
             return token;
         }
-
 
         // 请求头中获取
         token = requestContext.getRequest().getHeader(properties.getTokenNameHeader());
@@ -252,20 +179,16 @@ public class FinalManager implements ApplicationRunner {
         return httpSecurity;
     }
 
-    public FinalSecurityConfiguration getConfiguration() {
-        return configuration;
-    }
-
     public FinalFilterChain[] getFilterChains() {
         return filterChains;
     }
 
-    public void setFilterChains(FinalFilterChain[] filterChains) {
-        this.filterChains = filterChains;
-    }
-
     public FinalProperties getProperties() {
         return properties;
+    }
+
+    public void updateProperties(FinalProperties newProperties) {
+        properties = newProperties;
     }
 
     public FinalRememberHandler getRememberHandler() {
@@ -273,4 +196,8 @@ public class FinalManager implements ApplicationRunner {
     }
 
     // 配置区 end ----------------------------------
+
+    public void updateFilterChains(FinalFilterChain[] newFilterChain) {
+        filterChains = newFilterChain;
+    }
 }
