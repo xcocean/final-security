@@ -136,14 +136,14 @@ public class FinalManager implements ApplicationRunner {
             return null;
         }
 
-        // 请求头中获取
-        String rememberToken = requestContext.getRequest().getHeader(properties.getRememberName());
+        // cookie中获取
+        String rememberToken = CookieUtils.getTokenByCookie(properties.getRememberName(), requestContext.getRequest().getCookies());
         if (rememberToken != null) {
             return rememberToken;
         }
 
-        // cookie中获取
-        rememberToken = CookieUtils.getTokenByCookie(properties.getRememberName(), requestContext.getRequest().getCookies());
+        // 请求头中获取
+        rememberToken = requestContext.getRequest().getHeader(properties.getRememberName());
         if (rememberToken != null) {
             return rememberToken;
         }
@@ -153,6 +153,10 @@ public class FinalManager implements ApplicationRunner {
         if (rememberToken != null) {
             return rememberToken;
         }
+
+        // 线程中获取
+        if (requestContext.getRemember()!=null)
+            return requestContext.getRemember();
 
         return null;
     }

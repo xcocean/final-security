@@ -4,6 +4,7 @@ import org.springframework.lang.Nullable;
 import top.lingkang.base.FinalSessionListener;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lingkang
@@ -11,7 +12,12 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class DefaultFinalSessionListener implements FinalSessionListener {
     @Override
-    public void create(String token, String id,@Nullable HttpServletRequest request) {
+    public void create(String token, String id,@Nullable HttpServletRequest request, @Nullable HttpServletResponse response) {
+
+    }
+
+    @Override
+    public void delete(String token, String id, HttpServletRequest request, HttpServletResponse response) {
 
     }
 }

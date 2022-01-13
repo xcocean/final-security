@@ -37,7 +37,7 @@ public interface SessionManager {
     void deletePermission(String token);
 
     // 根据token移除会话
-    void removeSession(String token);
+    FinalSession removeSession(String token);
 
     // 是否存在 token
     boolean existsToken(String token);

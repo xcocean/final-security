@@ -1,8 +1,10 @@
 package top.lingkang.filter;
 
 import top.lingkang.FinalManager;
+import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.error.FinalTokenException;
+import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
 import top.lingkang.session.FinalSession;
@@ -55,6 +57,11 @@ public class FinalSecurityFilter implements Filter {
 
             //放行
             filterChain.doFilter(servletRequest, servletResponse);
+
+            // 检查使用使用视图会话
+            if (manager.getProperties().getUseViewSession()) {
+                request.getSession().setAttribute(FinalConstants.FINAL_SESSION_NAME, FinalHolder.getSession());
+            }
         } catch (Exception e) {
             if (e instanceof FinalTokenException) {// 无token处理
                 if (manager.getProperties().getUseCookie()) {
@@ -90,7 +97,6 @@ public class FinalSecurityFilter implements Filter {
             } else {// 其他异常
                 manager.getExceptionHandler().exception(e, request, response);
             }
-            return;
         } finally {
             FinalContextHolder.removeRequestContext();// 防止内存泄露
         }

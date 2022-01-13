@@ -94,18 +94,28 @@ public abstract class FinalHolder {
             sessionManager.addFinalSession(rememberSession.getToken(), rememberSession);
 
             // 将记住我令牌放到cookie中
-            if (requestContext != null && properties.getUseCookie()) {
-                CookieUtils.addToken(
-                        requestContext.getResponse(),
-                        properties.getRememberName(),
-                        rememberSession.getToken(),
-                        (int) (properties.getMaxValidRemember() / 1000L)
-                );
+            if (requestContext != null && requestContext.getResponse() != null) {
+                if (properties.getUseCookie()) {
+                    CookieUtils.addToken(
+                            requestContext.getResponse(),
+                            properties.getRememberName(),
+                            rememberSession.getToken(),
+                            (int) (properties.getMaxValidRemember() / 1000L)
+                    );
+                }
+                // 放到响应头
+                requestContext.getResponse().addHeader(properties.getRememberName(), rememberSession.getToken());
+            } else {
+                // 此时是无请求会话，放在本地线程中
+                requestContext.setRemember(rememberToken);
             }
         }
 
         // 会话创建监听
-        sessionListener.create(token, id, requestContext == null ? null : requestContext.getRequest());
+        sessionListener.create(token, id,
+                requestContext == null ? null : requestContext.getRequest(),
+                requestContext == null ? null : requestContext.getResponse()
+        );
 
         return token;
     }
@@ -120,7 +130,7 @@ public abstract class FinalHolder {
 
     public static void logout(String token) {
         try {
-            manager.getSessionManager().removeSession(token);
+            FinalSession removeSession = manager.getSessionManager().removeSession(token);
 
             FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
             if (requestContext != null) {
@@ -134,6 +144,11 @@ public abstract class FinalHolder {
                     }
                 }
             }
+            // 会话创建监听
+            manager.getSessionListener().delete(token, removeSession == null ? null : removeSession.getId(),
+                    requestContext == null ? null : requestContext.getRequest(),
+                    requestContext == null ? null : requestContext.getResponse()
+            );
         } catch (Exception e) {
         }
     }

@@ -43,4 +43,11 @@ public class Myconfig {
         });*//*
         return configuration;
     }*/
+
+    @Bean
+    public FinalConfigProperties configProperties(){
+        FinalConfigProperties properties=new FinalConfigProperties();
+        properties.setExcludePath(new String[]{"/login","/logout"});
+        return properties;
+    }
 }

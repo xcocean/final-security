@@ -82,13 +82,14 @@ public class DefaultFinalSessionManager implements SessionManager {
     }
 
     @Override
-    public void removeSession(String token) {
+    public FinalSession removeSession(String token) {
         FinalSession remove = session.remove(token);
         if (remove != null) {
             idAndToken.remove(remove.getId());
         }
         roles.remove(token);
         permission.remove(token);
+        return remove;
     }
 
     public boolean existsToken(String token) {
