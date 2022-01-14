@@ -3,7 +3,8 @@ package top.lingkang.annotation.impl;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import top.lingkang.holder.FinalHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import top.lingkang.FinalManager;
 
 /**
  * @author lingkang
@@ -11,10 +12,12 @@ import top.lingkang.holder.FinalHolder;
  */
 @Aspect
 public class FinalCheckLoginAnnotation {
+    @Autowired(required = false)
+    private FinalManager manager;
 
     @Around("@annotation(top.lingkang.annotation.FinalCheckLogin)")
     public Object before(ProceedingJoinPoint joinPoint) throws Throwable {
-        FinalHolder.isLogin();
+        manager.getSessionManager().existsToken(manager.getToken());
         return joinPoint.proceed();
     }
 }

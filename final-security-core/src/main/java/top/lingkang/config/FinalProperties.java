@@ -17,7 +17,8 @@ public class FinalProperties implements Serializable {
     private String tokenNameRequest = "access_token";
     private String tokenNameHeader = "Authorization";
     private String rememberName = "rn";// 记住我的名称
-    private String rememberTokenPrefix="remember-";// 记住我的令牌前缀
+    private String rememberTokenPrefix="remember-";// 记住我的令牌前缀，用于区分token与记住我
+    private Boolean generateNewToken=false; // 重复登陆是否生成新的令牌 默认 false 即源令牌未过期则不会生成新令牌
 
     // 失效时间
     private Long maxValid = 1800000L;// 30分钟
@@ -35,6 +36,14 @@ public class FinalProperties implements Serializable {
 
     // 会话相关
     private Boolean useViewSession=false;// 是否使用视图会话，例如在 jsp中，通过 ${sessionScope.finalSecurity.role }获得角色数组
+
+    public Boolean getGenerateNewToken() {
+        return generateNewToken;
+    }
+
+    public void setGenerateNewToken(Boolean generateNewToken) {
+        this.generateNewToken = generateNewToken;
+    }
 
     public Boolean getUseViewSession() {
         return useViewSession;

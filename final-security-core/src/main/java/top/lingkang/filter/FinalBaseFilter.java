@@ -1,5 +1,8 @@
 package top.lingkang.filter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * @date 2022/1/11
  */
 public class FinalBaseFilter implements FinalFilterChain {
+
     private FinalManager manager;
 
     public FinalBaseFilter(FinalManager manager) {

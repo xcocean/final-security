@@ -1,5 +1,8 @@
 package top.lingkang.holder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.base.FinalSessionListener;
 import top.lingkang.base.FinalTokenGenerate;
@@ -12,7 +15,6 @@ import top.lingkang.session.FinalSessionData;
 import top.lingkang.session.SessionManager;
 import top.lingkang.session.impl.DefaultFinalSession;
 import top.lingkang.utils.CookieUtils;
-import top.lingkang.utils.SpringBeanUtils;
 
 import javax.servlet.http.HttpSession;
 
@@ -20,14 +22,18 @@ import javax.servlet.http.HttpSession;
  * @author lingkang
  * Created by 2022/1/7
  */
-public abstract class FinalHolder {
-    public static FinalManager manager = SpringBeanUtils.getBean(FinalManager.class);
+@Lazy
+@Component
+public class FinalHolder {
 
-    public static String login(String id) {
+    @Autowired
+    private FinalManager manager;
+
+    public String login(String id) {
         return login(id, false);
     }
 
-    public static String login(String id, boolean remember) {
+    public String login(String id, boolean remember) {
         FinalProperties properties = manager.getProperties();
         SessionManager sessionManager = manager.getSessionManager();
         FinalTokenGenerate tokenGenerate = manager.getTokenGenerate();
@@ -43,16 +49,16 @@ public abstract class FinalHolder {
         String token = null;
         try {
             FinalSession session = sessionManager.getSession(getToken());
-            if (session != null) {
-                token = session.getToken();
+            // 是否生成新令牌
+            if (manager.getProperties().getGenerateNewToken()) {
+                token = tokenGenerate.generateToken();
                 sessionManager.removeSession(session.getToken());
+            } else {
+                token = session.getToken();
             }
         } catch (Exception e) {
-        }
-
-        // 生成会话，如果存在token则覆盖会话
-        if (token == null)
             token = tokenGenerate.generateToken();
+        }
 
         FinalSession session = new DefaultFinalSession(id, token);
 
@@ -88,9 +94,13 @@ public abstract class FinalHolder {
 
         // 记住我
         if (remember) {
-            String rememberToken = tokenGenerate.generateRemember();
+            String rememberToken = manager.getRememberToken();
+            if (rememberToken == null) {
+                rememberToken = tokenGenerate.generateRemember();
+            }
+            rememberToken = properties.getRememberTokenPrefix() + rememberToken;
             FinalSession rememberSession = new DefaultFinalSession(properties.getRememberTokenPrefix() + id,
-                    properties.getRememberTokenPrefix() + rememberToken);
+                    rememberToken);
             sessionManager.addFinalSession(rememberSession.getToken(), rememberSession);
 
             // 将记住我令牌放到cookie中
@@ -99,7 +109,7 @@ public abstract class FinalHolder {
                     CookieUtils.addToken(
                             requestContext.getResponse(),
                             properties.getRememberName(),
-                            rememberSession.getToken(),
+                            rememberToken,
                             (int) (properties.getMaxValidRemember() / 1000L)
                     );
                 }
@@ -120,17 +130,19 @@ public abstract class FinalHolder {
         return token;
     }
 
-    public static boolean isLogin() {
+    public boolean isLogin() {
         return isLogin(getToken());
     }
 
-    public static boolean isLogin(String token) {
+    public boolean isLogin(String token) {
         return manager.getSessionManager().existsToken(token);
     }
 
-    public static void logout(String token) {
+    public void logout(String token) {
         try {
             FinalSession removeSession = manager.getSessionManager().removeSession(token);
+            // 移除记住我
+            manager.getSessionManager().removeSession(manager.getProperties().getRememberTokenPrefix() + manager.getRememberToken());
 
             FinalRequestContext requestContext = FinalContextHolder.getRequestContext();
             if (requestContext != null) {
@@ -153,42 +165,42 @@ public abstract class FinalHolder {
         }
     }
 
-    public static void logout() {
+    public void logout() {
         try {
             logout(getToken());
         } catch (Exception e) {
         }
     }
 
-    public static FinalSession getSession() {
+    public FinalSession getSession() {
         return getSession(getToken());
     }
 
-    public static FinalSession getSession(String token) {
+    public FinalSession getSession(String token) {
         return manager.getSessionManager().getSession(token);
     }
 
-    public static String getToken() {
+    public String getToken() {
         return manager.getToken();
     }
 
-    public static String[] getRole(String token) {
+    public String[] getRole(String token) {
         return manager.getSessionManager().getRoles(token);
     }
 
-    public static String[] getRole() {
+    public String[] getRole() {
         return getRole(getToken());
     }
 
-    public static String[] getPermission(String token) {
+    public String[] getPermission(String token) {
         return manager.getSessionManager().getPermission(token);
     }
 
-    public static String[] getPermission() {
+    public String[] getPermission() {
         return getPermission(getToken());
     }
 
-    public static void addRoles(String... role) {
+    public void addRoles(String... role) {
         manager.getSessionManager().addRoles(getToken(), role);
 
         if (manager.getProperties().getUseViewSession() && FinalContextHolder.getRequestContext() != null) {
@@ -201,7 +213,7 @@ public abstract class FinalHolder {
         }
     }
 
-    public static void addPermission(String... permission) {
+    public void addPermission(String... permission) {
         manager.getSessionManager().addPermission(getToken(), permission);
 
         if (manager.getProperties().getUseViewSession() && FinalContextHolder.getRequestContext() != null) {

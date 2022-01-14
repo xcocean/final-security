@@ -24,6 +24,7 @@ import top.lingkang.session.impl.DefaultFinalSessionManager;
 import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
+import top.lingkang.utils.SpringBeanUtils;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -54,6 +55,8 @@ public class FinalManager implements ApplicationRunner {
     private FinalRememberHandler rememberHandler;
     @Autowired(required = false)
     private FinalConfigProperties configProperties;
+    @Autowired(required = false)
+    private FinalHolder finalHolder;
 
 
     @Override
@@ -71,7 +74,7 @@ public class FinalManager implements ApplicationRunner {
         initExcludePath();
         initFilterChain();
 
-        log.info("final-security init user:  " + FinalHolder.login("user"));
+        log.info("final-security init user:  " + finalHolder.login("user"));
         log.info("final-security v1.0.1 load finish");
     }
 
@@ -155,7 +158,7 @@ public class FinalManager implements ApplicationRunner {
         }
 
         // 线程中获取
-        if (requestContext.getRemember()!=null)
+        if (requestContext.getRemember() != null)
             return requestContext.getRemember();
 
         return null;

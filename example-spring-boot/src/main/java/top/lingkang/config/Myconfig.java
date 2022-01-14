@@ -44,10 +44,23 @@ public class Myconfig {
         return configuration;
     }*/
 
-    @Bean
+    /*@Bean
     public FinalConfigProperties configProperties(){
         FinalConfigProperties properties=new FinalConfigProperties();
         properties.setExcludePath(new String[]{"/login","/logout"});
         return properties;
+    }*/
+
+    @Bean
+    public FinalHttpSecurity httpSecurity(){
+        FinalHttpSecurity security=new DefaultFinalHttpSecurity();
+        HashMap<String, FinalAuth> map = new HashMap<>();
+        map.put("/user", new FinalAuth().hasRoles("user"));// 必须拥有user角色
+        map.put("/about", new FinalAuth().hasPermission("get"));// 必须拥有get权限
+        map.put("/updatePassword", new FinalAuth().hasRoles("user").hasPermission("update"));// 需要拥有user角色和update权限
+        map.put("/index", new FinalAuth().hasRoles("admin", "system").hasPermission("get"));// 至少有一个角色并拥有get权限
+        map.put("/vip", new FinalAuth().hasAllRoles("user","vip"));// 需要同时拥有角色
+        security.setCheckAuths(map);
+        return security;
     }
 }

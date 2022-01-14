@@ -1,5 +1,8 @@
 package top.lingkang.filter;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
@@ -21,13 +24,15 @@ import java.util.HashSet;
  * @author lingkang
  * Created by 2022/1/7
  */
+@Component
 public class FinalSecurityFilter implements Filter {
+    @Autowired
     private FinalManager manager;
+    @Autowired
+    private FinalHolder finalHolder;
+
     private static HashSet<String> cacheExcludePath = new HashSet<>();
 
-    public FinalSecurityFilter(FinalManager manager) {
-        this.manager = manager;
-    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -57,11 +62,6 @@ public class FinalSecurityFilter implements Filter {
 
             //放行
             filterChain.doFilter(servletRequest, servletResponse);
-
-            // 检查使用使用视图会话
-            if (manager.getProperties().getUseViewSession()) {
-                request.getSession().setAttribute(FinalConstants.FINAL_SESSION_NAME, FinalHolder.getSession());
-            }
         } catch (Exception e) {
             if (e instanceof FinalTokenException) {// 无token处理
                 if (manager.getProperties().getUseCookie()) {

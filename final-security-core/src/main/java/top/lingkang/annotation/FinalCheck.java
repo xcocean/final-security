@@ -12,7 +12,10 @@ import java.lang.annotation.*;
 public @interface FinalCheck {
     // 检查角色
     String[] orRole() default {};
+
     String[] andRole() default {};
+
     String[] orPermission() default {};
+
     String[] andPermission() default {};
 }

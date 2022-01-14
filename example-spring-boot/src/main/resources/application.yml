@@ -1,9 +1,11 @@
 final:
   security:
-    exclude-path: /login,/logout
+    exclude-path: /login,/logout,/*
     use-view-session: true
 
 spring:
+  thymeleaf:
+    cache: false
   http:
     encoding:
       charset: UTF-8

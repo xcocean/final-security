@@ -11,6 +11,7 @@ public class FinalConfigProperties {
     private String tokenNameHeader;
     private String rememberName;// 记住我的名称
     private String rememberTokenPrefix;// 记住我的令牌前缀  默认"remember-"
+    private Boolean generateNewToken; // 重复登陆是否生成新的令牌 默认 false 即源令牌未过期则不会生成新令牌
 
     // 失效时间
     private Long maxValid;// 30分钟
@@ -28,6 +29,14 @@ public class FinalConfigProperties {
 
     // 会话相关
     private Boolean useViewSession;// 是否使用视图会话，默认关闭，例如在 jsp中，通过 ${sessionScope.finalSecurity.role }获得角色数组
+
+    public Boolean getGenerateNewToken() {
+        return generateNewToken;
+    }
+
+    public void setGenerateNewToken(Boolean generateNewToken) {
+        this.generateNewToken = generateNewToken;
+    }
 
     public Boolean getUseViewSession() {
         return useViewSession;

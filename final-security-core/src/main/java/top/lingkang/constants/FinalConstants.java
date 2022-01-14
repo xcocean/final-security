@@ -10,6 +10,4 @@ public class FinalConstants {
     public static final String UNAUTHORIZED_MSG = "403 Unauthorized, 未授权的资源！";
 
     public static final String VIEW_SESSION_NAME = "finalSecurity";
-
-    public static final String FINAL_SESSION_NAME = "finalSession";
 }

@@ -1,6 +1,6 @@
 package top.lingkang.base;
 
-import top.lingkang.holder.FinalHolder;
+import top.lingkang.FinalManager;
 import top.lingkang.utils.AuthUtils;
 
 /**
@@ -11,16 +11,17 @@ import top.lingkang.utils.AuthUtils;
 public class FinalAuth {
     private String[] role, andRole, permission, andPermission;
 
-    public void check() {
-        String token = FinalHolder.getToken();
+
+    public void check(FinalManager manager) {
+        String token = manager.getToken();
         if (role != null || andRole != null) {
-            String[] has = FinalHolder.getRole(token);
+            String[] has = manager.getSessionManager().getRoles(token);
             AuthUtils.checkRole(role, has);
             AuthUtils.checkAndRole(andRole, has);
         }
 
         if (permission != null || andPermission != null) {
-            String[] has = FinalHolder.getPermission(token);
+            String[] has = manager.getSessionManager().getPermission(token);
             AuthUtils.checkPermission(permission, has);
             AuthUtils.checkAndPermission(andPermission, has);
         }
