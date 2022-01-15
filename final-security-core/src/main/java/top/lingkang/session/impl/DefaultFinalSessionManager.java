@@ -38,18 +38,13 @@ public class DefaultFinalSessionManager implements SessionManager {
         clear.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (session.size()==0)
+                if (session.size() == 0)
                     return;
-                int count = 0;
-                long current = System.currentTimeMillis() - manager.getProperties().getMaxValid();
+                long current = System.currentTimeMillis() - manager.getProperties().getMaxValid() + 300000L;
                 for (Map.Entry<String, FinalSession> entry : session.entrySet()) {
                     if (entry.getValue().getLastAccessTime() < current) {
                         removeSession(entry.getValue().getToken());
-                        count++;
                     }
-                }
-                if (count > 0) {
-                    log.debug("淘汰 " + count + " 个不活跃会话");
                 }
             }
         }, 2000, maxValid);
