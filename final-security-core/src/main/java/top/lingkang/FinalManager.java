@@ -7,13 +7,19 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import top.lingkang.base.*;
-import top.lingkang.base.impl.*;
+import top.lingkang.base.FinalExceptionHandler;
+import top.lingkang.base.FinalHttpSecurity;
+import top.lingkang.base.FinalSessionListener;
+import top.lingkang.base.FinalTokenGenerate;
+import top.lingkang.base.impl.DefaultFinalExceptionHandler;
+import top.lingkang.base.impl.DefaultFinalHttpSecurity;
+import top.lingkang.base.impl.DefaultFinalSessionListener;
+import top.lingkang.base.impl.DefaultFinalTokenGenerate;
 import top.lingkang.config.FinalConfigProperties;
 import top.lingkang.config.FinalProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
-import top.lingkang.filter.FinalAccessFilter;
+import top.lingkang.filter.FinalAuthenticationFilter;
 import top.lingkang.filter.FinalBaseFilter;
 import top.lingkang.filter.FinalFilterChain;
 import top.lingkang.holder.FinalHolder;
@@ -51,8 +57,6 @@ public class FinalManager implements ApplicationRunner {
     private FinalProperties properties;
     private FinalFilterChain[] filterChains;
     @Autowired(required = false)
-    private FinalRememberHandler rememberHandler;
-    @Autowired(required = false)
     private FinalConfigProperties configProperties;
     @Autowired(required = false)
     private FinalHolder finalHolder;
@@ -65,7 +69,6 @@ public class FinalManager implements ApplicationRunner {
         if (sessionManager == null) sessionManager = new DefaultFinalSessionManager();
         if (sessionListener == null) sessionListener = new DefaultFinalSessionListener();
         if (httpSecurity == null) httpSecurity = new DefaultFinalHttpSecurity();
-        if (rememberHandler == null) rememberHandler = new DefaultFinalRememberHandler();
         if (configProperties == null) configProperties = new FinalConfigProperties();
 
         BeanUtils.copyProperty(configProperties, properties, true);
@@ -73,7 +76,7 @@ public class FinalManager implements ApplicationRunner {
         initExcludePath();
         initFilterChain();
 
-        log.info("final-security init user:  " + finalHolder.login("user",null,null,null));
+        log.info("final-security init user:  " + finalHolder.login("user", null, null, null));
         log.info("final-security v1.0.1 load finish");
     }
 
@@ -89,7 +92,7 @@ public class FinalManager implements ApplicationRunner {
         filterChains = AuthUtils.addFilterChain(
                 filterChains,
                 new FinalBaseFilter(this),
-                new FinalAccessFilter(this));
+                new FinalAuthenticationFilter(this));
     }
 
     /**
@@ -163,10 +166,6 @@ public class FinalManager implements ApplicationRunner {
 
     public void updateProperties(FinalProperties newProperties) {
         properties = newProperties;
-    }
-
-    public FinalRememberHandler getRememberHandler() {
-        return rememberHandler;
     }
 
     // 配置区 end ----------------------------------

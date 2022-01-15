@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import top.lingkang.annotation.FinalCheck;
 import top.lingkang.annotation.FinalCheckLogin;
 import top.lingkang.holder.FinalHolder;
+import top.lingkang.service.UserService;
 import top.lingkang.session.FinalSession;
 
 import java.util.ArrayList;
@@ -15,14 +17,17 @@ import java.util.ArrayList;
  * @date 2021/8/10 15:35
  * @description
  */
+@FinalCheckLogin
 @RestController
 public class FinalSecurityController {
     @Autowired
     private FinalHolder finalHolder;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("login")
     public Object login() {
-        finalHolder.login("lk", null, null, null);// 登陆
+        finalHolder.login("lk", null, new String[]{"user"}, null);// 登陆
 //        finalHolder.addRoles("user", "admin", "system");// 添加角色
 //        finalHolder.addPermission("get", "update", "delete");// 添加权限
         FinalSession finalSession = finalHolder.getSession();
@@ -38,12 +43,20 @@ public class FinalSecurityController {
         return "ok";
     }
 
-    @FinalCheckLogin
+    @FinalCheck(orRole = "admin",andRole = {"admin,system"},orPermission = "get")
     @GetMapping("/")
     public Object index() {
-        FinalSession session = finalHolder.getSession();
-        System.out.println(session);
-        return "123";
+        return "index";
+    }
+
+    @GetMapping("/nickname")
+    public Object getNickname(){
+        return userService.getNickname();
+    }
+
+    @GetMapping("/username")
+    public Object getUsername(){
+        return userService.getUsername();
     }
 
     @GetMapping("index")

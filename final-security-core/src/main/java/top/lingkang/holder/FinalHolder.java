@@ -119,10 +119,11 @@ public class FinalHolder {
     }
 
     public void logout() {
-        try {
-            logout(getToken());
-        } catch (Exception e) {
-        }
+        logout(getToken());
+    }
+
+    public void logoutById(String id) {
+        logout(manager.getSessionManager().getSessionById(id).getToken());
     }
 
     public FinalSession getSession() {

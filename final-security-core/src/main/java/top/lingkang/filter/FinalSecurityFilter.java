@@ -40,6 +40,7 @@ public class FinalSecurityFilter implements Filter {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
+
             // 排除
             for (String url : manager.getProperties().getExcludePath()) {
                 if (AuthUtils.matcher(url, path)) {

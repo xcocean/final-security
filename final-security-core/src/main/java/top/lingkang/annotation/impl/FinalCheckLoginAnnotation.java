@@ -15,7 +15,7 @@ public class FinalCheckLoginAnnotation {
     @Autowired(required = false)
     private FinalManager manager;
 
-    @Around("@annotation(top.lingkang.annotation.FinalCheckLogin)")
+    @Around("@within(top.lingkang.annotation.FinalCheckLogin) || @annotation(top.lingkang.annotation.FinalCheckLogin)")
     public Object before(ProceedingJoinPoint joinPoint) throws Throwable {
         manager.getSessionManager().existsToken(manager.getToken());
         return joinPoint.proceed();

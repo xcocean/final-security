@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.lingkang.FinalManager;
 import top.lingkang.error.FinalBaseException;
+import top.lingkang.error.FinalPermissionException;
 import top.lingkang.error.FinalTokenException;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +28,8 @@ public class FinalControllerExceptionHandler {
         // log.error("controller exist final-security error");
         if (e instanceof FinalTokenException) {
             manager.getExceptionHandler().tokenException(e, request, response);
+        }else if (e instanceof FinalPermissionException){
+            manager.getExceptionHandler().permissionException(e, request, response);
         }
         return null;
     }
