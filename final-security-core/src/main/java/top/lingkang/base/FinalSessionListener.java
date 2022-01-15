@@ -1,6 +1,7 @@
 package top.lingkang.base;
 
 import org.springframework.lang.Nullable;
+import top.lingkang.session.FinalSession;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +14,7 @@ public interface FinalSessionListener {
     /**
      * 线程内登录，request为空值
      */
-    void create(String token, String id, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
+    void create(FinalSession session, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
 
-    void delete(String token, String id, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
+    void delete(FinalSession session, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
 }

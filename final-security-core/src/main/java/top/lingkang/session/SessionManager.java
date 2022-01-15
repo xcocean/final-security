@@ -6,7 +6,6 @@ package top.lingkang.session;
  * @description
  */
 public interface SessionManager {
-
     // 添加会话
     void addFinalSession(String token, FinalSession finalSession);
 
@@ -19,20 +18,14 @@ public interface SessionManager {
     // 根据token获取角色
     String[] getRoles(String token);
 
+    String[] getPermission(String token);
+
     // 根据token添加角色
     void addRoles(String token, String... roles);
 
-    // 根据token获取权限
-    String[] getPermission(String token);
-
-    void updateRoles(String token, String... roles);
-
     void deleteRoles(String token);
 
-    // 根据token添加角色
     void addPermission(String token, String... permission);
-
-    void updatePermission(String token, String... permission);
 
     void deletePermission(String token);
 
@@ -42,9 +35,11 @@ public interface SessionManager {
     // 是否存在 token
     boolean existsToken(String token);
 
-    // 更新最后访问时间
+    boolean existsId(String id);
+
+    // 更新会话最后访问时间
     void updateLastAccessTime(String token);
 
-    // 获取 token 最后访问时间
+    // 获取 会话 最后访问时间
     long getLastAccessTime(String token);
 }

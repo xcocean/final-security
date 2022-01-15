@@ -1,7 +1,6 @@
 final:
   security:
-    exclude-path: /login,/logout,/*
-    use-view-session: true
+    exclude-path: /login,/logout
 
 spring:
   thymeleaf:

@@ -1,6 +1,5 @@
 package top.lingkang.session;
 
-import java.util.Map;
 
 /**
  * @author lingkang
@@ -11,17 +10,9 @@ public interface FinalSession {
 
     String getToken();
 
-    Object getAttribute(String var1);
+    Object getUser();
 
-    void setAttribute(String var1, Object var2);
-
-    void removeAttribute(String var1);
-
-    Map<String, Object> getData();
-
-    void setData(Map<String, Object> data);
-
-    boolean isValidInternal(long time);
+    void setUser(Object user);
 
     void updateLastAccessTime();
 

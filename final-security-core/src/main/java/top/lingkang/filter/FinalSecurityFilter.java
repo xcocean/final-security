@@ -1,16 +1,12 @@
 package top.lingkang.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
-import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.error.FinalTokenException;
-import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
-import top.lingkang.session.FinalSession;
 import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.CookieUtils;
 
@@ -28,8 +24,6 @@ import java.util.HashSet;
 public class FinalSecurityFilter implements Filter {
     @Autowired
     private FinalManager manager;
-    @Autowired
-    private FinalHolder finalHolder;
 
     private static HashSet<String> cacheExcludePath = new HashSet<>();
 
@@ -67,30 +61,6 @@ public class FinalSecurityFilter implements Filter {
                 if (manager.getProperties().getUseCookie()) {
                     CookieUtils.tokenToZeroAge(manager.getProperties().getTokenName(), response);
                 }
-                // 记住我处理
-                String remember = manager.getRememberToken();
-                if (remember != null) {
-                    FinalSession session = null;
-                    try {
-                        session = manager.getSessionManager().getSession(remember);
-                    } catch (Exception ex) {
-                    }
-                    if (session != null &&
-                            manager.getRememberHandler().doLogin(
-                                    session.getId().substring(manager.getProperties().getRememberTokenPrefix().length()),
-                                    session,
-                                    request,
-                                    response
-                            )) {
-                        filterChain.doFilter(servletRequest, servletResponse);
-                        return;
-                    } else {
-                        // 移除记住我,,从cookie中
-                        if (manager.getProperties().getUseCookie()) {
-                            CookieUtils.tokenToZeroAge(manager.getProperties().getRememberName(), response);
-                        }
-                    }
-                }
                 manager.getExceptionHandler().tokenException(e, request, response);
             } else if (e instanceof FinalPermissionException) {
                 manager.getExceptionHandler().permissionException(e, request, response);
@@ -98,7 +68,7 @@ public class FinalSecurityFilter implements Filter {
                 manager.getExceptionHandler().exception(e, request, response);
             }
         } finally {
-            FinalContextHolder.removeRequestContext();// 防止内存泄露
+            FinalContextHolder.removeRequestContext();
         }
     }
 

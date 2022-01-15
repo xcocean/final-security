@@ -8,6 +8,8 @@ import top.lingkang.filter.FinalFilterChain;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author lingkang
@@ -121,5 +123,12 @@ public class AuthUtils {
             }
         }
         return resource;
+    }
+
+    public static String[] removeRepeat(String[] str){
+        Set<String> set=new HashSet<>();
+        for (String s:str)
+            set.add(s);
+        return set.toArray(new String[set.size()]);
     }
 }

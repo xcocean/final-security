@@ -9,13 +9,10 @@ public class FinalConfigProperties {
     private String tokenName;
     private String tokenNameRequest;
     private String tokenNameHeader;
-    private String rememberName;// 记住我的名称
-    private String rememberTokenPrefix;// 记住我的令牌前缀  默认"remember-"
     private Boolean generateNewToken; // 重复登陆是否生成新的令牌 默认 false 即源令牌未过期则不会生成新令牌
 
     // 失效时间
     private Long maxValid;// 30分钟
-    private Long maxValidRemember;// 30天
     private Boolean prepareCheck;
     private Long prepareTime;// 预留3分钟执行后续操操作
     private Boolean tokenAccessContinue;// 每次访问都更新令牌失效时间,,即访问续时，默认false
@@ -27,8 +24,6 @@ public class FinalConfigProperties {
     private Boolean useCookie;// 使用cookie存储 token
     private Boolean onlyOne;// 只允许登录唯一用户，第二个登录会kill掉第一个的token
 
-    // 会话相关
-    private Boolean useViewSession;// 是否使用视图会话，默认关闭，例如在 jsp中，通过 ${sessionScope.finalSecurity.role }获得角色数组
 
     public Boolean getGenerateNewToken() {
         return generateNewToken;
@@ -36,30 +31,6 @@ public class FinalConfigProperties {
 
     public void setGenerateNewToken(Boolean generateNewToken) {
         this.generateNewToken = generateNewToken;
-    }
-
-    public Boolean getUseViewSession() {
-        return useViewSession;
-    }
-
-    public void setUseViewSession(Boolean useViewSession) {
-        this.useViewSession = useViewSession;
-    }
-
-    public String getRememberTokenPrefix() {
-        return rememberTokenPrefix;
-    }
-
-    public void setRememberTokenPrefix(String rememberTokenPrefix) {
-        this.rememberTokenPrefix = rememberTokenPrefix;
-    }
-
-    public String getRememberName() {
-        return rememberName;
-    }
-
-    public void setRememberName(String rememberName) {
-        this.rememberName = rememberName;
     }
 
     public String getTokenName() {
@@ -92,14 +63,6 @@ public class FinalConfigProperties {
 
     public void setMaxValid(Long maxValid) {
         this.maxValid = maxValid;
-    }
-
-    public Long getMaxValidRemember() {
-        return maxValidRemember;
-    }
-
-    public void setMaxValidRemember(Long maxValidRemember) {
-        this.maxValidRemember = maxValidRemember;
     }
 
     public String[] getExcludePath() {

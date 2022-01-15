@@ -1,10 +1,18 @@
 package top.lingkang.session.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import top.lingkang.FinalManager;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
+import top.lingkang.utils.AuthUtils;
+import top.lingkang.utils.SpringBeanUtils;
 
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -14,10 +22,38 @@ import java.util.concurrent.ConcurrentMap;
  * @description 会话管理，存储于内存中
  */
 public class DefaultFinalSessionManager implements SessionManager {
+    private static final Log log = LogFactory.getLog(DefaultFinalSessionManager.class);
     private static ConcurrentMap<String, String> idAndToken = new ConcurrentHashMap<>();
     private static ConcurrentMap<String, FinalSession> session = new ConcurrentHashMap<String, FinalSession>();
     private static ConcurrentMap<String, String[]> roles = new ConcurrentHashMap<String, String[]>();
     private static ConcurrentMap<String, String[]> permission = new ConcurrentHashMap<String, String[]>();
+
+    public DefaultFinalSessionManager() {
+        FinalManager manager = SpringBeanUtils.getBean(FinalManager.class);
+        Long maxValid = manager.getProperties().getMaxValid();
+        if (maxValid < 1800000L) {// 30分钟
+            maxValid = 1800000L;
+        }
+        Timer clear = new Timer();
+        clear.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                if (session.size()==0)
+                    return;
+                int count = 0;
+                long current = System.currentTimeMillis() - manager.getProperties().getMaxValid();
+                for (Map.Entry<String, FinalSession> entry : session.entrySet()) {
+                    if (entry.getValue().getLastAccessTime() < current) {
+                        removeSession(entry.getValue().getToken());
+                        count++;
+                    }
+                }
+                if (count > 0) {
+                    log.debug("淘汰 " + count + " 个不活跃会话");
+                }
+            }
+        }, 2000, maxValid);
+    }
 
     @Override
     public void addFinalSession(String token, FinalSession finalSession) {
@@ -48,17 +84,12 @@ public class DefaultFinalSessionManager implements SessionManager {
 
     @Override
     public void addRoles(String token, String... roles) {
-        this.roles.put(token, roles);
+        this.roles.put(token, AuthUtils.removeRepeat(roles));
     }
 
     @Override
     public String[] getPermission(String token) {
         return permission.get(token);
-    }
-
-    @Override
-    public void updateRoles(String token, String... roles) {
-        this.roles.put(token, roles);
     }
 
     @Override
@@ -68,12 +99,7 @@ public class DefaultFinalSessionManager implements SessionManager {
 
     @Override
     public void addPermission(String token, String... permission) {
-        this.permission.put(token, permission);
-    }
-
-    @Override
-    public void updatePermission(String token, String... permission) {
-        this.permission.put(token, permission);
+        this.permission.put(token, AuthUtils.removeRepeat(permission));
     }
 
     @Override
@@ -94,6 +120,11 @@ public class DefaultFinalSessionManager implements SessionManager {
 
     public boolean existsToken(String token) {
         return session.containsKey(token);
+    }
+
+    @Override
+    public boolean existsId(String id) {
+        return idAndToken.containsKey(id);
     }
 
     @Override

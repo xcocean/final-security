@@ -51,7 +51,7 @@ public class Myconfig {
         return properties;
     }*/
 
-    @Bean
+    /*@Bean
     public FinalHttpSecurity httpSecurity(){
         FinalHttpSecurity security=new DefaultFinalHttpSecurity();
         HashMap<String, FinalAuth> map = new HashMap<>();
@@ -62,5 +62,5 @@ public class Myconfig {
         map.put("/vip", new FinalAuth().hasAllRoles("user","vip"));// 需要同时拥有角色
         security.setCheckAuths(map);
         return security;
-    }
+    }*/
 }

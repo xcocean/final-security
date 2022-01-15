@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import top.lingkang.annotation.FinalCheck;
 import top.lingkang.annotation.FinalCheckLogin;
 import top.lingkang.holder.FinalHolder;
 import top.lingkang.session.FinalSession;
@@ -23,12 +22,11 @@ public class FinalSecurityController {
 
     @GetMapping("login")
     public Object login() {
-        finalHolder.login("lk");// 登陆
-        finalHolder.addRoles("user", "admin", "system");// 添加角色
-        finalHolder.addPermission("get", "update", "delete");// 添加权限
+        finalHolder.login("lk", null, null, null);// 登陆
+//        finalHolder.addRoles("user", "admin", "system");// 添加角色
+//        finalHolder.addPermission("get", "update", "delete");// 添加权限
         FinalSession finalSession = finalHolder.getSession();
         System.out.println(finalSession.getToken());
-        finalSession.setAttribute("a", "login添加的参数a：" + finalSession.getToken());
         //return new ModelAndView("redirect:/");
         return "ok";
     }
@@ -44,12 +42,12 @@ public class FinalSecurityController {
     @GetMapping("/")
     public Object index() {
         FinalSession session = finalHolder.getSession();
-        System.out.println(session.getData());
+        System.out.println(session);
         return "123";
     }
 
     @GetMapping("index")
-    public Object indexHtml(){
+    public Object indexHtml() {
         return new ModelAndView("index");
     }
 

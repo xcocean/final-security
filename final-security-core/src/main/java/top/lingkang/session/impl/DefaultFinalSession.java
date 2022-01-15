@@ -3,8 +3,6 @@ package top.lingkang.session.impl;
 import top.lingkang.session.FinalSession;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author lingkang
@@ -13,19 +11,15 @@ import java.util.Map;
  */
 public class DefaultFinalSession implements FinalSession, Serializable {
     private static final long serialVersionUID = 1L;
-    private Map<String, Object> data = new HashMap<>();
-    private String token;
-    private String id;
+    private String id, token;
+    private Object user;
     private volatile long creationTime, lastAccessTime;
 
-    public DefaultFinalSession(String id, String token) {
+    public DefaultFinalSession(String id, Object user, String token) {
         this.id = id;
         this.token = token;
+        this.user = user;
         this.creationTime = this.lastAccessTime = System.currentTimeMillis();
-    }
-
-    public long getCreationTime() {
-        return creationTime;
     }
 
     public String getId() {
@@ -36,40 +30,36 @@ public class DefaultFinalSession implements FinalSession, Serializable {
         return token;
     }
 
-    public Object getAttribute(String var1) {
-        return data.get(var1);
+    @Override
+    public Object getUser() {
+        return user;
     }
 
-    public void setAttribute(String var1, Object var2) {
-        data.put(var1, var2);
-    }
-
-    public void removeAttribute(String var1) {
-        data.remove(var1);
-    }
-
-    public Map<String, Object> getData() {
-        return data;
-    }
-
-    public void setData(Map<String, Object> data) {
-        this.data = data;
-    }
-
-    public boolean isValidInternal(long time) {
-        return System.currentTimeMillis() - lastAccessTime < time;
+    @Override
+    public void setUser(Object user) {
+        this.user = user;
     }
 
     public void updateLastAccessTime() {
         lastAccessTime = System.currentTimeMillis();
     }
 
-    @Override
     public long getLastAccessTime() {
         return lastAccessTime;
     }
 
     public long getCreateTime() {
         return creationTime;
+    }
+
+    @Override
+    public String toString() {
+        return "DefaultFinalSession{" +
+                "id='" + id + '\'' +
+                ", token='" + token + '\'' +
+                ", user=" + user +
+                ", creationTime=" + creationTime +
+                ", lastAccessTime=" + lastAccessTime +
+                '}';
     }
 }
