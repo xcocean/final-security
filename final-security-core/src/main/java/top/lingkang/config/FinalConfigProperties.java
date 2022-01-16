@@ -9,6 +9,7 @@ public class FinalConfigProperties {
     private String tokenName;
     private String tokenNameRequest;
     private String tokenNameHeader;
+    private String tokenNameHeaderPrefix;// 默认 "Basic "
     private Boolean generateNewToken; // 重复登陆是否生成新的令牌 默认 false 即源令牌未过期则不会生成新令牌
 
     // 失效时间
@@ -24,6 +25,13 @@ public class FinalConfigProperties {
     private Boolean useCookie;// 使用cookie存储 token
     private Boolean onlyOne;// 只允许登录唯一用户，第二个登录会kill掉第一个的token
 
+    public String getTokenNameHeaderPrefix() {
+        return tokenNameHeaderPrefix;
+    }
+
+    public void setTokenNameHeaderPrefix(String tokenNameHeaderPrefix) {
+        this.tokenNameHeaderPrefix = tokenNameHeaderPrefix;
+    }
 
     public Boolean getGenerateNewToken() {
         return generateNewToken;

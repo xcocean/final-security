@@ -13,14 +13,4 @@ public class DefaultFinalTokenGenerate implements FinalTokenGenerate {
     public String generateToken() {
         return UUID.randomUUID().toString();
     }
-
-    @Override
-    public String generateRefreshToken() {
-        return generateToken();
-    }
-
-    @Override
-    public String generateRemember() {
-        return generateToken();
-    }
 }

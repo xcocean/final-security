@@ -1,13 +1,23 @@
 package top.lingkang.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.lingkang.base.FinalAuth;
-import top.lingkang.base.FinalHttpSecurity;
+import org.springframework.data.redis.core.RedisTemplate;
+import top.lingkang.base.*;
+import top.lingkang.base.impl.DefaultFinalExceptionHandler;
 import top.lingkang.base.impl.DefaultFinalHttpSecurity;
 import top.lingkang.base.impl.DefaultFinalSessionListener;
+import top.lingkang.base.impl.DefaultFinalTokenGenerate;
+import top.lingkang.session.FinalSession;
+import top.lingkang.session.SessionManager;
+import top.lingkang.session.impl.DefaultFinalSessionManager;
+import top.lingkang.session.impl.FinalRedisSessionManager;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * @author lingkang
@@ -63,4 +73,67 @@ public class Myconfig {
         security.setCheckAuths(map);
         return security;
     }*/
+
+   /* @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Bean
+    public SessionManager sessionManager() {
+        return new FinalRedisSessionManager(redisTemplate);
+    }*/
+
+    //@Bean
+    public FinalTokenGenerate tokenGenerate() {
+        return new customTokenGenerate();
+    }
+
+    class customTokenGenerate implements FinalTokenGenerate {
+        @Override
+        public String generateToken() {
+            return UUID.randomUUID().toString();
+        }
+    }
+
+    //@Bean
+    public FinalExceptionHandler exceptionHandler() {
+        // 实现FinalExceptionHandler接口进行定制处理，，可参照 DefaultFinalExceptionHandler
+        return new customExceptionHandler();
+    }
+
+    class customExceptionHandler implements FinalExceptionHandler {
+        @Override
+        public void tokenException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+            // 做些什么？
+        }
+
+        @Override
+        public void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+            // 做些什么？
+        }
+
+        @Override
+        public void exception(Exception e, HttpServletRequest request, HttpServletResponse response) {
+            // 做些什么？
+        }
+    }
+
+    @Bean
+    public SessionManager sessionManager(){
+        return new DefaultFinalSessionManager();
+    }
+
+    //@Bean
+    public FinalSessionListener finalSessionListener(){
+        return new FinalSessionListener() {
+            @Override
+            public void create(FinalSession session, HttpServletRequest request, HttpServletResponse response) {
+                // 创建时做些什么？
+            }
+
+            @Override
+            public void delete(FinalSession session, HttpServletRequest request, HttpServletResponse response) {
+                // 移除时做些什么？
+            }
+        };
+    }
 }

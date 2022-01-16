@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.annotation.FinalCheck;
-import top.lingkang.annotation.FinalCheckLogin;
 import top.lingkang.holder.FinalHolder;
 import top.lingkang.service.UserService;
 import top.lingkang.session.FinalSession;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
  * @date 2021/8/10 15:35
  * @description
  */
-@FinalCheckLogin
 @RestController
 public class FinalSecurityController {
     @Autowired
@@ -43,19 +41,19 @@ public class FinalSecurityController {
         return "ok";
     }
 
-    @FinalCheck(orRole = "admin",andRole = {"admin,system"},orPermission = "get")
+    @FinalCheck(orRole = "admin", andRole = {"admin,system"}, orPermission = "get")
     @GetMapping("/")
     public Object index() {
         return "index";
     }
 
     @GetMapping("/nickname")
-    public Object getNickname(){
+    public Object getNickname() {
         return userService.getNickname();
     }
 
     @GetMapping("/username")
-    public Object getUsername(){
+    public Object getUsername() {
         return userService.getUsername();
     }
 

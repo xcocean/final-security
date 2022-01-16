@@ -9,8 +9,8 @@ final-security，一个基于spring、专注于认证授权的轻量级框架<br
 
 ## 功能列表
 1、正常登录注销、角色权限认证<br/>
-2、记住我remember、视图层使用session<br/>
-3、注解鉴权
+2、注解鉴权<br/>
+
 
 ## 待实现的功能
 临时token的使用

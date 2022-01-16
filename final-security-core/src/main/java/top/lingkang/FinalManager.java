@@ -113,7 +113,7 @@ public class FinalManager implements ApplicationRunner {
         // 请求头中获取
         token = requestContext.getRequest().getHeader(properties.getTokenNameHeader());
         if (token != null) {
-            requestContext.setToken(token);
+            requestContext.setToken(token.substring(properties.getTokenNameHeaderPrefix().length()));
             return token;
         }
 
