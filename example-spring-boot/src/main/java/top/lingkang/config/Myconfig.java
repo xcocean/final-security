@@ -94,7 +94,7 @@ public class Myconfig {
         }
     }
 
-    //@Bean
+    @Bean
     public FinalExceptionHandler exceptionHandler() {
         // 实现FinalExceptionHandler接口进行定制处理，，可参照 DefaultFinalExceptionHandler
         return new customExceptionHandler();
@@ -117,10 +117,10 @@ public class Myconfig {
         }
     }
 
-    @Bean
+    /*@Bean
     public SessionManager sessionManager(){
         return new DefaultFinalSessionManager();
-    }
+    }*/
 
     //@Bean
     public FinalSessionListener finalSessionListener(){

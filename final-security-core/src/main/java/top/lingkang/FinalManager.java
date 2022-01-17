@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import top.lingkang.base.FinalExceptionHandler;
@@ -43,34 +45,59 @@ import java.util.Set;
 @Configuration
 public class FinalManager implements ApplicationRunner {
     private static final Log log = LogFactory.getLog(FinalManager.class);
-    @Autowired(required = false)
+    @Autowired
     private FinalExceptionHandler exceptionHandler;
-    @Autowired(required = false)
+    @Autowired
     private FinalTokenGenerate tokenGenerate;
     @Autowired(required = false)
     private SessionManager sessionManager;
-    @Autowired(required = false)
+    @Autowired
     private FinalSessionListener sessionListener;
-    @Autowired(required = false)
+    @Autowired
     private FinalHttpSecurity httpSecurity;
     @Autowired
     private FinalProperties properties;
     private FinalFilterChain[] filterChains;
-    @Autowired(required = false)
+    @Autowired
     private FinalConfigProperties configProperties;
-    @Autowired(required = false)
+    @Autowired
     private FinalHolder finalHolder;
+
+    @ConditionalOnMissingBean(FinalExceptionHandler.class)
+    @Bean
+    public FinalExceptionHandler exceptionHandler() {
+        return new DefaultFinalExceptionHandler();
+    }
+
+    @ConditionalOnMissingBean(FinalTokenGenerate.class)
+    @Bean
+    public FinalTokenGenerate tokenGenerate() {
+        return new DefaultFinalTokenGenerate();
+    }
+
+    @ConditionalOnMissingBean(FinalSessionListener.class)
+    @Bean
+    public FinalSessionListener finalSessionListener() {
+        return new DefaultFinalSessionListener();
+    }
+
+    @ConditionalOnMissingBean(FinalHttpSecurity.class)
+    @Bean
+    public FinalHttpSecurity finalHttpSecurity() {
+        return new DefaultFinalHttpSecurity();
+    }
+
+    @ConditionalOnMissingBean(FinalConfigProperties.class)
+    @Bean
+    public FinalConfigProperties finalConfigProperties() {
+        return new FinalConfigProperties();
+    }
 
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (exceptionHandler == null) exceptionHandler = new DefaultFinalExceptionHandler();
-        if (tokenGenerate == null) tokenGenerate = new DefaultFinalTokenGenerate();
-        if (sessionManager == null) sessionManager = new DefaultFinalSessionManager();
-        if (sessionListener == null) sessionListener = new DefaultFinalSessionListener();
-        if (httpSecurity == null) httpSecurity = new DefaultFinalHttpSecurity();
-        if (configProperties == null) configProperties = new FinalConfigProperties();
-
+        if (sessionManager == null)
+            sessionManager = new DefaultFinalSessionManager();
         BeanUtils.copyProperty(configProperties, properties, true);
 
         initExcludePath();

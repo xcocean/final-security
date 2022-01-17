@@ -37,6 +37,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+
+        <dependency>
+            <groupId>top.lingkang</groupId>
+            <artifactId>final-security-core</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
