@@ -1,23 +1,22 @@
 package top.lingkang.oauth.server.annotation;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import top.lingkang.oauth.server.base.OauthCodeGenerate;
+import top.lingkang.oauth.server.base.impl.DefaultOauthCodeGenerate;
 
 /**
  * @author lingkang
  * Created by 2022/1/11
  */
 public class FinalOauthServerConfiguration {
-    @Autowired
-    private RequestMappingHandlerMapping requestMappingHandlerMapping;
 
-    @Autowired
-    private ApplicationContext applicationContext;
 
+    @ConditionalOnMissingBean(OauthCodeGenerate.class)
+    @Bean
+    public OauthCodeGenerate oauthCodeGenerate() {
+        return new DefaultOauthCodeGenerate();
+    }
 
 
 }
