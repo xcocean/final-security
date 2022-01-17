@@ -2,18 +2,61 @@ package top.lingkang.oauth.server.client;
 
 /**
  * @author lingkang
- * Created by 2022/1/17
+ * @date 2022/1/17
  */
-public interface ClientDetails {
-    String getClientId();
+public class ClientDetails {
+    private String clientId;
+    private String secret;
+    private String authorizedGrantTypes;
+    private String[] scopes;
+    private String[] resourceId;
+    private String redirectUris;
 
-    ClientDetails setClient(String clientId);
+    public String getClientId() {
+        return clientId;
+    }
 
-    ClientDetails secret(String... secret);
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
+    }
 
-    ClientDetails authorizedGrantTypes(String... type);
+    public String getSecret() {
+        return secret;
+    }
 
-    ClientDetails scopes(String... scopes);
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 
-    ClientDetails redirectUris(String url);
+    public String getAuthorizedGrantTypes() {
+        return authorizedGrantTypes;
+    }
+
+    public void setAuthorizedGrantTypes(String authorizedGrantTypes) {
+        this.authorizedGrantTypes = authorizedGrantTypes;
+    }
+
+    public String[] getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(String[] scopes) {
+        this.scopes = scopes;
+    }
+
+    public String[] getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String[] resourceId) {
+        this.resourceId = resourceId;
+    }
+
+    public String getRedirectUris() {
+        return redirectUris;
+    }
+
+    public void setRedirectUris(String redirectUris) {
+        this.redirectUris = redirectUris;
+    }
 }

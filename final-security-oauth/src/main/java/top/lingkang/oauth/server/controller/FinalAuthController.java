@@ -8,6 +8,7 @@ import top.lingkang.oauth.error.OauthClientException;
 import top.lingkang.oauth.server.base.OauthCodeGenerate;
 import top.lingkang.oauth.server.client.ClientDetails;
 import top.lingkang.oauth.server.client.ClientDetailsManager;
+import top.lingkang.oauth.utils.OauthUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,15 +29,20 @@ public class FinalAuthController {
 
 
     public Object authorize(String client_id, String response_type, String redirect_uri, String param,
+                            String scope,
                             HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if ("code".equals(response_type)) {
-            // 授权码模式
+        if ("code".equals(response_type)) { // 授权码模式
             ClientDetails clientDetails = clientDetailsManager.getClientDetails(client_id);
             if (clientDetails == null) {
                 throw new OauthClientException(OauthConstants.CLIENT_ID_NOT_EXIST);
             }
-            String code = oauthCodeGenerate.codeGenerate();
-            response.sendRedirect(redirect_uri + "?code=" + code + "&param=" + param);
+            if (!OauthUtils.exists(clientDetails.getScopes(),scope)){
+                throw new OauthClientException(OauthConstants.NOT_IN_AUTHORIZE_SCOPE);
+            }
+
+            //response.sendRedirect("/login_code/");
+//            String code = oauthCodeGenerate.codeGenerate();
+//            response.sendRedirect(redirect_uri + "?code=" + code + "&param=" + param);
             return null;
         }
 
@@ -44,7 +50,8 @@ public class FinalAuthController {
         return null;
     }
 
-    public Object confirm_access() {
+    public Object confirm_access(String username,String password,String loginId) {
+
         return null;
     }
 
