@@ -7,8 +7,14 @@ import top.lingkang.oauth.server.client.ClientDetails;
  * Created by 2022/1/17
  */
 public class DefaultClientDetails implements ClientDetails {
+    private String clientId;
     @Override
-    public ClientDetails withClient(String clientId) {
+    public String getClientId() {
+        return clientId;
+    }
+
+    @Override
+    public ClientDetails setClient(String clientId) {
         return this;
     }
 

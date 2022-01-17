@@ -35,8 +35,8 @@ public class FinalAuthController {
             if (clientDetails == null) {
                 throw new OauthClientException(OauthConstants.CLIENT_ID_NOT_EXIST);
             }
-
-            response.sendRedirect(redirect_uri + "?param=" + param);
+            String code = oauthCodeGenerate.codeGenerate();
+            response.sendRedirect(redirect_uri + "?code=" + code + "&param=" + param);
             return null;
         }
 

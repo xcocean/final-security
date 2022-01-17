@@ -5,7 +5,9 @@ package top.lingkang.oauth.server.client;
  * Created by 2022/1/17
  */
 public interface ClientDetails {
-    ClientDetails withClient(String clientId);
+    String getClientId();
+
+    ClientDetails setClient(String clientId);
 
     ClientDetails secret(String... secret);
 
