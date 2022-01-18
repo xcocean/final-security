@@ -10,15 +10,33 @@ import org.springframework.stereotype.Component;
 @Component(value = "finalOauthServerProperties")
 @ConfigurationProperties(prefix = "final.security.oauth.server")
 public class FinalOauthServerProperties {
-    private Long tokenMaxTime = 1800000L;// 30分钟
-    private Long refreshTokenMaxTime=2592000000L;// 30 天
-
-
-    /*private Boolean sessionPrepareCheck = false;// 会话检查
-    private Long sessionPrepareTime = 180000L;// 预留3分钟执行后续操操作*/
+    private long tokenMaxTime = 1800000L;// 30分钟
+    private long refreshTokenMaxTime=1296000000L;// 15 天
+    private boolean autoRefreshToken=false;
 
 
 
+    public long getTokenMaxTime() {
+        return tokenMaxTime;
+    }
 
+    public void setTokenMaxTime(long tokenMaxTime) {
+        this.tokenMaxTime = tokenMaxTime;
+    }
 
+    public long getRefreshTokenMaxTime() {
+        return refreshTokenMaxTime;
+    }
+
+    public void setRefreshTokenMaxTime(long refreshTokenMaxTime) {
+        this.refreshTokenMaxTime = refreshTokenMaxTime;
+    }
+
+    public boolean isAutoRefreshToken() {
+        return autoRefreshToken;
+    }
+
+    public void setAutoRefreshToken(boolean autoRefreshToken) {
+        this.autoRefreshToken = autoRefreshToken;
+    }
 }
