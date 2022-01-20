@@ -21,8 +21,9 @@ import top.lingkang.config.FinalConfigProperties;
 import top.lingkang.config.FinalProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
+import top.lingkang.filter.CheckTokenValidFilter;
 import top.lingkang.filter.FinalAuthenticationFilter;
-import top.lingkang.filter.FinalBaseFilter;
+import top.lingkang.filter.UpdateLastAccessTimeFilter;
 import top.lingkang.filter.FinalFilterChain;
 import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
@@ -33,9 +34,7 @@ import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author lingkang
@@ -116,10 +115,16 @@ public class FinalManager implements ApplicationRunner {
     }
 
     private void initFilterChain() {
+        List<FinalFilterChain> chains = new ArrayList<>();
+        chains.add(new CheckTokenValidFilter(this));
+        if (getProperties().getTokenAccessContinue())
+            chains.add(new UpdateLastAccessTimeFilter(this));
+        chains.add(new FinalAuthenticationFilter(this));
+
+        // 添加过滤链
         filterChains = AuthUtils.addFilterChain(
                 filterChains,
-                new FinalBaseFilter(this),
-                new FinalAuthenticationFilter(this));
+                chains.toArray(new FinalFilterChain[chains.size()]));
     }
 
     /**
@@ -189,10 +194,6 @@ public class FinalManager implements ApplicationRunner {
 
     public FinalProperties getProperties() {
         return properties;
-    }
-
-    public void updateProperties(FinalProperties newProperties) {
-        properties = newProperties;
     }
 
     // 配置区 end ----------------------------------

@@ -1,8 +1,5 @@
 package top.lingkang.filter;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
@@ -11,16 +8,14 @@ import top.lingkang.utils.AuthUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-
 /**
  * @author lingkang
- * @date 2022/1/11
+ * Created by 2022/1/20
  */
-public class FinalBaseFilter implements FinalFilterChain {
-
+public class CheckTokenValidFilter implements FinalFilterChain{
     private FinalManager manager;
 
-    public FinalBaseFilter(FinalManager manager) {
+    public CheckTokenValidFilter(FinalManager manager) {
         this.manager = manager;
     }
 
@@ -47,11 +42,6 @@ public class FinalBaseFilter implements FinalFilterChain {
                 manager.getSessionManager().removeSession(token);
                 throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
             }
-        }
-
-        // 是否续时，，默认关闭提升性能
-        if (manager.getProperties().getTokenAccessContinue()) {
-            manager.getSessionManager().updateLastAccessTime(token);
         }
     }
 }
