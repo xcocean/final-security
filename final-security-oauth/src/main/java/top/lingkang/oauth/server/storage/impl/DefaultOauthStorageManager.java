@@ -3,9 +3,9 @@ package top.lingkang.oauth.server.storage.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.oauth.server.OauthServerManager;
 import top.lingkang.oauth.server.entity.OauthToken;
-import top.lingkang.oauth.server.entity.RefreshToken;
 import top.lingkang.oauth.server.storage.OauthStorageManager;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -23,10 +23,6 @@ public class DefaultOauthStorageManager implements OauthStorageManager {
 
     @Autowired
     private OauthServerManager serverManager;
-
-    public DefaultOauthStorageManager() {
-
-    }
 
     @Override
     public boolean addCode(String code) {
@@ -111,5 +107,36 @@ public class DefaultOauthStorageManager implements OauthStorageManager {
     @Override
     public OauthToken removeRefreshToken(String refreshToken) {
         return sRefresh.remove(refreshToken);
+    }
+
+    @Override
+    public void cleanExpires() {
+        long current = System.currentTimeMillis();
+        if (!codeManager.isEmpty()) {
+            long codeMaxValid = serverManager.getOauthServerProperties().getCodeMaxValid();
+            for (Map.Entry<String, Long> entry : codeManager.entrySet()) {
+                if (current - entry.getValue() > codeMaxValid) {
+                    removeCode(entry.getKey());
+                }
+            }
+        }
+
+        if (!sToken.isEmpty()) {
+            long tokenMaxTime = serverManager.getOauthServerProperties().getTokenMaxTime();
+            for (Map.Entry<String, OauthToken> entry : sToken.entrySet()) {
+                if (current - entry.getValue().getCreateTime() > tokenMaxTime) {
+                    removeToken(entry.getKey());
+                }
+            }
+        }
+
+        if (!sRefresh.isEmpty()) {
+            long maxTime = serverManager.getOauthServerProperties().getRefreshTokenMaxTime();
+            for (Map.Entry<String, OauthToken> entry : sRefresh.entrySet()) {
+                if (current - entry.getValue().getCreateTime() > maxTime) {
+                    removeRefreshToken(entry.getKey());
+                }
+            }
+        }
     }
 }

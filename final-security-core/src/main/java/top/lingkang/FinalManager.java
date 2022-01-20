@@ -5,7 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.stereotype.Component;
 import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpSecurity;
 import top.lingkang.base.FinalSessionListener;

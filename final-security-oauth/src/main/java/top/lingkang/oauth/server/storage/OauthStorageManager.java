@@ -41,4 +41,6 @@ public interface OauthStorageManager {
     OauthToken removeToken(String token);
 
     OauthToken removeRefreshToken(String refreshToken);
+
+    void cleanExpires();
 }

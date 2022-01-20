@@ -1,24 +1,19 @@
 package top.lingkang.oauth.server.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
-
 /**
  * @author lingkang
- * @date 2022/1/10
+ * @date 2022/1/20
  */
-@Component(value = "finalOauthServerProperties")
-@ConfigurationProperties(prefix = "final.security.oauth.server")
-public class FinalOauthServerProperties {
-    private String tokenHeader="Authorization";
-    private String tokenHeaderPrefix="Basic ";
-    private String tokenRequest="access_token";
+public class OauthServerConfig {
+    private String tokenHeader; // ="Authorization";
+    private String tokenHeaderPrefix; // ="Basic ";
+    private String tokenRequest; // ="access_token";
 
-    private long tokenMaxTime = 1800000L;// 30分钟
-    private long refreshTokenMaxTime=1296000000L;// 15 天
-    private boolean autoRefreshToken=false;
+    private long tokenMaxTime; //  = 1800000L;// 30分钟
+    private long refreshTokenMaxTime; // =1296000000L;// 15 天
+    private boolean autoRefreshToken; // =false;
 
-    private long codeMaxValid=300000L;// 5 分钟
+    private long codeMaxValid; // =300000L;// 5 分钟
 
     public String getTokenHeader() {
         return tokenHeader;

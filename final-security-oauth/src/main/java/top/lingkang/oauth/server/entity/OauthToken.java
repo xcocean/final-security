@@ -12,7 +12,7 @@ public class OauthToken implements Serializable {
     private String token;
     private Object user;
     private String refreshToken;
-    private int createTime;
+    private long createTime;
     private String clientId;
     private String clientSecret;
 
@@ -52,11 +52,11 @@ public class OauthToken implements Serializable {
         this.refreshToken = refreshToken;
     }
 
-    public int getCreateTime() {
+    public long getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(int createTime) {
+    public void setCreateTime(long createTime) {
         this.createTime = createTime;
     }
 
