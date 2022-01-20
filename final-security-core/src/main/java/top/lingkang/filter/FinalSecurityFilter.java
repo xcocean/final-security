@@ -20,7 +20,6 @@ import java.util.HashSet;
  * @author lingkang
  * Created by 2022/1/7
  */
-@Component
 public class FinalSecurityFilter implements Filter {
     @Autowired
     private FinalManager manager;

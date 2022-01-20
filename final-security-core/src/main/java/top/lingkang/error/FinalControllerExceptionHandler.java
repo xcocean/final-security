@@ -1,14 +1,11 @@
-package top.lingkang.config;
+package top.lingkang.error;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.lingkang.FinalManager;
-import top.lingkang.error.FinalBaseException;
-import top.lingkang.error.FinalPermissionException;
-import top.lingkang.error.FinalTokenException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,7 +14,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author lingkang
  * @date 2022/1/8
  */
-@RestControllerAdvice
+@ControllerAdvice
 public class FinalControllerExceptionHandler {
     private static final Log log = LogFactory.getLog(FinalControllerExceptionHandler.class);
     @Autowired

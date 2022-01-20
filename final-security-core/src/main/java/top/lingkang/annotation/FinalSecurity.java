@@ -2,6 +2,7 @@ package top.lingkang.annotation;
 
 import org.springframework.context.annotation.Import;
 import top.lingkang.FinalManager;
+import top.lingkang.config.FinalSecurityInitConfiguration;
 
 import java.lang.annotation.*;
 
@@ -10,7 +11,7 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import({FinalManager.class})
+@Import({FinalSecurityInitConfiguration.class})
 @Documented
 public @interface FinalSecurity {
 }

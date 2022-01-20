@@ -13,7 +13,7 @@ import top.lingkang.annotation.FinalSecurity;
  */
 
 @FinalSecurity
-@EnableFinalAnnotation
+//@EnableFinalAnnotation
 @EnableScheduling
 @SpringBootApplication
 public class FinalSecurityApplication {

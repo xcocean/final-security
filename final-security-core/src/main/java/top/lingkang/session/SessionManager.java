@@ -42,4 +42,6 @@ public interface SessionManager {
 
     // 获取 会话 最后访问时间
     long getLastAccessTime(String token);
+
+    void cleanExpires();
 }

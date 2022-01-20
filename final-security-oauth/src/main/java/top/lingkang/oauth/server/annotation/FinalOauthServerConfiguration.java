@@ -7,6 +7,8 @@ import top.lingkang.oauth.error.impl.DefaultOauthExceptionHandler;
 import top.lingkang.oauth.server.base.OauthCodeGenerate;
 import top.lingkang.oauth.server.base.impl.DefaultOauthCodeGenerate;
 import top.lingkang.oauth.server.controller.FinalAuthController;
+import top.lingkang.oauth.server.storage.OauthStorageManager;
+import top.lingkang.oauth.server.storage.impl.DefaultOauthStorageManager;
 
 import java.util.Properties;
 
@@ -25,6 +27,12 @@ public class FinalOauthServerConfiguration {
     @Bean
     public DefaultOauthExceptionHandler oauthExceptionHandler() {
         return new DefaultOauthExceptionHandler();
+    }
+
+    @ConditionalOnMissingBean
+    @Bean
+    public OauthStorageManager storageManager(){
+        return new DefaultOauthStorageManager();
     }
 
     @Bean(name = "authController")

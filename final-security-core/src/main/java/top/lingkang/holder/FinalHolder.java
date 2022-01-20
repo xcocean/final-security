@@ -19,8 +19,6 @@ import top.lingkang.utils.CookieUtils;
  * @author lingkang
  * Created by 2022/1/7
  */
-@Lazy
-@Component
 public class FinalHolder {
 
     @Autowired
@@ -56,7 +54,7 @@ public class FinalHolder {
         FinalSession session = new DefaultFinalSession(id, user, token);
 
         // 添加会话
-        sessionManager.addFinalSession(token, session);// 共享会话时，会出现会话覆盖
+        sessionManager.addFinalSession(token, session);
         if (role != null)
             sessionManager.addRoles(token, role);
         if (permission != null)

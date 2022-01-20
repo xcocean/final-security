@@ -5,26 +5,19 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpSecurity;
 import top.lingkang.base.FinalSessionListener;
 import top.lingkang.base.FinalTokenGenerate;
-import top.lingkang.base.impl.DefaultFinalExceptionHandler;
-import top.lingkang.base.impl.DefaultFinalHttpSecurity;
-import top.lingkang.base.impl.DefaultFinalSessionListener;
-import top.lingkang.base.impl.DefaultFinalTokenGenerate;
 import top.lingkang.config.FinalConfigProperties;
 import top.lingkang.config.FinalProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalTokenException;
 import top.lingkang.filter.CheckTokenValidFilter;
 import top.lingkang.filter.FinalAuthenticationFilter;
-import top.lingkang.filter.UpdateLastAccessTimeFilter;
 import top.lingkang.filter.FinalFilterChain;
+import top.lingkang.filter.UpdateLastAccessTimeFilter;
 import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
@@ -40,15 +33,13 @@ import java.util.*;
  * @author lingkang
  * Created by 2022/1/7
  */
-@ComponentScan("top.lingkang")
-@Configuration
 public class FinalManager implements ApplicationRunner {
     private static final Log log = LogFactory.getLog(FinalManager.class);
     @Autowired
     private FinalExceptionHandler exceptionHandler;
     @Autowired
     private FinalTokenGenerate tokenGenerate;
-    @Autowired(required = false)
+    @Autowired
     private SessionManager sessionManager;
     @Autowired
     private FinalSessionListener sessionListener;
@@ -62,45 +53,13 @@ public class FinalManager implements ApplicationRunner {
     @Autowired
     private FinalHolder finalHolder;
 
-    @ConditionalOnMissingBean(FinalExceptionHandler.class)
-    @Bean
-    public FinalExceptionHandler exceptionHandler() {
-        return new DefaultFinalExceptionHandler();
-    }
-
-    @ConditionalOnMissingBean(FinalTokenGenerate.class)
-    @Bean
-    public FinalTokenGenerate tokenGenerate() {
-        return new DefaultFinalTokenGenerate();
-    }
-
-    @ConditionalOnMissingBean(FinalSessionListener.class)
-    @Bean
-    public FinalSessionListener finalSessionListener() {
-        return new DefaultFinalSessionListener();
-    }
-
-    @ConditionalOnMissingBean(FinalHttpSecurity.class)
-    @Bean
-    public FinalHttpSecurity finalHttpSecurity() {
-        return new DefaultFinalHttpSecurity();
-    }
-
-    @ConditionalOnMissingBean(FinalConfigProperties.class)
-    @Bean
-    public FinalConfigProperties finalConfigProperties() {
-        return new FinalConfigProperties();
-    }
-
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        if (sessionManager == null)
-            sessionManager = new DefaultFinalSessionManager();
         BeanUtils.copyProperty(configProperties, properties, true);
 
         initExcludePath();
         initFilterChain();
+        initCleanExpires();
 
         log.info("final-security init user:  " + finalHolder.login("user", null, null, null));
         log.info("final-security v1.0.1 load finish");
@@ -125,6 +84,18 @@ public class FinalManager implements ApplicationRunner {
         filterChains = AuthUtils.addFilterChain(
                 filterChains,
                 chains.toArray(new FinalFilterChain[chains.size()]));
+    }
+
+    private void initCleanExpires() {
+        if (sessionManager instanceof DefaultFinalSessionManager) {
+            Timer timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    sessionManager.cleanExpires();
+                }
+            }, 5000, 21600000);// 21600000ms = 6小时 执行一次
+        }
     }
 
     /**

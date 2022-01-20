@@ -1,25 +1,46 @@
 package top.lingkang.oauth.server;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import top.lingkang.FinalManager;
+import top.lingkang.oauth.server.base.OauthCodeGenerate;
+import top.lingkang.oauth.server.base.OauthExceptionHandler;
+import top.lingkang.oauth.server.base.OauthRefreshTokenGenerate;
+import top.lingkang.oauth.server.config.FinalOauthServerProperties;
+import top.lingkang.oauth.server.storage.OauthStorageManager;
 
 /**
  * @author lingkang
- * Created by 2022/1/17
+ * Created by 2022/1/20
  */
-public class OauthServerManager implements ApplicationContextAware {
+public class OauthServerManager {
     @Autowired
-    private FinalManager manager;
+    private OauthExceptionHandler oauthExceptionHandler;
+    @Autowired
+    private OauthRefreshTokenGenerate refreshTokenGenerate;
+    @Autowired
+    private OauthCodeGenerate oauthCodeGenerate;
+    @Autowired
+    private OauthStorageManager storageManager;
+    @Autowired
+    private FinalOauthServerProperties oauthServerProperties;
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
+    public OauthExceptionHandler getOauthExceptionHandler() {
+        return oauthExceptionHandler;
     }
 
+    public OauthRefreshTokenGenerate getRefreshTokenGenerate() {
+        return refreshTokenGenerate;
+    }
 
+    public OauthCodeGenerate getOauthCodeGenerate() {
+        return oauthCodeGenerate;
+    }
 
+    public OauthStorageManager getStorageManager() {
+        return storageManager;
+    }
 
+    public FinalOauthServerProperties getOauthServerProperties() {
+        return oauthServerProperties;
+    }
 }

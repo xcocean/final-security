@@ -16,8 +16,4 @@ public class DefaultOauthCodeGenerate implements OauthCodeGenerate {
         return UUID.randomUUID().toString();
     }
 
-    @Override
-    public String sessionIdGenerate() {
-        return UUID.randomUUID().toString();
-    }
 }

@@ -6,5 +6,4 @@ package top.lingkang.oauth.server.base;
  */
 public interface OauthCodeGenerate {
     String codeGenerate();
-    String sessionIdGenerate();
 }

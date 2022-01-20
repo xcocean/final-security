@@ -66,6 +66,7 @@ public class FinalSecurityController {
     public Object test() {
         ArrayList<String> objects = new ArrayList<>();
         objects.add("66");
+        String[] permission = finalHolder.getPermission();
         return "test";
     }
 }

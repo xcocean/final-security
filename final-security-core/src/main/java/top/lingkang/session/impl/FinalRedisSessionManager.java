@@ -122,4 +122,9 @@ public class FinalRedisSessionManager implements SessionManager {
         FinalSession session = getSession(token);
         return session.getLastAccessTime();
     }
+
+    @Override
+    public void cleanExpires() {
+
+    }
 }

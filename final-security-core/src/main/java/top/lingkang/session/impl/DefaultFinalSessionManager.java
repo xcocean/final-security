@@ -28,28 +28,6 @@ public class DefaultFinalSessionManager implements SessionManager {
     private static ConcurrentMap<String, String[]> roles = new ConcurrentHashMap<String, String[]>();
     private static ConcurrentMap<String, String[]> permission = new ConcurrentHashMap<String, String[]>();
 
-    public DefaultFinalSessionManager() {
-        FinalManager manager = SpringBeanUtils.getBean(FinalManager.class);
-        Long maxValid = manager.getProperties().getMaxValid();
-        if (maxValid < 1800000L) {// 30分钟
-            maxValid = 1800000L;
-        }
-        Timer clear = new Timer();
-        clear.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                if (session.size() == 0)
-                    return;
-                long current = System.currentTimeMillis() - manager.getProperties().getMaxValid() + 300000L;
-                for (Map.Entry<String, FinalSession> entry : session.entrySet()) {
-                    if (entry.getValue().getLastAccessTime() < current) {
-                        removeSession(entry.getValue().getToken());
-                    }
-                }
-            }
-        }, 2000, maxValid);
-    }
-
     @Override
     public void addFinalSession(String token, FinalSession finalSession) {
         session.put(token, finalSession);
@@ -138,5 +116,22 @@ public class DefaultFinalSessionManager implements SessionManager {
             throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
         }
         return session.getLastAccessTime();
+    }
+
+    @Override
+    public void cleanExpires() {
+        FinalManager manager = SpringBeanUtils.getBean(FinalManager.class);
+        Long maxValid = manager.getProperties().getMaxValid();
+        if (maxValid < 1800000L) {// 30分钟
+            maxValid = 1800000L;
+        }
+        if (session.size() == 0)
+            return;
+        long current = System.currentTimeMillis() - maxValid + 300000L;
+        for (Map.Entry<String, FinalSession> entry : session.entrySet()) {
+            if (entry.getValue().getLastAccessTime() < current) {
+                removeSession(entry.getValue().getToken());
+            }
+        }
     }
 }
