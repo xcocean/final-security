@@ -1,8 +1,6 @@
 package top.lingkang.holder;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.base.FinalSessionListener;
 import top.lingkang.base.FinalTokenGenerate;
@@ -66,7 +64,7 @@ public class FinalHolder {
             requestContext.setToken(token);
 
             // 将令牌放到cookie中
-            if (properties.getUseCookie()) {
+            if (properties.getUseCookie() && requestContext.getResponse() != null) {
                 CookieUtils.addToken(
                         requestContext.getResponse(),
                         properties.getTokenName(),
