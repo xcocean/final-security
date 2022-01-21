@@ -1,8 +1,6 @@
 package top.lingkang.oauth.server.storage;
 
-import top.lingkang.oauth.server.entity.OauthToken;
-import top.lingkang.oauth.server.entity.RefreshToken;
-import top.lingkang.session.FinalSession;
+import top.lingkang.oauth.server.pojo.OauthToken;
 
 /**
  * @author lingkang

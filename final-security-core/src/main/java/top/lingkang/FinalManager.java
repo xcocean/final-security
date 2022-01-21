@@ -171,4 +171,8 @@ public class FinalManager implements ApplicationRunner {
     public void updateFilterChains(FinalFilterChain[] newFilterChain) {
         filterChains = newFilterChain;
     }
+
+    public void updateExcludePath(String... excludePath){
+        properties.setExcludePath(excludePath);
+    }
 }

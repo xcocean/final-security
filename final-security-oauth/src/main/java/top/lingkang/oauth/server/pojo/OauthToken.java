@@ -1,4 +1,4 @@
-package top.lingkang.oauth.server.entity;
+package top.lingkang.oauth.server.pojo;
 
 import java.io.Serializable;
 

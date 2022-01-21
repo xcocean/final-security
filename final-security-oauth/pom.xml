@@ -41,6 +41,8 @@
         <dependency>
             <groupId>top.lingkang</groupId>
             <artifactId>final-security-core</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

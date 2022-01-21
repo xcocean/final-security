@@ -11,7 +11,6 @@ import top.lingkang.utils.AuthUtils;
 public class FinalAuth {
     private String[] role, andRole, permission, andPermission;
 
-
     public void check(FinalManager manager) {
         String token = manager.getToken();
         if (role != null || andRole != null) {

@@ -18,12 +18,12 @@ public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
 
     @Override
     public void tokenException(Exception e, HttpServletRequest request, HttpServletResponse response) {
-        printError(e, request, response, "501");
+        printError(e, request, response, 400);
     }
 
     @Override
     public void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response) {
-        printError(e, request, response, "403");
+        printError(e, request, response, 403);
     }
 
     @Override
@@ -36,14 +36,14 @@ public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
         }
     }
 
-    private void printError(Exception e, HttpServletRequest request, HttpServletResponse response, String code) {
+    private void printError(Exception e, HttpServletRequest request, HttpServletResponse response, int code) {
         log.warn(e.getMessage() + "  url=" + request.getServletPath());
         String contentType = request.getContentType();
         if (StringUtils.isEmpty(contentType)) {
             contentType = "text/html; charset=UTF-8";
         }
         response.setContentType(contentType);
-        response.setStatus(Integer.valueOf(code));
+        response.setStatus(code);
         try {
             if (contentType.toLowerCase().indexOf("json") != -1) {
                 response.getWriter().print("{\"code\":" + code + ",\"msg\":\"" + e.getMessage() + "\"}");

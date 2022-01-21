@@ -2,7 +2,7 @@ package top.lingkang.oauth.server.storage.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.oauth.server.OauthServerManager;
-import top.lingkang.oauth.server.entity.OauthToken;
+import top.lingkang.oauth.server.pojo.OauthToken;
 import top.lingkang.oauth.server.storage.OauthStorageManager;
 
 import java.util.Map;

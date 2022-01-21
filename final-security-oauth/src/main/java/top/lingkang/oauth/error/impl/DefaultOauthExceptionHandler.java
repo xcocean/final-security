@@ -21,6 +21,16 @@ public class DefaultOauthExceptionHandler implements OauthExceptionHandler {
         printError(e, request, response, 400);
     }
 
+    @Override
+    public void oauthTokenException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+        printError(e, request, response, 400);
+    }
+
+    @Override
+    public void oauthOtherException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+        printError(e, request, response, 500);
+    }
+
     private void printError(Exception e, HttpServletRequest request, HttpServletResponse response, int code) {
         log.warn(e.getMessage() + "  url=" + request.getServletPath());
         String contentType = request.getContentType();
