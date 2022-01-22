@@ -1,5 +1,6 @@
 package top.lingkang.oauth.server;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -22,8 +23,8 @@ import java.util.Arrays;
  * @author lingkang
  * Created by 2022/1/20
  */
-public class OauthServerManager implements ApplicationRunner {
-    @Autowired(required = false)
+public class OauthServerManager implements InitializingBean  {
+    @Autowired
     private OauthExceptionHandler oauthExceptionHandler;
     @Autowired
     private OauthTokenGenerate tokenGenerate;
@@ -39,7 +40,7 @@ public class OauthServerManager implements ApplicationRunner {
     private FinalManager manager;
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void afterPropertiesSet() throws Exception {
         BeanUtils.copyProperty(configProperties, oauthServerProperties, true);
 
         // 更新排除路径

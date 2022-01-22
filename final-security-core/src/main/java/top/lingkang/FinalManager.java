@@ -2,6 +2,7 @@ package top.lingkang;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -26,13 +27,14 @@ import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
 
+import javax.annotation.PreDestroy;
 import java.util.*;
 
 /**
  * @author lingkang
  * Created by 2022/1/7
  */
-public class FinalManager implements ApplicationRunner {
+public class FinalManager implements InitializingBean {
     private static final Log log = LogFactory.getLog(FinalManager.class);
     @Autowired
     private FinalExceptionHandler exceptionHandler;
@@ -52,8 +54,10 @@ public class FinalManager implements ApplicationRunner {
     @Autowired
     private FinalHolder finalHolder;
 
+    private Timer cleanExpiresTimer;
+
     @Override
-    public void run(ApplicationArguments args) throws Exception {
+    public void afterPropertiesSet() throws Exception {
         BeanUtils.copyProperty(configProperties, properties, true);
 
         initExcludePath();
@@ -87,14 +91,20 @@ public class FinalManager implements ApplicationRunner {
 
     private void initCleanExpires() {
         if (sessionManager instanceof DefaultFinalSessionManager) {
-            Timer timer = new Timer();
-            timer.schedule(new TimerTask() {
+            cleanExpiresTimer=new Timer();
+            cleanExpiresTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     sessionManager.cleanExpires();
                 }
             }, 5000, 21600000);// 21600000ms = 6小时 执行一次
         }
+    }
+
+    @PreDestroy
+    public void destroy(){
+        if (cleanExpiresTimer!=null)
+            cleanExpiresTimer.cancel();
     }
 
     /**
