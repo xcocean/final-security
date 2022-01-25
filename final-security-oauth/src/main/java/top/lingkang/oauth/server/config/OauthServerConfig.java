@@ -9,8 +9,8 @@ public class OauthServerConfig {
     private String tokenHeaderPrefix; // ="Basic ";
     private String tokenRequest; // ="access_token";
 
-    private long tokenMaxTime; //  = 1800000L;// 30分钟
-    private long refreshTokenMaxTime; // =1296000000L;// 15 天
+    private Long tokenMaxTime; //  = 1800000L;// 30分钟
+    private Long refreshTokenMaxTime; // =1296000000L;// 15 天
     private boolean autoRefreshToken; // =false;
 
     private long codeMaxValid; // =300000L;// 5 分钟
@@ -47,19 +47,19 @@ public class OauthServerConfig {
         this.codeMaxValid = codeMaxValid;
     }
 
-    public long getTokenMaxTime() {
+    public Long getTokenMaxTime() {
         return tokenMaxTime;
     }
 
-    public void setTokenMaxTime(long tokenMaxTime) {
+    public void setTokenMaxTime(Long tokenMaxTime) {
         this.tokenMaxTime = tokenMaxTime;
     }
 
-    public long getRefreshTokenMaxTime() {
+    public Long getRefreshTokenMaxTime() {
         return refreshTokenMaxTime;
     }
 
-    public void setRefreshTokenMaxTime(long refreshTokenMaxTime) {
+    public void setRefreshTokenMaxTime(Long refreshTokenMaxTime) {
         this.refreshTokenMaxTime = refreshTokenMaxTime;
     }
 

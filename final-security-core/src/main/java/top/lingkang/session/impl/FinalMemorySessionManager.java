@@ -31,18 +31,15 @@ public class FinalMemorySessionManager implements SessionManager {
 
     @Override
     public FinalSession getSession(String token) {
-        FinalSession session = this.session.get(token);
-        if (session == null)
-            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
-        return session;
+        return session.get(token);
     }
 
     @Override
     public FinalSession getSessionById(String id) {
-        FinalSession session = this.session.get(idAndToken.get(id));
-        if (session == null)
-            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
-        return session;
+        String s = idAndToken.get(id);
+        if (s == null)
+            return null;
+        return session.get(s);
     }
 
     @Override
@@ -51,8 +48,10 @@ public class FinalMemorySessionManager implements SessionManager {
     }
 
     @Override
-    public void addRoles(String token, String... roles) {
-        this.roles.put(token, AuthUtils.removeRepeat(roles));
+    public void addRoles(String token, String... role) {
+        if (role == null)
+            return;
+        this.roles.put(token, AuthUtils.removeRepeat(role));
     }
 
     @Override
@@ -67,6 +66,8 @@ public class FinalMemorySessionManager implements SessionManager {
 
     @Override
     public void addPermission(String token, String... permission) {
+        if (permission == null)
+            return;
         this.permission.put(token, AuthUtils.removeRepeat(permission));
     }
 
@@ -106,11 +107,7 @@ public class FinalMemorySessionManager implements SessionManager {
 
     @Override
     public long getLastAccessTime(String token) {
-        FinalSession session = this.session.get(token);
-        if (session == null) {
-            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
-        }
-        return session.getLastAccessTime();
+        return session.get(token).getLastAccessTime();
     }
 
     public void cleanExpires() {

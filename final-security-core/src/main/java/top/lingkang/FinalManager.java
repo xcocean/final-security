@@ -88,8 +88,8 @@ public class FinalManager implements InitializingBean {
     }
 
     private void initCleanExpires() {
-        if (sessionManager instanceof FinalMemorySessionManager) {
-            cleanExpiresTimer=new Timer();
+        if ("FinalMemorySessionManager".equals(sessionManager.getClass().getSimpleName())) {
+            cleanExpiresTimer = new Timer();
             cleanExpiresTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -100,8 +100,8 @@ public class FinalManager implements InitializingBean {
     }
 
     @PreDestroy
-    public void destroy(){
-        if (cleanExpiresTimer!=null)
+    public void destroy() {
+        if (cleanExpiresTimer != null)
             cleanExpiresTimer.cancel();
     }
 
@@ -180,7 +180,11 @@ public class FinalManager implements InitializingBean {
         filterChains = newFilterChain;
     }
 
-    public void updateExcludePath(String... excludePath){
+    public void updateExcludePath(String... excludePath) {
         properties.setExcludePath(excludePath);
+    }
+
+    public void updateTokenMaxTime(long tokenMax) {
+        this.properties.setMaxValid(tokenMax);
     }
 }

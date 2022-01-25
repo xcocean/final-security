@@ -1,6 +1,8 @@
 package top.lingkang.base;
 
 import top.lingkang.FinalManager;
+import top.lingkang.constants.FinalConstants;
+import top.lingkang.error.FinalTokenException;
 import top.lingkang.utils.AuthUtils;
 
 /**
@@ -13,6 +15,9 @@ public class FinalAuth {
 
     public void check(FinalManager manager) {
         String token = manager.getToken();
+        if (token==null)
+            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
+
         if (role != null || andRole != null) {
             String[] has = manager.getSessionManager().getRoles(token);
             AuthUtils.checkRole(role, has);

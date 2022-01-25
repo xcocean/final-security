@@ -29,7 +29,7 @@ public class FinalHolder {
         FinalSessionListener sessionListener = manager.getSessionListener();
 
         if (properties.getOnlyOne()) { // 用户只能存在一个会话
-            top.lingkang.session.FinalSession session = sessionManager.getSessionById(id);
+            FinalSession session = sessionManager.getSessionById(id);
             if (session != null) {
                 sessionManager.removeSession(session.getToken());
             }
@@ -37,7 +37,7 @@ public class FinalHolder {
 
         String token = null;
         try {
-            top.lingkang.session.FinalSession session = sessionManager.getSession(getToken());
+            FinalSession session = sessionManager.getSession(getToken());
             // 是否生成新令牌
             if (manager.getProperties().getGenerateNewToken()) {
                 token = tokenGenerate.generateToken();

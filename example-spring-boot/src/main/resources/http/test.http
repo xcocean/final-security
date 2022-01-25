@@ -1,3 +1,5 @@
 
-GET http://localhost:8080
+GET http://localhost:8082/oauth/token?id=123
 Content-Type: application/json; charset=UTF-8
+
+

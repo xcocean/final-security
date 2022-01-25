@@ -1,16 +1,16 @@
 package top.lingkang.oauth.server;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import top.lingkang.FinalManager;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
 import top.lingkang.oauth.constants.OauthConstants;
+import top.lingkang.oauth.error.OauthExceptionHandler;
 import top.lingkang.oauth.error.OauthTokenException;
 import top.lingkang.oauth.server.base.OauthCodeGenerate;
-import top.lingkang.oauth.server.base.OauthExceptionHandler;
 import top.lingkang.oauth.server.base.OauthTokenGenerate;
 import top.lingkang.oauth.server.config.FinalOauthServerProperties;
 import top.lingkang.oauth.server.config.OauthServerConfig;
@@ -26,6 +26,7 @@ import java.util.Arrays;
  * Created by 2022/1/20
  */
 public class OauthServerManager implements InitializingBean {
+    private static final Log log = LogFactory.getLog(OauthServerManager.class);
     @Autowired
     private OauthExceptionHandler oauthExceptionHandler;
     @Autowired
@@ -50,6 +51,11 @@ public class OauthServerManager implements InitializingBean {
         String[] newEx = Arrays.copyOf(excludePath, excludePath.length + 1);
         newEx[newEx.length - 1] = "/oauth/**";
         manager.updateExcludePath(newEx);
+
+        // 更新令牌时效时间
+        manager.updateTokenMaxTime(oauthServerProperties.getTokenMaxTime());
+        log.info("oauth server update token maxValid value to " + oauthServerProperties.getTokenMaxTime() + " millisecond," +
+                " 授权服务将令牌时效时间更新为 " + oauthServerProperties.getTokenMaxTime() + " 毫秒");
     }
 
     public String getToken() {
@@ -58,7 +64,7 @@ public class OauthServerManager implements InitializingBean {
             throw new OauthTokenException(OauthConstants.NOT_EXIST_TOKEN);
         }
         HttpServletRequest request = requestContext.getRequest();
-        if (request==null){
+        if (request == null) {
             throw new OauthTokenException(OauthConstants.NOT_EXIST_TOKEN);
         }
         String token = request.getHeader(oauthServerProperties.getTokenHeader());

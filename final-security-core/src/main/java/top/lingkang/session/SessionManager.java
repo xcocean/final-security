@@ -23,7 +23,7 @@ public interface SessionManager {
     String[] getPermission(String token);
 
     // 根据token添加角色
-    void addRoles(String token, String... roles);
+    void addRoles(String token, String... role);
 
     void deleteRoles(String token);
 

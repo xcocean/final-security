@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
+import top.lingkang.oauth.error.OauthExceptionHandler;
 import top.lingkang.oauth.error.impl.DefaultOauthExceptionHandler;
 import top.lingkang.oauth.server.OauthServerHolder;
 import top.lingkang.oauth.server.OauthServerManager;
@@ -12,7 +13,7 @@ import top.lingkang.oauth.server.base.OauthTokenGenerate;
 import top.lingkang.oauth.server.base.impl.DefaultOauthCodeGenerate;
 import top.lingkang.oauth.server.base.impl.DefaultOauthTokenGenerate;
 import top.lingkang.oauth.server.config.OauthServerConfig;
-import top.lingkang.oauth.server.controller.FinalAuthController;
+import top.lingkang.oauth.server.controller.AuthServerController;
 import top.lingkang.oauth.server.storage.OauthStorageManager;
 import top.lingkang.oauth.server.storage.impl.OauthMemorySessionManager;
 
@@ -24,32 +25,32 @@ import java.util.Map;
  * Created by 2022/1/11
  */
 public class FinalOauthServerConfiguration {
-    @ConditionalOnMissingBean(OauthCodeGenerate.class)
     @Bean
+    @ConditionalOnMissingBean(OauthCodeGenerate.class)
     public OauthCodeGenerate oauthCodeGenerate() {
         return new DefaultOauthCodeGenerate();
     }
 
-    @ConditionalOnMissingBean
     @Bean
-    public DefaultOauthExceptionHandler oauthExceptionHandler() {
+    @ConditionalOnMissingBean
+    public OauthExceptionHandler oauthExceptionHandler() {
         return new DefaultOauthExceptionHandler();
     }
 
-    @ConditionalOnMissingBean
     @Bean
+    @ConditionalOnMissingBean
     public OauthStorageManager storageManager() {
         return new OauthMemorySessionManager();
     }
 
-    @Bean(name = "authController")
+    @Bean
     @ConditionalOnMissingBean
-    public FinalAuthController authController() {
-        return new FinalAuthController();
+    public AuthServerController authController() {
+        return new AuthServerController();
     }
 
-    @ConditionalOnMissingBean
     @Bean
+    @ConditionalOnMissingBean
     public OauthServerConfig oauthServerConfig() {
         return new OauthServerConfig();
     }
@@ -61,12 +62,12 @@ public class FinalOauthServerConfiguration {
     }
 
     @Bean
-    public SimpleUrlHandlerMapping simpleUrlHandlerMapping(@Qualifier("authController") FinalAuthController finalAuthController) {
+    public SimpleUrlHandlerMapping simpleUrlHandlerMapping(@Qualifier("authController") AuthServerController authServerController) {
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         // 需要优于 ResourceHttpRequestHandler 处理，否则 404 无法进入到 SimpleUrlHandlerMapping 的映射
         mapping.setOrder(Integer.MAX_VALUE - 2);
         Map<String, Object> map = new HashMap<>();
-        map.put("/oauth/**", finalAuthController);
+        map.put("/oauth/**", authServerController);
         mapping.setUrlMap(map);
         return mapping;
     }

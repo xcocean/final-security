@@ -1,54 +1,63 @@
 package top.lingkang.oauth.server;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import top.lingkang.oauth.server.pojo.OauthToken;
 import top.lingkang.session.FinalSession;
+import top.lingkang.session.impl.DefaultFinalSession;
 
 /**
  * @author lingkang
  * Created by 2022/1/17
  */
 public class OauthServerHolder {
+
     @Autowired
     private OauthServerManager serverManager;
 
-    /*public OauthToken oauthLogin(String id, Object user, String[] role, String[] permission) {
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    public Object oauthLogin(String id, Object user, String[] role, String[] permission) throws Exception {
+        Assert.notNull(id, "入参id不能为空！");
+        // token
         FinalSession session = serverManager.getStorageManager().getSessionById(id);
         if (session != null) {
-            oauthToken = copyAttributes(oauthToken);
-            OauthToken refreshToken = serverManager.getStorageManager().getRefreshToken(oauthToken.getRefreshToken());
-            if (refreshToken == null) {
-                oauthToken.setRefreshToken(serverManager.getTokenGenerate().refreshTokenGenerate());
-            }
+            session.setUser(user);
+            session.updateLastAccessTime();
         } else {
-            oauthToken = new OauthToken();
-            oauthToken.setToken(serverManager.getTokenGenerate().tokenGenerate());
-            oauthToken.setRefreshToken(serverManager.getTokenGenerate().refreshTokenGenerate());
+            session = new DefaultFinalSession(id, user, serverManager.getTokenGenerate().generateToken());
         }
-        oauthToken.setId(id);
-        oauthToken.setUser(user);
-        oauthToken.setCreateTime(System.currentTimeMillis());
+        session.setType("token");
+        serverManager.getStorageManager().addFinalSession(session.getToken(), session);
 
+        // refresh token
+        FinalSession refreshSession = serverManager.getStorageManager().getRefreshSessionById(id);
+        if (refreshSession == null) {
+            refreshSession = new DefaultFinalSession(id, user, serverManager.getTokenGenerate().refreshTokenGenerate());
+            refreshSession.setType("refresh");
+            serverManager.getStorageManager().addRefreshSession(refreshSession.getToken(), refreshSession);
+        }
 
-        // 添加token信息
-        serverManager.getStorageManager().addToken(oauthToken.getToken(), oauthToken);
-        serverManager.getStorageManager().addToken(oauthToken.getRefreshToken(), oauthToken);
-        serverManager.getStorageManager().addRoles(oauthToken.getToken(), role);
-        serverManager.getStorageManager().addPermission(oauthToken.getToken(), permission);
+        serverManager.getStorageManager().addPermission(session.getToken(), permission);
+        serverManager.getStorageManager().addRoles(session.getToken(), role);
+        serverManager.getStorageManager().updateRefreshPermission(refreshSession.getToken(), permission);
+        serverManager.getStorageManager().updateRefreshRole(refreshSession.getToken(), role);
 
-        return oauthToken;
-    }*/
-
-    private OauthToken copyAttributes(OauthToken token) {
         OauthToken oauthToken = new OauthToken();
-        oauthToken.setToken(token.getToken());
-        oauthToken.setRefreshToken(token.getRefreshToken());
-        oauthToken.setClientId(token.getClientId());
-        oauthToken.setClientSecret(token.getClientSecret());
-        oauthToken.setId(token.getId());
-        oauthToken.setUser(token.getUser());
-        oauthToken.setCreateTime(token.getCreateTime());
-        return oauthToken;
+        oauthToken.setToken(session.getToken());
+        oauthToken.setRefreshToken(refreshSession.getToken());
+        oauthToken.setId(id);
+        long current = System.currentTimeMillis();
+        oauthToken.setExpire(
+                serverManager.getOauthServerProperties().getTokenMaxTime() + session.getLastAccessTime() - current
+        );
+        oauthToken.setRefreshExpire(
+                serverManager.getOauthServerProperties().getRefreshTokenMaxTime() + refreshSession.getLastAccessTime() - current
+        );
+
+        // to json
+        return objectMapper.writeValueAsString(oauthToken);
     }
 
 

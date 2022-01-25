@@ -67,4 +67,5 @@ public class FinalSecurityController {
     public Object test() {
         return "test";
     }
+
 }

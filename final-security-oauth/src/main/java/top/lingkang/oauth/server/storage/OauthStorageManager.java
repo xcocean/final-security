@@ -1,6 +1,5 @@
 package top.lingkang.oauth.server.storage;
 
-import top.lingkang.oauth.server.pojo.OauthToken;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
@@ -15,15 +14,17 @@ public interface OauthStorageManager extends SessionManager {
 
     FinalSession removeRefreshSession(String refreshToken);
 
+    FinalSession getRefreshSessionById(String id);
+
     String[] getRefreshRole(String refreshToken);
 
-    String[] updateRefreshRole(String refreshToken, String[] role);
+    String[] updateRefreshRole(String refreshToken, String... role);
 
     String[] deleteRefreshRole(String refreshToken);
 
     String[] getRefreshPermission(String refreshToken);
 
-    String[] updateRefreshPermission(String refreshToken, String[] permission);
+    String[] updateRefreshPermission(String refreshToken, String... permission);
 
     String[] deleteRefreshPermission(String refreshToken);
 }

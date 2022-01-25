@@ -22,6 +22,8 @@ public class CheckTokenValidFilter implements FinalFilterChain{
     @Override
     public void doFilter(HttpServletRequest request, HttpServletResponse response) {
         String token = manager.getToken();
+        if (token==null)
+            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
 
         // 检查令牌预留时长情况
         if (manager.getProperties().getPrepareCheck()) {

@@ -10,15 +10,9 @@ public class OauthToken implements Serializable {
     private static final long serialVersionUID = 1L;
     private String id;
     private String token;
-    private Object user;
     private String refreshToken;
-    private long createTime;
-    private String clientId;
-    private String clientSecret;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
+    private long expire;
+    private long refreshExpire;
 
     public String getId() {
         return id;
@@ -36,14 +30,6 @@ public class OauthToken implements Serializable {
         this.token = token;
     }
 
-    public Object getUser() {
-        return user;
-    }
-
-    public void setUser(Object user) {
-        this.user = user;
-    }
-
     public String getRefreshToken() {
         return refreshToken;
     }
@@ -52,27 +38,19 @@ public class OauthToken implements Serializable {
         this.refreshToken = refreshToken;
     }
 
-    public long getCreateTime() {
-        return createTime;
+    public long getExpire() {
+        return expire;
     }
 
-    public void setCreateTime(long createTime) {
-        this.createTime = createTime;
+    public void setExpire(long expire) {
+        this.expire = expire;
     }
 
-    public String getClientId() {
-        return clientId;
+    public long getRefreshExpire() {
+        return refreshExpire;
     }
 
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
-    }
-
-    public void setClientSecret(String clientSecret) {
-        this.clientSecret = clientSecret;
+    public void setRefreshExpire(long refreshExpire) {
+        this.refreshExpire = refreshExpire;
     }
 }

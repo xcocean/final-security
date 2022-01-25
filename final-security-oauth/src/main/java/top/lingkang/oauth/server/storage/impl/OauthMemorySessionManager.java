@@ -13,13 +13,15 @@ import java.util.concurrent.ConcurrentMap;
  * @description 会话管理，存储于内存中
  */
 public class OauthMemorySessionManager extends FinalMemorySessionManager implements OauthStorageManager {
-    private ConcurrentMap<String, FinalSession> rSession = new ConcurrentHashMap<String, FinalSession>();
+    private ConcurrentMap<String, String> idRSession = new ConcurrentHashMap<>();
+    private ConcurrentMap<String, FinalSession> rSession = new ConcurrentHashMap<>();
     private ConcurrentMap<String, String[]> rRole = new ConcurrentHashMap<>();
     private ConcurrentMap<String, String[]> rPermission = new ConcurrentHashMap<>();
 
     @Override
     public void addRefreshSession(String refreshToken, FinalSession finalSession) {
         rSession.put(refreshToken, finalSession);
+        idRSession.put(finalSession.getId(), refreshToken);
     }
 
     @Override
@@ -32,7 +34,17 @@ public class OauthMemorySessionManager extends FinalMemorySessionManager impleme
         FinalSession remove = rSession.remove(refreshToken);
         rRole.remove(refreshToken);
         rPermission.remove(refreshToken);
+        if (remove != null)
+            idRSession.remove(remove.getId());
         return remove;
+    }
+
+    @Override
+    public FinalSession getRefreshSessionById(String id) {
+        String s = idRSession.get(id);
+        if (s != null)
+            return rSession.get(s);
+        return null;
     }
 
     @Override
@@ -41,7 +53,9 @@ public class OauthMemorySessionManager extends FinalMemorySessionManager impleme
     }
 
     @Override
-    public String[] updateRefreshRole(String refreshToken, String[] role) {
+    public String[] updateRefreshRole(String refreshToken, String... role) {
+        if (role == null)
+            return null;
         return rRole.put(refreshToken, role);
     }
 
@@ -56,7 +70,9 @@ public class OauthMemorySessionManager extends FinalMemorySessionManager impleme
     }
 
     @Override
-    public String[] updateRefreshPermission(String refreshToken, String[] permission) {
+    public String[] updateRefreshPermission(String refreshToken, String... permission) {
+        if (permission == null)
+            return null;
         return rPermission.put(refreshToken, permission);
     }
 

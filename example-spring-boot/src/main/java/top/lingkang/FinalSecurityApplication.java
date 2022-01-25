@@ -15,7 +15,7 @@ import top.lingkang.oauth.server.annotation.EnableFinalOauthServer;
 
 @FinalSecurity
 //@EnableFinalAnnotation
-//@EnableFinalOauthServer
+@EnableFinalOauthServer
 @EnableScheduling
 @SpringBootApplication
 public class FinalSecurityApplication {
