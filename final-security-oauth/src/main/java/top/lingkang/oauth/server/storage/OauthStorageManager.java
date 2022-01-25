@@ -1,44 +1,29 @@
 package top.lingkang.oauth.server.storage;
 
 import top.lingkang.oauth.server.pojo.OauthToken;
+import top.lingkang.session.FinalSession;
+import top.lingkang.session.SessionManager;
 
 /**
  * @author lingkang
  * Created by 2022/1/17
  */
-public interface OauthStorageManager {
+public interface OauthStorageManager extends SessionManager {
+    void addRefreshSession(String refreshToken, FinalSession finalSession);
 
-    boolean addCode(String code);
+    FinalSession getRefreshSession(String refreshToken);
 
-    boolean removeCode(String code);
+    FinalSession removeRefreshSession(String refreshToken);
 
-    void addToken(String token, OauthToken oauthToken);
+    String[] getRefreshRole(String refreshToken);
 
-    void addRefreshToken(String refreshToken, OauthToken token);
+    String[] updateRefreshRole(String refreshToken, String[] role);
 
-    // 根据token获取角色
-    String[] getRoles(String token);
+    String[] deleteRefreshRole(String refreshToken);
 
-    String[] getPermission(String token);
+    String[] getRefreshPermission(String refreshToken);
 
-    // 根据token添加角色
-    void addRoles(String token, String... role);
+    String[] updateRefreshPermission(String refreshToken, String[] permission);
 
-    String[] deleteRoles(String token);
-
-    void addPermission(String token, String... permission);
-
-    String[] deletePermission(String token);
-
-    String getTokenById(String id);
-
-    OauthToken getToken(String token);
-
-    OauthToken getRefreshToken(String refreshToken);
-
-    OauthToken removeToken(String token);
-
-    OauthToken removeRefreshToken(String refreshToken);
-
-    void cleanExpires();
+    String[] deleteRefreshPermission(String refreshToken);
 }

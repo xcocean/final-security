@@ -14,6 +14,7 @@ public class DefaultFinalSession implements FinalSession, Serializable {
     private String id, token;
     private Object user;
     private volatile long creationTime, lastAccessTime;
+    private String type;
 
     public DefaultFinalSession(String id, Object user, String token) {
         this.id = id;
@@ -38,6 +39,16 @@ public class DefaultFinalSession implements FinalSession, Serializable {
     @Override
     public void setUser(Object user) {
         this.user = user;
+    }
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    @Override
+    public void setType(String type) {
+        this.type = type;
     }
 
     public void updateLastAccessTime() {

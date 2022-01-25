@@ -16,14 +16,16 @@ import top.lingkang.oauth.server.config.FinalOauthServerProperties;
 import top.lingkang.oauth.server.config.OauthServerConfig;
 import top.lingkang.oauth.server.storage.OauthStorageManager;
 import top.lingkang.utils.BeanUtils;
+import top.lingkang.utils.CookieUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 /**
  * @author lingkang
  * Created by 2022/1/20
  */
-public class OauthServerManager implements InitializingBean  {
+public class OauthServerManager implements InitializingBean {
     @Autowired
     private OauthExceptionHandler oauthExceptionHandler;
     @Autowired
@@ -46,7 +48,7 @@ public class OauthServerManager implements InitializingBean  {
         // 更新排除路径
         String[] excludePath = manager.getProperties().getExcludePath();
         String[] newEx = Arrays.copyOf(excludePath, excludePath.length + 1);
-        newEx[newEx.length-1]="/oauth/**";
+        newEx[newEx.length - 1] = "/oauth/**";
         manager.updateExcludePath(newEx);
     }
 
@@ -55,16 +57,22 @@ public class OauthServerManager implements InitializingBean  {
         if (requestContext == null) {
             throw new OauthTokenException(OauthConstants.NOT_EXIST_TOKEN);
         }
-
-        String token = requestContext.getRequest().getHeader(oauthServerProperties.getTokenHeader());
+        HttpServletRequest request = requestContext.getRequest();
+        if (request==null){
+            throw new OauthTokenException(OauthConstants.NOT_EXIST_TOKEN);
+        }
+        String token = request.getHeader(oauthServerProperties.getTokenHeader());
         if (token != null) {
             return token.substring(oauthServerProperties.getTokenHeaderPrefix().length());
         }
 
-        token = requestContext.getRequest().getParameter(oauthServerProperties.getTokenRequest());
+        token = request.getParameter(oauthServerProperties.getTokenRequest());
         if (token != null)
             return token;
 
+        token = CookieUtils.getTokenByCookie(manager.getProperties().getTokenName(), request.getCookies());
+        if (token != null)
+            return token;
 
         throw new OauthTokenException(OauthConstants.NOT_EXIST_TOKEN);
     }

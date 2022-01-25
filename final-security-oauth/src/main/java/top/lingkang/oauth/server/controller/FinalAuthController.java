@@ -12,6 +12,7 @@ import top.lingkang.oauth.error.OauthTokenException;
 import top.lingkang.oauth.server.OauthServerManager;
 import top.lingkang.oauth.server.pojo.CheckTokenResponse;
 import top.lingkang.oauth.server.pojo.OauthToken;
+import top.lingkang.session.FinalSession;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -48,13 +49,13 @@ public class FinalAuthController implements Controller {
     private ModelAndView handler(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         if ("/oauth/check_token".equals(httpServletRequest.getServletPath())) {
             String token = serverManager.getToken();
-            OauthToken oauthToken = serverManager.getStorageManager().getToken(token);
-            if (oauthToken == null) {
+            FinalSession session = serverManager.getStorageManager().getSession(token);
+            if (session == null) {
                 throw new OauthTokenException(OauthConstants.Token_Invalid);
             }
             CheckTokenResponse res = new CheckTokenResponse();
-            res.setId(oauthToken.getId());
-            res.setUser(oauthToken.getUser());
+            res.setId(session.getId());
+            res.setUser(session.getUser());
             res.setRole(serverManager.getStorageManager().getRoles(token));
             res.setPermission(serverManager.getStorageManager().getPermission(token));
             String json = objectMapper.writeValueAsString(res);

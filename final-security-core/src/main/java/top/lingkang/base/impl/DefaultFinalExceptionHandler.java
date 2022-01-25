@@ -18,7 +18,7 @@ public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
 
     @Override
     public void tokenException(Exception e, HttpServletRequest request, HttpServletResponse response) {
-        printError(e, request, response, 400);
+        printError(e, request, response, 403);
     }
 
     @Override

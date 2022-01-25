@@ -2,6 +2,7 @@ package top.lingkang.oauth.server;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.oauth.server.pojo.OauthToken;
+import top.lingkang.session.FinalSession;
 
 /**
  * @author lingkang
@@ -11,13 +12,9 @@ public class OauthServerHolder {
     @Autowired
     private OauthServerManager serverManager;
 
-    public OauthToken oauthLogin(String id, Object user, String[] role, String[] permission) {
-        String tokenById = serverManager.getStorageManager().getTokenById(id);
-        OauthToken oauthToken = null;
-        if (tokenById != null) {
-            oauthToken = serverManager.getStorageManager().getToken(tokenById);
-        }
-        if (oauthToken != null) {
+    /*public OauthToken oauthLogin(String id, Object user, String[] role, String[] permission) {
+        FinalSession session = serverManager.getStorageManager().getSessionById(id);
+        if (session != null) {
             oauthToken = copyAttributes(oauthToken);
             OauthToken refreshToken = serverManager.getStorageManager().getRefreshToken(oauthToken.getRefreshToken());
             if (refreshToken == null) {
@@ -40,7 +37,7 @@ public class OauthServerHolder {
         serverManager.getStorageManager().addPermission(oauthToken.getToken(), permission);
 
         return oauthToken;
-    }
+    }*/
 
     private OauthToken copyAttributes(OauthToken token) {
         OauthToken oauthToken = new OauthToken();

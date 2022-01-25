@@ -1,7 +1,6 @@
 package top.lingkang.filter;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import top.lingkang.FinalManager;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.error.FinalTokenException;
@@ -26,19 +25,19 @@ public class FinalSecurityFilter implements Filter {
 
     private static HashSet<String> cacheExcludePath = new HashSet<>();
 
-
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        HttpServletResponse response = (HttpServletResponse) servletResponse;
-
-        FinalContextHolder.setRequestContext(new FinalRequestContext(request, response));
+        HttpServletResponse response = null;
         try {
             String path = request.getServletPath();
             if (cacheExcludePath.contains(path)) {
                 filterChain.doFilter(servletRequest, servletResponse);
                 return;
             }
+
+            response = (HttpServletResponse) servletResponse;
+            FinalContextHolder.setRequestContext(new FinalRequestContext(request, response));
 
             // 排除
             for (String url : manager.getProperties().getExcludePath()) {
@@ -70,6 +69,12 @@ public class FinalSecurityFilter implements Filter {
         } finally {
             FinalContextHolder.removeRequestContext();
         }
+    }
+
+    public HashSet<String> clearExcludePathCache() {
+        HashSet<String> res = new HashSet<>(cacheExcludePath);
+        cacheExcludePath.clear();
+        return res;
     }
 
     @Override

@@ -14,7 +14,7 @@ import top.lingkang.base.impl.DefaultFinalTokenGenerate;
 import top.lingkang.filter.FinalSecurityFilter;
 import top.lingkang.holder.FinalHolder;
 import top.lingkang.session.SessionManager;
-import top.lingkang.session.impl.DefaultFinalSessionManager;
+import top.lingkang.session.impl.FinalMemorySessionManager;
 
 /**
  * @author lingkang
@@ -37,7 +37,7 @@ public class FinalSecurityInitConfiguration {
     @ConditionalOnMissingBean
     @Bean
     public SessionManager sessionManager() {
-        return new DefaultFinalSessionManager();
+        return new FinalMemorySessionManager();
     }
 
     @ConditionalOnMissingBean(FinalSessionListener.class)

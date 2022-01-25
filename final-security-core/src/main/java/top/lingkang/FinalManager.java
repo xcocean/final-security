@@ -4,8 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpSecurity;
 import top.lingkang.base.FinalSessionListener;
@@ -22,7 +20,7 @@ import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
 import top.lingkang.session.SessionManager;
-import top.lingkang.session.impl.DefaultFinalSessionManager;
+import top.lingkang.session.impl.FinalMemorySessionManager;
 import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
@@ -90,7 +88,7 @@ public class FinalManager implements InitializingBean {
     }
 
     private void initCleanExpires() {
-        if (sessionManager instanceof DefaultFinalSessionManager) {
+        if (sessionManager instanceof FinalMemorySessionManager) {
             cleanExpiresTimer=new Timer();
             cleanExpiresTimer.schedule(new TimerTask() {
                 @Override
@@ -122,13 +120,6 @@ public class FinalManager implements InitializingBean {
             return token;
         }
 
-        // 请求头中获取
-        token = requestContext.getRequest().getHeader(properties.getTokenNameHeader());
-        if (token != null) {
-            requestContext.setToken(token.substring(properties.getTokenNameHeaderPrefix().length()));
-            return token;
-        }
-
         // cookie中获取
         token = CookieUtils.getTokenByCookie(properties.getTokenName(), requestContext.getRequest().getCookies());
         if (token != null) {
@@ -140,6 +131,13 @@ public class FinalManager implements InitializingBean {
         token = requestContext.getRequest().getParameter(properties.getTokenNameRequest());
         if (token != null) {
             requestContext.setToken(token);
+            return token;
+        }
+
+        // 请求头中获取
+        token = requestContext.getRequest().getHeader(properties.getTokenNameHeader());
+        if (token != null) {
+            requestContext.setToken(token.substring(properties.getTokenNameHeaderPrefix().length()));
             return token;
         }
 

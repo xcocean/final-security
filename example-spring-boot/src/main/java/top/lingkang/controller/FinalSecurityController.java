@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.annotation.FinalCheck;
+import top.lingkang.filter.FinalSecurityFilter;
 import top.lingkang.holder.FinalHolder;
 import top.lingkang.service.UserService;
 import top.lingkang.session.FinalSession;
@@ -64,9 +65,6 @@ public class FinalSecurityController {
 
     @GetMapping("/test")
     public Object test() {
-        ArrayList<String> objects = new ArrayList<>();
-        objects.add("66");
-        String[] permission = finalHolder.getPermission();
         return "test";
     }
 }

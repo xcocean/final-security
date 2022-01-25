@@ -8,6 +8,7 @@ import top.lingkang.error.FinalTokenException;
 import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
 
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -17,10 +18,11 @@ import java.util.concurrent.TimeUnit;
 public class FinalRedisSessionManager implements SessionManager {
     @Autowired
     private FinalManager manager;
+
     private RedisTemplate<String, Object> redisTemplate;
     private static final String prefixId = "id.";
-    private static final String prefixRole = "role.";
-    private static final String prefixPermission = "permission.";
+    private static final String prefixRole = "r.";
+    private static final String prefixPermission = "p.";
 
     public FinalRedisSessionManager(RedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
@@ -123,7 +125,6 @@ public class FinalRedisSessionManager implements SessionManager {
         return session.getLastAccessTime();
     }
 
-    @Override
     public void cleanExpires() {
 
     }

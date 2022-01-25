@@ -14,7 +14,7 @@ import top.lingkang.oauth.server.base.impl.DefaultOauthTokenGenerate;
 import top.lingkang.oauth.server.config.OauthServerConfig;
 import top.lingkang.oauth.server.controller.FinalAuthController;
 import top.lingkang.oauth.server.storage.OauthStorageManager;
-import top.lingkang.oauth.server.storage.impl.DefaultOauthStorageManager;
+import top.lingkang.oauth.server.storage.impl.OauthMemorySessionManager;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +39,7 @@ public class FinalOauthServerConfiguration {
     @ConditionalOnMissingBean
     @Bean
     public OauthStorageManager storageManager() {
-        return new DefaultOauthStorageManager();
+        return new OauthMemorySessionManager();
     }
 
     @Bean(name = "authController")

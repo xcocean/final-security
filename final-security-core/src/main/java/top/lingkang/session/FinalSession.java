@@ -14,6 +14,10 @@ public interface FinalSession {
 
     void setUser(Object user);
 
+    String getType();
+
+    void setType(String type);
+
     void updateLastAccessTime();
 
     long getLastAccessTime();
