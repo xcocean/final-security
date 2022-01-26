@@ -36,18 +36,6 @@
             </dependency>
 
             <dependency>
-                <groupId>top.lingkang</groupId>
-                <artifactId>final-security-core1</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>top.lingkang</groupId>
-                <artifactId>final-security-data</artifactId>
-                <version>${project.parent.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
                 <version>${spring.boot.version}</version>
