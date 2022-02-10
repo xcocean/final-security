@@ -18,7 +18,7 @@ public class DefaultFinalSessionListener implements FinalSessionListener {
     }
 
     @Override
-    public void delete(FinalSession session, HttpServletRequest request, HttpServletResponse response) {
+    public void logout(FinalSession session, HttpServletRequest request, HttpServletResponse response) {
 
     }
 }

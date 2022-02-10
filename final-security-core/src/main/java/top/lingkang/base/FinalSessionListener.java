@@ -16,5 +16,5 @@ public interface FinalSessionListener {
      */
     void create(FinalSession session, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
 
-    void delete(FinalSession session, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
+    void logout(FinalSession session, @Nullable HttpServletRequest request, @Nullable HttpServletResponse response);
 }

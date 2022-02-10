@@ -11,19 +11,10 @@ public class FinalRequestContext {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private String token;
-    private String remember;
 
     public FinalRequestContext(HttpServletRequest request, HttpServletResponse response) {
         this.request = request;
         this.response = response;
-    }
-
-    public String getRemember() {
-        return remember;
-    }
-
-    public void setRemember(String remember) {
-        this.remember = remember;
     }
 
     public FinalRequestContext(String token) {

@@ -108,7 +108,7 @@ public class FinalHolder {
         } catch (Exception e) {
         }
         // 会话删除监听
-        manager.getSessionListener().delete(removeSession,
+        manager.getSessionListener().logout(removeSession,
                 requestContext == null ? null : requestContext.getRequest(),
                 requestContext == null ? null : requestContext.getResponse()
         );
