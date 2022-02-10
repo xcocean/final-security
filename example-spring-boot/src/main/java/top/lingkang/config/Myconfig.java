@@ -2,14 +2,8 @@ package top.lingkang.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.lingkang.base.*;
-import top.lingkang.oauth.server.storage.impl.OauthMemorySessionManager;
-import top.lingkang.session.FinalSession;
 import top.lingkang.session.SessionManager;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.UUID;
+import top.lingkang.session.impl.FinalMemorySessionManager;
 
 /**
  * @author lingkang
@@ -75,10 +69,9 @@ public class Myconfig {
     }*/
 
 
-
     @Bean
-    public SessionManager sessionManager(){
-        return new OauthMemorySessionManager();
+    public SessionManager sessionManager() {
+        return new FinalMemorySessionManager();
     }
 
 

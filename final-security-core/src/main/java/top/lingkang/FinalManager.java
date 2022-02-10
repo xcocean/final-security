@@ -20,7 +20,6 @@ import top.lingkang.holder.FinalHolder;
 import top.lingkang.http.FinalContextHolder;
 import top.lingkang.http.FinalRequestContext;
 import top.lingkang.session.SessionManager;
-import top.lingkang.session.impl.FinalMemorySessionManager;
 import top.lingkang.utils.AuthUtils;
 import top.lingkang.utils.BeanUtils;
 import top.lingkang.utils.CookieUtils;
