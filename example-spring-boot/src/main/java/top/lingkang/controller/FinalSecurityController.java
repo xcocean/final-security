@@ -5,12 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.annotation.FinalCheck;
-import top.lingkang.filter.FinalSecurityFilter;
-import top.lingkang.holder.FinalHolder;
+import top.lingkang.http.FinalSecurityHolder;
 import top.lingkang.service.UserService;
-import top.lingkang.session.FinalSession;
-
-import java.util.ArrayList;
 
 /**
  * @author lingkang
@@ -20,25 +16,20 @@ import java.util.ArrayList;
 @RestController
 public class FinalSecurityController {
     @Autowired
-    private FinalHolder finalHolder;
-    @Autowired
     private UserService userService;
+    @Autowired
+    private FinalSecurityHolder securityHolder;
 
     @GetMapping("login")
     public Object login() {
-        finalHolder.login("lk", null, new String[]{"user"}, null);// 登陆
-//        finalHolder.addRoles("user", "admin", "system");// 添加角色
-//        finalHolder.addPermission("get", "update", "delete");// 添加权限
-        FinalSession finalSession = finalHolder.getSession();
-        System.out.println(finalSession.getToken());
-        //return new ModelAndView("redirect:/");
+        securityHolder.login("asd", new String[]{"user"}, null);
         return "ok";
     }
 
 
     @GetMapping("logout")
     public Object logout() {
-        finalHolder.logout();
+        securityHolder.logout();
         return "ok";
     }
 

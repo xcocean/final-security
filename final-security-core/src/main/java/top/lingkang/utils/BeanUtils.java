@@ -2,8 +2,6 @@ package top.lingkang.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import top.lingkang.config.FinalConfigProperties;
-import top.lingkang.config.FinalProperties;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
@@ -22,7 +20,7 @@ public class BeanUtils {
             if (getField(target, s.getName()) != null) {
                 try {
                     Object value = getProperty(source, s.getName());
-                    if (ignoreNullValue && value == null) {
+                    if (value == null && ignoreNullValue) {
                         continue;
                     }
                     setProperty(target, s.getName(), value);
@@ -33,20 +31,6 @@ public class BeanUtils {
         }
     }
 
-    public static void in() throws Exception {
-        FinalConfigProperties source = new FinalConfigProperties();
-        source.setTokenName("source");
-
-        FinalProperties properties = new FinalProperties();
-        properties.setTokenName("properties");
-        for (Field s : source.getClass().getDeclaredFields()) {
-            if (getField(properties, s.getName()) != null) {
-                Object value = getProperty(source, s.getName());
-                setProperty(properties, s.getName(), value);
-            }
-        }
-        System.out.println(properties.getTokenName());
-    }
 
     public static Field getField(Object o, String name) {
         for (Field field : o.getClass().getDeclaredFields()) {

@@ -10,7 +10,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FinalCheck {
-    // 检查角色
     String[] orRole() default {};
 
     String[] andRole() default {};

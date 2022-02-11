@@ -1,18 +1,17 @@
 package top.lingkang.base;
 
+import top.lingkang.base.FinalAuth;
+
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * @author lingkang
- * @date 2022/1/8
+ * Created by 2022/2/11
  */
-public interface FinalHttpSecurity {
-    List<String> getExcludePath();
+public class FinalHttpSecurity {
 
-    void setExcludePath(List<String> excludePath);
-
-    HashMap<String, FinalAuth> getCheckAuths();
-
-    void setCheckAuths(HashMap<String, FinalAuth> checkAuths);
+    // 排除路径
+    private String[] excludePath;
+    // 权限校验
+    private HashMap<String, FinalAuth> checkAuths = new HashMap<>();
 }

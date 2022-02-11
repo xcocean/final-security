@@ -1,9 +1,10 @@
 package top.lingkang.base;
 
-import top.lingkang.FinalManager;
 import top.lingkang.constants.FinalConstants;
-import top.lingkang.error.FinalTokenException;
+import top.lingkang.error.FinalPermissionException;
 import top.lingkang.utils.AuthUtils;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * @author lingkang
@@ -13,19 +14,23 @@ import top.lingkang.utils.AuthUtils;
 public class FinalAuth {
     private String[] role, andRole, permission, andPermission;
 
-    public void check(FinalManager manager) {
-        String token = manager.getToken();
-        if (token==null)
-            throw new FinalTokenException(FinalConstants.NOT_EXIST_TOKEN);
-
+    public void check(HttpSession session) {
         if (role != null || andRole != null) {
-            String[] has = manager.getSessionManager().getRoles(token);
+            Object finalRole = session.getAttribute("finalRole");
+            if (finalRole==null)
+                throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
+
+            String[] has = (String[]) finalRole;
             AuthUtils.checkRole(role, has);
             AuthUtils.checkAndRole(andRole, has);
         }
 
         if (permission != null || andPermission != null) {
-            String[] has = manager.getSessionManager().getPermission(token);
+            Object finalPermission = session.getAttribute("finalPermission");
+            if (finalPermission==null)
+                throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
+
+            String[] has = (String[]) finalPermission;
             AuthUtils.checkPermission(permission, has);
             AuthUtils.checkAndPermission(andPermission, has);
         }

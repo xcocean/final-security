@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
  * @description
  */
 public class CookieUtils {
-    public static void tokenToZeroAge(String name, HttpServletResponse response) {
+    public static void toZeroAge(String name, HttpServletResponse response) {
         Cookie cookie = new Cookie(name, "");
         cookie.setPath("/");
         cookie.setMaxAge(0);// 秒

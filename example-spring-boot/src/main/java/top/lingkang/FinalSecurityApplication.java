@@ -2,10 +2,6 @@ package top.lingkang;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import top.lingkang.annotation.EnableFinalAnnotation;
-import top.lingkang.annotation.FinalSecurity;
-import top.lingkang.oauth.server.annotation.EnableFinalOauthServer;
 
 /**
  * @author lingkang
@@ -13,10 +9,6 @@ import top.lingkang.oauth.server.annotation.EnableFinalOauthServer;
  * @description
  */
 
-@FinalSecurity
-//@EnableFinalAnnotation
-@EnableFinalOauthServer
-@EnableScheduling
 @SpringBootApplication
 public class FinalSecurityApplication {
     public static void main(String[] args) {

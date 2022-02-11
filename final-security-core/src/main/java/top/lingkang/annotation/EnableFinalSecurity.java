@@ -1,17 +1,17 @@
 package top.lingkang.annotation;
 
 import org.springframework.context.annotation.Import;
-import top.lingkang.FinalManager;
-import top.lingkang.config.FinalSecurityInitConfiguration;
+import top.lingkang.http.FinalSecurityHolder;
 
 import java.lang.annotation.*;
 
 /**
- * 开启 FinalSecurity
+ * @author lingkang
+ * Created by 2022/2/11
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import({FinalSecurityInitConfiguration.class})
+@Import({FinalSecurityHolder.class})
 @Documented
-public @interface FinalSecurity {
+public @interface EnableFinalSecurity {
 }

@@ -1,13 +1,10 @@
 package top.lingkang.utils;
 
-import org.springframework.util.AntPathMatcher;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
-import top.lingkang.filter.FinalFilterChain;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -72,8 +69,6 @@ public class AuthUtils {
     public static void checkAndPermission(String[] permission, String[] has) {
         if (permission == null)
             return;
-        if (has == null)
-            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String p : permission) {
             boolean no = true;
             for (String h : has) {
@@ -110,24 +105,10 @@ public class AuthUtils {
         return System.currentTimeMillis() - lastTime > maxTime;
     }
 
-    public static FinalFilterChain[] addFilterChain(FinalFilterChain[] resource, FinalFilterChain... newChain) {
-        if (resource == null || resource.length == 0) {
-            resource = newChain;
-        } else {
-            int sourcesLen = resource.length;
-            resource = Arrays.copyOf(resource, resource.length + 1);
-            int init = 0;
-            for (int i = sourcesLen - 1; i < resource.length; i++) {
-                resource[i] = newChain[init];
-                init++;
-            }
-        }
-        return resource;
-    }
 
-    public static String[] removeRepeat(String[] str){
-        Set<String> set=new HashSet<>();
-        for (String s:str)
+    public static String[] removeRepeat(String[] str) {
+        Set<String> set = new HashSet<>();
+        for (String s : str)
             set.add(s);
         return set.toArray(new String[set.size()]);
     }

@@ -12,7 +12,7 @@ import java.lang.annotation.*;
  */
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Import({FinalCheckLoginAnnotation.class,FinalCheckAnnotation.class})
+@Import({FinalCheckAnnotation.class, FinalCheckLoginAnnotation.class})
 @Documented
-public @interface EnableFinalAnnotation {
+public @interface EnableFinalSecurityAnnotation {
 }

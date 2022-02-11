@@ -2,8 +2,8 @@ package top.lingkang.base.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.StringUtils;
 import top.lingkang.base.FinalExceptionHandler;
+import top.lingkang.utils.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,13 +17,13 @@ public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
     private static final Log log = LogFactory.getLog(DefaultFinalExceptionHandler.class);
 
     @Override
-    public void tokenException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+    public void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response) {
         printError(e, request, response, 403);
     }
 
     @Override
-    public void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response) {
-        printError(e, request, response, 403);
+    public void notLoginException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+        printError(e, request, response, 400);
     }
 
     @Override
