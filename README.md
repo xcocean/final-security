@@ -163,6 +163,7 @@ permission：${sessionScope.finalPermission}<br/>
 <%=Arrays.toString((String[]) request.getSession().getAttribute("finalPermission"))%>
 <br/>
 ```
+![pay](https://gitee.com/lingkang_top/final-security/raw/master/document/fontend01.png)
 
 ## 4、使用注解进行鉴权
 final-security不会帮你引入aop注解所需依赖，需要你手动引入aop依赖，否则将会报aop包类找不到异常。
@@ -261,3 +262,38 @@ properties.setExceptionHandler(new FinalExceptionHandler() {
 
 # 03.集群
 final-security依赖session，因此整合分布式会话可以轻松实现无限扩展集群。
+## 通过 final-session 实现集群
+`final-session` 是一个轻量级分布式session框架，它可以无限水平扩展你的集群。
+引入依赖
+```xml
+<dependency>
+    <groupId>top.lingkang</groupId>
+    <artifactId>final-session-core</artifactId>
+    <version>1.0.0</version>
+    <scope>system</scope>
+    <systemPath>${project.basedir}/lib/final-session-core-1.0.0.jar</systemPath>
+</dependency>
+```
+配置
+```java
+@Order(-19951219)
+@Component
+public class MyFinalSessionConfig extends FinalSessionConfigurerAdapter {
+    @Autowired
+    private RedisTemplate redisTemplate;
+    
+    @Override
+    protected void configurer(FinalSessionProperties properties) {
+        // 默认会话存储于内存中，下面将会话存储于redis中，需要引入RedisTemplate依赖
+        properties.setRepository(new FinalRedisRepository(redisTemplate));
+    }
+}
+```
+
+
+## 其他
+有问题issues，也可以邮箱：**ling-kang@qq.com**
+<br><br>也能打赏我：
+<br>
+![pay](https://gitee.com/lingkang_top/final-security/raw/master/document/pay.png)
+<br><br>
