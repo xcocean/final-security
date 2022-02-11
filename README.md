@@ -264,6 +264,8 @@ properties.setExceptionHandler(new FinalExceptionHandler() {
 final-security依赖session，因此整合分布式会话可以轻松实现无限扩展集群。
 ## 通过 final-session 实现集群
 `final-session` 是一个轻量级分布式session框架，它可以无限水平扩展你的集群。
+`gitee`:https://gitee.com/lingkang_top/final-session
+<br>
 引入依赖
 ```xml
 <dependency>
