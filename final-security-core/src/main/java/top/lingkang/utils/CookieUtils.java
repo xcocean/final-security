@@ -6,8 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author lingkang
- * @date 2021/8/13 15:40
- * @description
+ * date 2021/8/13 15:40
  */
 public class CookieUtils {
     public static void toZeroAge(String name, HttpServletResponse response) {

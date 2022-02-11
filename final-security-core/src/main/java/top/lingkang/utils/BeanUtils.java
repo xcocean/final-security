@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
 
 /**
  * @author lingkang
- * @date 2022/1/11
+ * date 2022/1/11
  * 实际场景中应该加入cache
  */
 public class BeanUtils {

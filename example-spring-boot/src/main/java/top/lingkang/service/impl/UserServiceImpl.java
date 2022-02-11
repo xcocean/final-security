@@ -6,7 +6,7 @@ import top.lingkang.service.UserService;
 
 /**
  * @author lingkang
- * @date 2022/1/16
+ * date 2022/1/16
  */
 @FinalCheck(orRole = "user")
 @Service

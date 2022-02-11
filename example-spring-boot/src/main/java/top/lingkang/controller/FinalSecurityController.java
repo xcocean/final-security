@@ -10,8 +10,7 @@ import top.lingkang.service.UserService;
 
 /**
  * @author lingkang
- * @date 2021/8/10 15:35
- * @description
+ * date 2021/8/10 15:35
  */
 @RestController
 public class FinalSecurityController {

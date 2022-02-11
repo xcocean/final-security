@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 /**
  * @author lingkang
- * @date 2022/1/8
+ * date 2022/1/8
  */
 @EnableFinalSecurity // 开启 FinalSecurity
 @EnableFinalSecurityAnnotation // 开启注解

@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * @author lingkang
- * @date 2022/1/8
+ * date 2022/1/8
  */
 public class AuthUtils {
     private static final AntPathMatcher matcher = new AntPathMatcher();

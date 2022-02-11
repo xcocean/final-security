@@ -8,8 +8,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * @author lingkang
- * @date 2021/8/20 16:35
- * @description
+ * date 2021/8/20 16:35
  */
 public class FinalAuth {
     private String[] role, andRole, permission, andPermission;
