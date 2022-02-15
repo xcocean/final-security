@@ -275,7 +275,7 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
     <artifactId>final-session-core</artifactId>
     <version>1.0.1</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/lib/final-session-core-1.0.1.jar</systemPath>
+    <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-1.0.1.jar</systemPath>
 </dependency>
 ```
 配置
@@ -297,7 +297,7 @@ public class MyFinalSessionConfig extends FinalSessionConfigurerAdapter {
 
 ## 其他
 有问题issues，也可以邮箱：**ling-kang@qq.com**
-<br><br>也能打赏我：
+<br><br>也能请我喝冰可乐：
 <br>
 ![pay](https://gitee.com/lingkang_top/final-security/raw/master/document/pay.png)
 <br><br>
