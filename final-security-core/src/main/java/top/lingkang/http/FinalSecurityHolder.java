@@ -7,8 +7,8 @@ import javax.servlet.http.HttpSession;
  * Created by 2022/1/7
  */
 public class FinalSecurityHolder {
-
-    public static void login(String username, String[] role, String[] permission) {
+    
+    public void login(String username, String[] role, String[] permission) {
         HttpSession session = FinalContextHolder.getRequest().getSession();
         session.setAttribute("finalUsername", username);
         session.setAttribute("finalRole", role);
@@ -16,15 +16,15 @@ public class FinalSecurityHolder {
         session.setAttribute("finalLogin", true);
     }
 
-    public static void logout() {
+    public void logout() {
         HttpSession session = FinalContextHolder.getRequest().getSession();
         session.removeAttribute("finalUsername");
         session.removeAttribute("finalRole");
         session.removeAttribute("finalPermission");
         session.removeAttribute("finalLogin");
     }
-
-    public static String[] getRole() {
+    
+    public String[] getRole() {
         Object finalRole = FinalContextHolder.getRequest().getSession().getAttribute("finalRole");
         if (finalRole != null) {
             return (String[]) finalRole;
@@ -32,7 +32,7 @@ public class FinalSecurityHolder {
         return null;
     }
 
-    public static String[] getPermission() {
+    public String[] getPermission() {
         Object permission = FinalContextHolder.getRequest().getSession().getAttribute("finalPermission");
         if (permission != null) {
             return (String[]) permission;
@@ -40,7 +40,7 @@ public class FinalSecurityHolder {
         return null;
     }
 
-    public static String getUsername() {
+    public String getUsername() {
         Object username = FinalContextHolder.getRequest().getSession().getAttribute("finalUsername");
         if (username != null) {
             return (String) username;
@@ -48,7 +48,7 @@ public class FinalSecurityHolder {
         return null;
     }
 
-    public static boolean isLogin(){
+    public boolean isLogin(){
         Object login = FinalContextHolder.getRequest().getSession().getAttribute("finalLogin");
         if (login!=null)
             return (boolean) login;

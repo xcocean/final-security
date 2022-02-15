@@ -40,7 +40,8 @@ public class FinalSecurityConfiguration implements Filter {
                     throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
                 }
 
-                for (FinalAuth auth : cacheAuths.get(path)) {
+                FinalAuth[] finalAuths = cacheAuths.get(path);
+                for (FinalAuth auth : finalAuths) {
                     auth.check(session);
                 }
 
@@ -105,6 +106,5 @@ public class FinalSecurityConfiguration implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         config(properties);
-        System.out.println("init ... ");
     }
 }

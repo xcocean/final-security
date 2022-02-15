@@ -12,6 +12,7 @@ import java.io.PrintWriter;
 @WebServlet(name = "helloServlet", value = "/hello-servlet")
 public class HelloServlet extends HttpServlet {
     private String message;
+    private FinalSecurityHolder securityHolder=new FinalSecurityHolder();
 
     public void init() {
         message = "Hello World!";
@@ -19,7 +20,7 @@ public class HelloServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 直接使用
-        FinalSecurityHolder.login("123", new String[]{"user", "admin", "system"}, new String[]{"get", "write", "read"});
+        securityHolder.login("123", new String[]{"user", "admin", "system"}, new String[]{"get", "write", "read"});
 
         response.setContentType("text/html");
 

@@ -39,12 +39,12 @@ final-security，一个专注于认证授权的轻量级框架<br/>
 public class Myconfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
-        properties.setExcludePath(new String[]{"/login", "/logout"});
+        properties.setExcludePath(new String[]{"/login", "/logout", "/res/**"});
     }
 }
 ```
 `更多配置请查看 FinalConfigProperties 类`
-> 不配置排除路径，所有请求都无法通过。
+> 不配置排除路径，所有请求都无法通过。未登录重定向需要你自己配置异常处理，可通过继承`DefaultFinalExceptionHandler`来重写`notLoginException`方法。
 
 ### 二、传统 servlet 中
 引入依赖
@@ -103,9 +103,11 @@ public Object login() {
 ```
 #### 在 servlet 中
 ```java
+// 实例化
+private FinalSecurityHolder securityHolder=new FinalSecurityHolder();
 public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // 直接使用 FinalSecurityHolder 后面不再赘述
-    FinalSecurityHolder.login("123",null,null);
+    securityHolder.login("123",null,null);
     // ...
 }
 ```
@@ -271,9 +273,9 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-session-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/lib/final-session-core-1.0.0.jar</systemPath>
+    <systemPath>${project.basedir}/lib/final-session-core-1.0.1.jar</systemPath>
 </dependency>
 ```
 配置
