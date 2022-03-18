@@ -291,7 +291,7 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-session-core</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-1.0.1.jar</systemPath>
 </dependency>
@@ -310,6 +310,23 @@ public class MyFinalSessionConfig extends FinalSessionConfigurerAdapter {
         properties.setRepository(new FinalRedisRepository(redisTemplate));
     }
 }
+```
+
+# 04.打包
+注意，springboot的`spring-boot-maven-plugin`插件打包需要配置将system作用域的依赖打进入项目
+```xml
+<plugin>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-maven-plugin</artifactId>
+    <executions>
+        <execution>
+            <id>repackage</id>
+            <goals>
+                <goal>repackage</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
 ```
 
 
