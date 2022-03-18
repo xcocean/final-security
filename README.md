@@ -273,7 +273,7 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-session-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-1.0.1.jar</systemPath>
 </dependency>
