@@ -12,7 +12,6 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
@@ -86,7 +85,7 @@ public class FinalSecurityConfiguration implements Filter {
             } else if (e instanceof FinalNotLoginException) {
                 properties.getExceptionHandler().notLoginException(e, request, (HttpServletResponse) servletResponse);
             } else if ("NestedServletException".equals(e.getClass().getSimpleName()) &&
-                    (e instanceof FileNotFoundException || e instanceof FinalPermissionException)) {
+                    (e instanceof FinalNotLoginException || e instanceof FinalPermissionException)) {
                 if (e instanceof FinalPermissionException)
                     properties.getExceptionHandler().permissionException(e, request, (HttpServletResponse) servletResponse);
                 else

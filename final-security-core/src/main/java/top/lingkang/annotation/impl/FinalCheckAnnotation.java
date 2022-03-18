@@ -7,10 +7,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.annotation.FinalCheck;
 import top.lingkang.constants.FinalConstants;
+import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.http.FinalSecurityHolder;
 import top.lingkang.utils.AuthUtils;
-
-import java.io.FileNotFoundException;
 
 /**
  * @author lingkang
@@ -24,18 +23,18 @@ public class FinalCheckAnnotation {
     @Around("@within(top.lingkang.annotation.FinalCheck) || @annotation(top.lingkang.annotation.FinalCheck)")
     public Object method(ProceedingJoinPoint joinPoint) throws Throwable {
         if (!securityHolder.isLogin()) {
-            throw new FileNotFoundException(FinalConstants.NOT_LOGIN_MSG);
+            throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
         }
 
         FinalCheck clazz = joinPoint.getTarget().getClass().getAnnotation(FinalCheck.class);
         if (clazz != null) {
-            check( clazz);
+            check(clazz);
         }
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         FinalCheck method = signature.getMethod().getAnnotation(FinalCheck.class);
-        if (method != null){
-            check( method);
+        if (method != null) {
+            check(method);
         }
 
         return joinPoint.proceed();
