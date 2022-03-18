@@ -4,6 +4,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
+import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.http.FinalSecurityHolder;

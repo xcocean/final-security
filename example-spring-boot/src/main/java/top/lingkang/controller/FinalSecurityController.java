@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import top.lingkang.annotation.FinalCheck;
+import top.lingkang.annotation.FinalCheckLogin;
 import top.lingkang.http.FinalSecurityHolder;
 import top.lingkang.service.UserService;
 
@@ -21,6 +22,7 @@ public class FinalSecurityController {
     @Autowired
     private FinalSecurityHolder securityHolder;
 
+    @FinalCheckLogin
     @GetMapping("/login")
     public Object login() {
         securityHolder.login("asd", new String[]{"user"}, null);

@@ -1,6 +1,9 @@
 package top.lingkang.config;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import top.lingkang.base.FinalAuth;
+import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpProperties;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalNotLoginException;
@@ -105,5 +108,10 @@ public class FinalSecurityConfiguration implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         config(properties);
+    }
+
+    @Bean
+    public FinalHttpProperties finalHttpProperties(){
+        return properties;
     }
 }

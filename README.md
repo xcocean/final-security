@@ -229,6 +229,24 @@ public class UserServiceImpl implements UserService {
     }
 }
 ```
+AOP切面的异常需要`手动捕获`
+```java
+@RestControllerAdvice
+public class ErrorAopHandler {
+    @Autowired
+    private FinalHttpProperties properties;
+    @ExceptionHandler(FinalBaseException.class)
+    public void finalBaseException(FinalBaseException e, HttpServletRequest request, HttpServletResponse response) {
+        if (e instanceof FinalPermissionException) {
+            properties.getExceptionHandler().permissionException(e, request, response);
+        } else if (e instanceof FinalNotLoginException) {
+            properties.getExceptionHandler().notLoginException(e, request, response);
+        } else {
+            properties.getExceptionHandler().exception(e, request, response);
+        }
+    }
+}
+```
 
 # 02.自定义
 默认配置可能不满足实际场景需求，这里介绍了final-security的自定义功能。
