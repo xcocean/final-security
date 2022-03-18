@@ -194,7 +194,7 @@ public class Myconfig extends FinalSecurityConfiguration {
     }
     
     // 通过角色权限检查
-    @FinalCheck(orRole = "admin",andRole = {"admin,system"},orPermission = "get")
+    @FinalCheck(orRole = "admin",andRole = {"admin","system"},orPermission = "get")
     @GetMapping("/")
     public Object index() {
         return "index";
