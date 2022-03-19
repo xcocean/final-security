@@ -26,7 +26,7 @@ final-security，一个专注于认证授权的轻量级框架<br/>
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/lib/final-security-core-1.0.0.jar</systemPath>
 </dependency>
@@ -52,7 +52,7 @@ public class Myconfig extends FinalSecurityConfiguration {
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/lib/final-security-core-1.0.0.jar</systemPath>
 </dependency>
@@ -291,7 +291,7 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-session-core</artifactId>
-    <version>1.1.0</version>
+    <version>1.0.0</version>
     <scope>system</scope>
     <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-1.0.1.jar</systemPath>
 </dependency>
