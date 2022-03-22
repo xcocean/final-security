@@ -43,9 +43,9 @@ public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
             contentType = "text/html; charset=UTF-8";
         }
         response.setContentType(contentType);
-        response.setStatus(code);
+        response.setStatus(200);
         try {
-            if (contentType.toLowerCase().indexOf("json") != -1) {
+            if (contentType.toLowerCase().indexOf("html") == -1) {
                 response.getWriter().print("{\"code\":" + code + ",\"msg\":\"" + e.getMessage() + "\"}");
             } else {
                 response.getWriter().print(e.getMessage());

@@ -6,7 +6,6 @@ final-security，一个基于RBAC，专注于授权认证的轻量级框架<br/>
 ## 返璞归真
 云淡风轻，回归真我，专注其一，`final-security` 一心追寻认证授权的真我。
 
-
 # 01.快速入门
 
 `final-security 前提条件：java 7+ spring 5+`
@@ -94,7 +93,10 @@ private FinalSecurityHolder securityHolder;
 
 @GetMapping("login")
 public Object login() {
-    securityHolder.login("lingkang", new String[]{"user"});
+    securityHolder.login("asd", new String[]{"user"});
+    securityHolder.getUsername();// 获取会话用户名 string
+    securityHolder.getRole(); // 获取会话中的角色 array
+    securityHolder.isLogin(); // 判断当前会话是否登录 boolean
     return "login-success";
 }
 ```
@@ -142,7 +144,7 @@ public class Myconfig extends FinalSecurityConfiguration {
 ```
 > 通过指定路径，路径通配符等进行角色权限鉴权。注意，排除路径会使checkAuthorize失效。优先等级：注解 > 排除路径 > checkAuthorize 
 
-### 前端模板中获取用户、角色
+### 前端解析视图中获取用户、角色
 final-security依赖session，直接从session中读取即可。在`jsp`中
 ```html
 is login：${sessionScope.final_isLogin}<br/>
@@ -253,7 +255,7 @@ public class ErrorAopHandler {
 默认配置可能不满足实际场景需求，这里介绍了final-security的自定义功能。
 
 ### 自定义异常处理
-final-security的所有异常处理均在接口 `FinalExceptionHandler` 可实现它进行自定义
+final-security的所有异常处理均在接口 `FinalExceptionHandler` 处理，可实现它进行自定义。
 ```java
 properties.setExcludePath(new String[]{"/login", "/logout"});
 // 自定义异常处理
@@ -274,6 +276,7 @@ properties.setExceptionHandler(new FinalExceptionHandler() {
     }
 });
 ```
+> 常见的自定义有重定向到登录、未授权响应等。
 
 ### 记住我remember
 

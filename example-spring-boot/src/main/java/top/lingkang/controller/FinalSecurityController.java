@@ -28,6 +28,9 @@ public class FinalSecurityController {
     @GetMapping("/login")
     public Object login() {
         securityHolder.login("asd", new String[]{"user"});
+        securityHolder.getUsername();// 获取会话用户名 string
+        securityHolder.getRole(); // 获取会话中的角色 array
+        securityHolder.isLogin(); // 判断当前会话是否登录 boolean
         return "ok";
     }
 
