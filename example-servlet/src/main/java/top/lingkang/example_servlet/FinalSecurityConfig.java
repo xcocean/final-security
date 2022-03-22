@@ -2,8 +2,11 @@ package top.lingkang.example_servlet;
 
 import top.lingkang.base.FinalAuth;
 import top.lingkang.base.FinalHttpProperties;
+import top.lingkang.base.impl.DefaultFinalExceptionHandler;
 import top.lingkang.config.FinalSecurityConfiguration;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 
 /**
@@ -13,10 +16,19 @@ import java.util.HashMap;
 public class FinalSecurityConfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
-        HashMap<String, FinalAuth> checkAuths=new HashMap<>();
-        checkAuths.put("/*",new FinalAuth().hasRoles("user"));
+        properties.checkAuthorize()
+                .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
+                .pathMatchers("/vip/**").hasAllRole("user", "vip1");// 必须有所有角色才能访问
 
-        properties.setCheckAuths(checkAuths);
-        properties.setExcludePath(new String[]{"/hello-servlet"});
+
+        properties.setExcludePath("/login", "/logout", "/hello-servlet");
+
+        properties.setExceptionHandler(new DefaultFinalExceptionHandler() {
+            @Override
+            public void notLoginException(Exception e, HttpServletRequest request, HttpServletResponse response) {
+                System.out.println(request.getServletPath());
+                super.notLoginException(e, request, response);
+            }
+        });
     }
 }

@@ -10,6 +10,9 @@ import top.lingkang.annotation.FinalCheckLogin;
 import top.lingkang.http.FinalSecurityHolder;
 import top.lingkang.service.UserService;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Enumeration;
+
 /**
  * @author lingkang
  * date 2021/8/10 15:35
@@ -22,11 +25,15 @@ public class FinalSecurityController {
     @Autowired
     private FinalSecurityHolder securityHolder;
 
-    @FinalCheckLogin
     @GetMapping("/login")
     public Object login() {
-        securityHolder.login("asd", new String[]{"user"}, null);
+        securityHolder.login("asd", new String[]{"user"});
         return "ok";
+    }
+
+    @GetMapping("user")
+    public Object user(){
+        return "user";
     }
 
 
@@ -36,7 +43,7 @@ public class FinalSecurityController {
         return "ok";
     }
 
-    @FinalCheck(orRole = "admin", andRole = {"admin,system"}, orPermission = "get")
+    @FinalCheck(anyRole = "admin", andRole = {"admin,system"})
     @GetMapping("/")
     public Object index() {
         return "index";
@@ -53,13 +60,18 @@ public class FinalSecurityController {
     }
 
     @GetMapping("index")
-    public Object indexHtml() {
+    public Object indexHtml(HttpServletRequest request) {
         return new ModelAndView("index");
     }
 
     @GetMapping("/test")
     public Object test() {
         return "test";
+    }
+
+    @GetMapping("vip")
+    public Object vip() {
+        return "vip1";
     }
 
 }

@@ -2,7 +2,9 @@ package top.lingkang.base;
 
 import top.lingkang.base.impl.DefaultFinalExceptionHandler;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author lingkang
@@ -13,9 +15,10 @@ public class FinalHttpProperties {
     private String[] excludePath = {};
 
     // 权限校验
-    private HashMap<String, FinalAuth> checkAuths = new HashMap<>();
+    private CheckAuthorize checkAuthorize =new CheckAuthorize();
 
     private FinalExceptionHandler exceptionHandler = new DefaultFinalExceptionHandler();
+
 
     public FinalExceptionHandler getExceptionHandler() {
         return exceptionHandler;
@@ -30,17 +33,17 @@ public class FinalHttpProperties {
         return excludePath;
     }
 
-    public FinalHttpProperties setExcludePath(String[] excludePath) {
-        this.excludePath = excludePath;
+    public FinalHttpProperties setExcludePath(String... excludePath) {
+        Set<String> ex = new HashSet<>(Arrays.asList(excludePath));
+        this.excludePath = ex.toArray(new String[ex.size()]);
         return this;
     }
 
-    public HashMap<String, FinalAuth> getCheckAuths() {
-        return checkAuths;
+    public CheckAuthorize checkAuthorize(){
+        return checkAuthorize;
     }
 
-    public FinalHttpProperties setCheckAuths(HashMap<String, FinalAuth> checkAuths) {
-        this.checkAuths = checkAuths;
-        return this;
+    public CheckAuthorize getCheckAuthorize() {
+        return checkAuthorize;
     }
 }

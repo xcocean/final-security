@@ -20,7 +20,7 @@ public class HelloServlet extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 直接使用
-        securityHolder.login("123", new String[]{"user", "admin", "system"}, new String[]{"get", "write", "read"});
+        securityHolder.login("123", new String[]{"user", "admin", "system"});
 
         response.setContentType("text/html");
 

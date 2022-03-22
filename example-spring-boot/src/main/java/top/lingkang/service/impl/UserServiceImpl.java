@@ -8,7 +8,7 @@ import top.lingkang.service.UserService;
  * @author lingkang
  * date 2022/1/16
  */
-@FinalCheck(orRole = "user")
+@FinalCheck(anyRole = "user")
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService {
         return "lingkang";
     }
 
-    @FinalCheck(orRole = "admin")
+    @FinalCheck(anyRole = "admin")
     @Override
     public String getUsername() {
         return "asd";

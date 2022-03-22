@@ -9,17 +9,13 @@
 <h1><%= "Hello World!" %>
 </h1>
 <br/>
-is login：${sessionScope.finalLogin}<br/>
-
-username：${sessionScope.finalUsername}<br/>
-
+is login：${sessionScope.final_isLogin}<br/>
+username：${sessionScope.final_loginUsername}<br/>
 role：<br/>
-${sessionScope.finalRole}
+${sessionScope.final_hasRoles}
 <br/>
-<%=Arrays.toString((String[]) request.getSession().getAttribute("finalRole"))%>
+<%=Arrays.toString((String[]) request.getSession().getAttribute("final_hasRoles"))%>
 <br/>
-permission：${sessionScope.finalPermission}<br/>
-<%=Arrays.toString((String[]) request.getSession().getAttribute("finalPermission"))%>
-<br/>
+
 </body>
 </html>

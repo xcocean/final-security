@@ -10,11 +10,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface FinalCheck {
-    String[] orRole() default {};
+    String[] anyRole() default {};
 
     String[] andRole() default {};
-
-    String[] orPermission() default {};
-
-    String[] andPermission() default {};
 }

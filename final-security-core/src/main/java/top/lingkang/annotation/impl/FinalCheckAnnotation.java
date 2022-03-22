@@ -41,13 +41,9 @@ public class FinalCheckAnnotation {
     }
 
     private void check(FinalCheck check) {
-        if (check.orRole().length != 0)
-            AuthUtils.checkRole(check.orRole(), securityHolder.getRole());
+        if (check.anyRole().length != 0)
+            AuthUtils.checkRole(check.anyRole(), securityHolder.getRole());
         if (check.andRole().length != 0)
             AuthUtils.checkAndRole(check.andRole(), securityHolder.getRole());
-        if (check.orPermission().length != 0)
-            AuthUtils.checkPermission(check.orPermission(), securityHolder.getPermission());
-        if (check.andPermission().length != 0)
-            AuthUtils.checkAndPermission(check.andPermission(), securityHolder.getPermission());
     }
 }

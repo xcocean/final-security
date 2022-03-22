@@ -1,10 +1,10 @@
 # final-security
 
 ## 介绍
-final-security，一个专注于认证授权的轻量级框架<br/>
+final-security，一个基于RBAC，专注于授权认证的轻量级框架<br/>
 
 ## 返璞归真
-云淡风轻，回归真我，专注其一，final-security一心追寻认证授权的真我。
+云淡风轻，回归真我，专注其一，`final-security` 一心追寻认证授权的真我。
 
 
 # 01.快速入门
@@ -26,9 +26,9 @@ final-security，一个专注于认证授权的轻量级框架<br/>
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/lib/final-security-core-1.0.0.jar</systemPath>
+    <systemPath>${project.basedir}/lib/final-security-core-2.0.0.jar</systemPath>
 </dependency>
 ```
 
@@ -39,12 +39,12 @@ final-security，一个专注于认证授权的轻量级框架<br/>
 public class Myconfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
-        properties.setExcludePath(new String[]{"/login", "/logout", "/res/**"});
+        properties.setExcludePath("/login", "/logout", "/res/**");
     }
 }
 ```
 `更多配置请查看 FinalConfigProperties 类`
-> 不配置排除路径，所有请求都无法通过。未登录重定向需要你自己配置异常处理，可通过继承`DefaultFinalExceptionHandler`来重写`notLoginException`方法。
+> 不配置排除路径，所有请求都无法通过，只有登录过的会话才能通过。
 
 ### 二、传统 servlet 中
 引入依赖
@@ -52,9 +52,9 @@ public class Myconfig extends FinalSecurityConfiguration {
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/lib/final-security-core-1.0.0.jar</systemPath>
+    <systemPath>${project.basedir}/lib/final-security-core-2.0.0.jar</systemPath>
 </dependency>
 ```
 配置 `web.xml`
@@ -74,31 +74,28 @@ public class FinalSecurityConfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
         HashMap<String, FinalAuth> checkAuths=new HashMap<>();
-        checkAuths.put("/*",new FinalAuth().hasRoles("user"));
-        properties.setCheckAuths(checkAuths);
-        properties.setExcludePath(new String[]{"/hello-servlet"});
+        properties.setExcludePath("/login", "/logout", "/res/**");
     }
 }
 ```
 
 
 ## 1、登录
-首先注入 `FinalSecurityHolder` 持有者进行操作
+自动装配 `FinalSecurityHolder` 持有者进行操作
 ```java
 @Autowired
 private FinalSecurityHolder securityHolder;
-
 ```
 
-登录username通常指用户唯一username，化繁为简，final-security认为登录是准备好角色权限；在web中会生成对应的会话，final-security基于session验证
+登录username通常指用户唯一username，化繁为简，在web中会生成对应的会话，`final-security`底层基于session验证
 ```java
 @Autowired
 private FinalSecurityHolder securityHolder;
 
 @GetMapping("login")
 public Object login() {
-    securityHolder.login("username", new String[]{"user"}, null);
-    return "ok";
+    securityHolder.login("lingkang", new String[]{"user"});
+    return "login-success";
 }
 ```
 #### 在 servlet 中
@@ -107,7 +104,7 @@ public Object login() {
 private FinalSecurityHolder securityHolder=new FinalSecurityHolder();
 public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // 直接使用 FinalSecurityHolder 后面不再赘述
-    securityHolder.login("123",null,null);
+    securityHolder.login("zhangsan",null);
     // ...
 }
 ```
@@ -119,7 +116,6 @@ public void doGet(HttpServletRequest request, HttpServletResponse response) thro
 注销当前用户username
 
 ```java
-
 // 注销当前会话
 @GetMapping("logout")
 public Object logout() {
@@ -135,40 +131,45 @@ public Object logout() {
 public class Myconfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
-        HashMap<String, FinalAuth> map = new HashMap<>();
-        map.put("/user", new FinalAuth().hasRoles("user"));// 必须拥有user角色
-        map.put("/about", new FinalAuth().hasPermission("get"));// 必须拥有get权限
-        map.put("/updatePassword", new FinalAuth().hasRoles("user").hasPermission("update"));// 需要拥有user角色和update权限
-        map.put("/index", new FinalAuth().hasRoles("admin", "system").hasPermission("get"));// 至少有一个角色并拥有get权限
-        map.put("/vip/**", new FinalAuth().hasAllRoles("user","vip"));// 需要同时拥有角色
-        properties.setCheckAuths(map);
+        properties.checkAuthorize()
+                .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
+                .pathMatchers("/vip/**").hasAllRole("user", "vip1");// 必须有所有角色才能访问
 
-        properties.setExcludePath(new String[]{"/login", "/logout"});
+
+        properties.setExcludePath("/login", "/logout", "/user/login/app");
     }
 }
 ```
-> 通过指定路径，路径通配符等进行角色权限鉴权
+> 通过指定路径，路径通配符等进行角色权限鉴权。注意，排除路径会使checkAuthorize失效。优先等级：注解 > 排除路径 > checkAuthorize 
 
-### 前端模板中获取用户、角色、权限
+### 前端模板中获取用户、角色
 final-security依赖session，直接从session中读取即可。在`jsp`中
 ```html
-is login：${sessionScope.finalLogin}<br/>
-
-username：${sessionScope.finalUsername}<br/>
-
+is login：${sessionScope.final_isLogin}<br/>
+username：${sessionScope.final_loginUsername}<br/>
 role：<br/>
-${sessionScope.finalRole}
+${sessionScope.final_hasRoles}
 <br/>
-<%=Arrays.toString((String[]) request.getSession().getAttribute("finalRole"))%>
-<br/>
-permission：${sessionScope.finalPermission}<br/>
-<%=Arrays.toString((String[]) request.getSession().getAttribute("finalPermission"))%>
+<%=Arrays.toString((String[]) request.getSession().getAttribute("final_hasRoles"))%>
 <br/>
 ```
-![pay](https://gitee.com/lingkang_top/final-security/raw/master/document/fontend01.png)
+![pay](https://gitee.com/lingkang_top/final-security/raw/master/document/fontend-servlet.png)
+
+在`Thymeleaf`中
+```html
+是否登录了：[[${session.final_isLogin}]]
+<br>
+登录的用户：[[${session.final_loginUsername}]]
+<br>
+用户拥有的角色：[[${session.final_hasRoles}]]
+<br>
+<!-- Thymeleaf 遍历-->
+<span th:each="item:${session.final_hasRoles}">[[${item}]]，</span>
+```
+![pay](https://gitee.com/lingkang_top/final-security/raw/master/document/fontend-springboot.png)
 
 ## 4、使用注解进行鉴权
-final-security不会帮你引入aop注解所需依赖，需要你手动引入aop依赖，否则将会报aop包类找不到异常。
+`final-security`没有引入AOP注解所需依赖，需要手动引入AOP依赖，否则将会报AOP包类找不到异常。
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -184,7 +185,7 @@ public class Myconfig extends FinalSecurityConfiguration {
     // ...
 }
 ```
-使用注解作用于controller上
+使用注解作用于`controller`上
 ```java
     // 检查登录情况
     @FinalCheckLogin
@@ -194,13 +195,13 @@ public class Myconfig extends FinalSecurityConfiguration {
     }
     
     // 通过角色权限检查
-    @FinalCheck(orRole = "admin",andRole = {"admin","system"},orPermission = "get")
+    @FinalCheck(orRole = "admin",andRole = {"admin","system"})
     @GetMapping("/")
     public Object index() {
         return "index";
         }
 ```
-作用于service上
+作用于`service`上
 ```java
 @Service
 public class UserServiceImpl implements UserService {
@@ -291,9 +292,9 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-session-core</artifactId>
-    <version>1.0.0</version>
+    <version>2.0.0</version>
     <scope>system</scope>
-    <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-1.0.1.jar</systemPath>
+    <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-2.0.0.jar</systemPath>
 </dependency>
 ```
 配置

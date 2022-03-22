@@ -3,11 +3,6 @@ package top.lingkang.utils;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalPermissionException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
  * @author lingkang
  * date 2022/1/8
@@ -26,7 +21,7 @@ public class AuthUtils {
             throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             for (String h : has) {
-                if (matcher(h, r))
+                if (r.equals(h))
                     return;
             }
         }
@@ -41,9 +36,9 @@ public class AuthUtils {
         for (String r : roles) {
             boolean no = true;
             for (String h : has) {
-                if (matcher(h, r)) {
+                if (r.equals(h)) {
                     no = false;
-                    continue;
+                    break;
                 }
             }
             if (no) {
@@ -52,64 +47,4 @@ public class AuthUtils {
         }
     }
 
-    public static void checkPermission(String[] permission, String[] has) {
-        if (permission == null)
-            return;
-        if (has == null)
-            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
-        for (String p : permission) {
-            for (String h : has) {
-                if (matcher(h, p))
-                    return;
-            }
-        }
-        throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
-    }
-
-    public static void checkAndPermission(String[] permission, String[] has) {
-        if (permission == null)
-            return;
-        for (String p : permission) {
-            boolean no = true;
-            for (String h : has) {
-                if (matcher(h, p)) {
-                    no = false;
-                    continue;
-                }
-            }
-            if (no) {
-                throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
-            }
-        }
-    }
-
-    public static void requestDispatcher(String url, HttpServletRequest request, HttpServletResponse response) {
-        try {
-            request.getRequestDispatcher(url).forward(request, response);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 检查预留时间，返回true表示预留时间不满足
-     */
-    public static boolean checkReserveTime(long prepareTime, long maxTime, long lastAccessTime) {
-        return lastAccessTime + maxTime - System.currentTimeMillis() < prepareTime;
-    }
-
-    /**
-     * 超过最大有效时间返回true
-     */
-    public static boolean checkTokenValid(long lastTime, long maxTime) {
-        return System.currentTimeMillis() - lastTime > maxTime;
-    }
-
-
-    public static String[] removeRepeat(String[] str) {
-        Set<String> set = new HashSet<>();
-        for (String s : str)
-            set.add(s);
-        return set.toArray(new String[set.size()]);
-    }
 }

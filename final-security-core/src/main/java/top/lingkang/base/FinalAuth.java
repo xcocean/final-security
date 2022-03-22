@@ -1,6 +1,7 @@
 package top.lingkang.base;
 
 import top.lingkang.constants.FinalConstants;
+import top.lingkang.constants.FinalSessionKey;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.utils.AuthUtils;
 
@@ -11,11 +12,11 @@ import javax.servlet.http.HttpSession;
  * date 2021/8/20 16:35
  */
 public class FinalAuth {
-    private String[] role, andRole, permission, andPermission;
+    private String[] role=new String[0], andRole=new String[0];
 
     public void check(HttpSession session) {
         if (role != null || andRole != null) {
-            Object finalRole = session.getAttribute("finalRole");
+            Object finalRole = session.getAttribute(FinalSessionKey.HAS_ROLE);
             if (finalRole==null)
                 throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
 
@@ -23,35 +24,21 @@ public class FinalAuth {
             AuthUtils.checkRole(role, has);
             AuthUtils.checkAndRole(andRole, has);
         }
-
-        if (permission != null || andPermission != null) {
-            Object finalPermission = session.getAttribute("finalPermission");
-            if (finalPermission==null)
-                throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
-
-            String[] has = (String[]) finalPermission;
-            AuthUtils.checkPermission(permission, has);
-            AuthUtils.checkAndPermission(andPermission, has);
-        }
     }
 
-    public FinalAuth hasRoles(String... roles) {
-        role = roles;
-        return this;
+    public String[] getRole() {
+        return role;
     }
 
-    public FinalAuth hasAllRoles(String... roles) {
-        andRole = roles;
-        return this;
+    public void setRole(String[] role) {
+        this.role = role;
     }
 
-    public FinalAuth hasPermission(String... permission) {
-        this.permission = permission;
-        return this;
+    public String[] getAndRole() {
+        return andRole;
     }
 
-    public FinalAuth hasAllPermission(String... permission) {
-        andPermission = permission;
-        return this;
+    public void setAndRole(String[] andRole) {
+        this.andRole = andRole;
     }
 }

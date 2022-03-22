@@ -1,11 +1,10 @@
 package top.lingkang.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import top.lingkang.base.FinalAuth;
-import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpProperties;
 import top.lingkang.constants.FinalConstants;
+import top.lingkang.constants.FinalSessionKey;
 import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.http.FinalContextHolder;
@@ -33,12 +32,13 @@ public class FinalSecurityConfiguration implements Filter {
         FinalContextHolder.setRequest(request);
         try {
             String path = request.getServletPath();
+            // 缓存相关
             if (cacheExcludePath.contains(path)) {
                 chain.doFilter(servletRequest, servletResponse);
                 return;
             } else if (cacheAuths.containsKey(path)) {
                 HttpSession session = request.getSession();
-                if (session.getAttribute("finalLogin") == null) {
+                if (session.getAttribute(FinalSessionKey.IS_LOGIN) == null) {
                     throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
                 }
 
@@ -54,20 +54,22 @@ public class FinalSecurityConfiguration implements Filter {
             // 排除
             for (String url : properties.getExcludePath()) {
                 if (AuthUtils.matcher(url, path)) {
-                    cacheExcludePath.add(path);
+                    cacheExcludePath.add(path);// 添加缓存
                     chain.doFilter(servletRequest, servletResponse);
                     return;
                 }
             }
 
+            // 检查登录
             HttpSession session = request.getSession();
-            if (session.getAttribute("finalLogin") == null) {
+            if (session.getAttribute(FinalSessionKey.IS_LOGIN) == null) {
                 throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
             }
 
-            HashMap<String, FinalAuth> checkAuths = properties.getCheckAuths();
+            // 检查角色
+            HashMap<String, FinalAuth> checkAuth = properties.getCheckAuthorize().getAuthorize();
             List<FinalAuth> auths = new ArrayList<>();
-            for (Map.Entry<String, FinalAuth> entry : checkAuths.entrySet()) {
+            for (Map.Entry<String, FinalAuth> entry : checkAuth.entrySet()) {
                 if (AuthUtils.matcher(entry.getKey(), path)) {
                     auths.add(entry.getValue());
                 }
@@ -76,6 +78,7 @@ public class FinalSecurityConfiguration implements Filter {
             // cache
             cacheAuths.put(path, auths.toArray(new FinalAuth[auths.size()]));
 
+            // 执行检查
             for (FinalAuth auth : auths) {
                 auth.check(session);
             }
@@ -87,12 +90,6 @@ public class FinalSecurityConfiguration implements Filter {
                 properties.getExceptionHandler().permissionException(e, request, (HttpServletResponse) servletResponse);
             } else if (e instanceof FinalNotLoginException) {
                 properties.getExceptionHandler().notLoginException(e, request, (HttpServletResponse) servletResponse);
-            } else if ("NestedServletException".equals(e.getClass().getSimpleName()) &&
-                    (e instanceof FinalNotLoginException || e instanceof FinalPermissionException)) {
-                if (e instanceof FinalPermissionException)
-                    properties.getExceptionHandler().permissionException(e, request, (HttpServletResponse) servletResponse);
-                else
-                    properties.getExceptionHandler().notLoginException(e, request, (HttpServletResponse) servletResponse);
             } else {
                 properties.getExceptionHandler().exception(e, request, (HttpServletResponse) servletResponse);
             }
@@ -111,7 +108,7 @@ public class FinalSecurityConfiguration implements Filter {
     }
 
     @Bean
-    public FinalHttpProperties finalHttpProperties(){
+    public FinalHttpProperties finalHttpProperties() {
         return properties;
     }
 }

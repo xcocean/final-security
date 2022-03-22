@@ -7,7 +7,7 @@
     <groupId>top.lingkang</groupId>
     <artifactId>final-security</artifactId>
     <packaging>pom</packaging>
-    <version>1.1.0</version>
+    <version>2.0.0</version>
 
     <modules>
         <module>final-security-core</module>
@@ -18,7 +18,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <spring.boot.version>2.1.12.RELEASE</spring.boot.version>
+        <spring-boot.version>2.1.12.RELEASE</spring-boot.version>
     </properties>
 
     <dependencyManagement>
@@ -32,38 +32,25 @@
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-aop</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
-                <version>${spring.boot.version}</version>
+                <version>${spring-boot.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-configuration-processor</artifactId>
-                <version>${spring.boot.version}</version>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-api -->
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>2.17.1</version>
+                <version>${spring-boot.version}</version>
             </dependency>
 
             <!-- https://mvnrepository.com/artifact/org.springframework/spring-jcl -->
@@ -71,6 +58,13 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-jcl</artifactId>
                 <version>5.3.15</version>
+            </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.tomcat/tomcat-servlet-api -->
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-servlet-api</artifactId>
+                <version>9.0.58</version>
             </dependency>
 
         </dependencies>
