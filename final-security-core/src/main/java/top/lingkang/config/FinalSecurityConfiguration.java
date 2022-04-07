@@ -7,7 +7,7 @@ import top.lingkang.constants.FinalConstants;
 import top.lingkang.constants.FinalSessionKey;
 import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalPermissionException;
-import top.lingkang.http.FinalContextHolder;
+import top.lingkang.http.FinalRequestContext;
 import top.lingkang.utils.AuthUtils;
 
 import javax.servlet.*;
@@ -29,7 +29,7 @@ public class FinalSecurityConfiguration implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        FinalContextHolder.setRequest(request);
+        FinalRequestContext.setRequest(request);
         try {
             String path = request.getServletPath();
             // 缓存相关
@@ -94,7 +94,7 @@ public class FinalSecurityConfiguration implements Filter {
                 properties.getExceptionHandler().exception(e, request, (HttpServletResponse) servletResponse);
             }
         } finally {
-            FinalContextHolder.removeRequest();
+            FinalRequestContext.removeRequest();
         }
     }
 

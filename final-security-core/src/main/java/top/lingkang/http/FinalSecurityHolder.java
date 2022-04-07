@@ -11,21 +11,21 @@ import javax.servlet.http.HttpSession;
 public class FinalSecurityHolder {
 
     public void login(String username, String[] role) {
-        HttpSession session = FinalContextHolder.getRequest().getSession();
+        HttpSession session = FinalRequestContext.getRequest().getSession();
         session.setAttribute(FinalSessionKey.LOGIN_USERNAME, username);
         session.setAttribute(FinalSessionKey.HAS_ROLE, role);
         session.setAttribute(FinalSessionKey.IS_LOGIN, true);
     }
 
     public void logout() {
-        HttpSession session = FinalContextHolder.getRequest().getSession();
+        HttpSession session = FinalRequestContext.getRequest().getSession();
         session.removeAttribute(FinalSessionKey.IS_LOGIN);
         session.removeAttribute(FinalSessionKey.HAS_ROLE);
         session.removeAttribute(FinalSessionKey.LOGIN_USERNAME);
     }
 
     public String[] getRole() {
-        Object finalRole = FinalContextHolder.getRequest().getSession().getAttribute(FinalSessionKey.HAS_ROLE);
+        Object finalRole = FinalRequestContext.getRequest().getSession().getAttribute(FinalSessionKey.HAS_ROLE);
         if (finalRole != null) {
             return (String[]) finalRole;
         }
@@ -33,7 +33,7 @@ public class FinalSecurityHolder {
     }
 
     public String getUsername() {
-        Object username = FinalContextHolder.getRequest().getSession().getAttribute(FinalSessionKey.LOGIN_USERNAME);
+        Object username = FinalRequestContext.getRequest().getSession().getAttribute(FinalSessionKey.LOGIN_USERNAME);
         if (username != null) {
             return (String) username;
         }
@@ -41,7 +41,7 @@ public class FinalSecurityHolder {
     }
 
     public boolean isLogin() {
-        Object login = FinalContextHolder.getRequest().getSession().getAttribute(FinalSessionKey.IS_LOGIN);
+        Object login = FinalRequestContext.getRequest().getSession().getAttribute(FinalSessionKey.IS_LOGIN);
         if (login != null)
             return (boolean) login;
         return false;
