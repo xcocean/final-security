@@ -8,7 +8,7 @@ final-security，一个基于RBAC，专注于授权认证的轻量级框架<br/>
 
 # 01.快速入门
 
-`final-security 前提条件：java 7+ spring 5+`
+`final-security 前提条件：java 7+`
 
 ## 依赖
 ### 一、spring 体系中
@@ -26,8 +26,6 @@ final-security，一个基于RBAC，专注于授权认证的轻量级框架<br/>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
     <version>2.0.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/lib/final-security-core-2.0.0.jar</systemPath>
 </dependency>
 ```
 
@@ -52,8 +50,6 @@ public class Myconfig extends FinalSecurityConfiguration {
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
     <version>2.0.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/lib/final-security-core-2.0.0.jar</systemPath>
 </dependency>
 ```
 配置 `web.xml`
