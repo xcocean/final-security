@@ -25,7 +25,7 @@ final-security，一个基于RBAC，专注于授权认证的轻量级框架<br/>
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.1</version>
 </dependency>
 ```
 

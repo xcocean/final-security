@@ -1,7 +1,7 @@
 package top.lingkang.base.impl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.utils.StringUtils;
 
@@ -14,7 +14,7 @@ import java.io.IOException;
  * Created by 2022/1/7
  */
 public class DefaultFinalExceptionHandler implements FinalExceptionHandler {
-    private static final Log log = LogFactory.getLog(DefaultFinalExceptionHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(DefaultFinalExceptionHandler.class);
 
     @Override
     public void permissionException(Exception e, HttpServletRequest request, HttpServletResponse response) {
