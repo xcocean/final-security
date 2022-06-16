@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 /**
  * @author lingkang
  * Created by 2022/1/7
+ * FinalSecurity 开放方法（核心）
  */
 public class FinalSecurityHolder {
 

@@ -6,10 +6,14 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.lingkang.annotation.FinalCheck;
+import top.lingkang.config.FinalSecurityConfiguration;
 import top.lingkang.constants.FinalConstants;
 import top.lingkang.error.FinalNotLoginException;
+import top.lingkang.http.FinalRequestContext;
 import top.lingkang.http.FinalSecurityHolder;
 import top.lingkang.utils.AuthUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author lingkang
@@ -19,9 +23,16 @@ import top.lingkang.utils.AuthUtils;
 public class FinalCheckAnnotation {
     @Autowired(required = false)
     private FinalSecurityHolder securityHolder;
+    @Autowired(required = false)
+    private FinalSecurityConfiguration finalSecurityConfiguration;
 
     @Around("@within(top.lingkang.annotation.FinalCheck) || @annotation(top.lingkang.annotation.FinalCheck)")
     public Object method(ProceedingJoinPoint joinPoint) throws Throwable {
+        HttpServletRequest request = FinalRequestContext.getRequest();
+        if (finalSecurityConfiguration.cacheExcludePath.contains(request.getServletPath())) {
+            return joinPoint.proceed();
+        }
+
         if (!securityHolder.isLogin()) {
             throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
         }

@@ -14,11 +14,12 @@ public class AuthUtils {
         return matcher.match(pattern, path);
     }
 
+    /**
+     * 入参均不能为空！长度大于 1
+     * @param roles not empty
+     * @param has not empty
+     */
     public static void checkRole(String[] roles, String[] has) {
-        if (roles == null)
-            return;
-        if (has == null)
-            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             for (String h : has) {
                 if (r.equals(h))
@@ -28,11 +29,12 @@ public class AuthUtils {
         throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
     }
 
+    /**
+     * 入参均不能为空！长度大于 1
+     * @param roles not empty
+     * @param has not empty
+     */
     public static void checkAndRole(String[] roles, String[] has) {
-        if (roles == null)
-            return;
-        if (has == null)
-            throw new FinalPermissionException(FinalConstants.UNAUTHORIZED_MSG);
         for (String r : roles) {
             boolean no = true;
             for (String h : has) {

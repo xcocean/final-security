@@ -7,9 +7,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * 匹配类，参考 spring 5.1.x 的 PathMatcher 接口实现
+ */
 public class AntPathMatcher implements PathMatcher {
-    public static final String DEFAULT_PATH_SEPARATOR = "/";
-    private static final int CACHE_TURNOFF_THRESHOLD = 65536;
     private static final Pattern VARIABLE_PATTERN = Pattern.compile("\\{[^/]+?\\}");
     private static final char[] WILDCARD_CHARS = new char[]{'*', '?', '{'};
     private String pathSeparator;

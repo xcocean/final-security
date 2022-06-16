@@ -25,23 +25,26 @@ final-security，一个基于RBAC，专注于授权认证的轻量级框架<br/>
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>2.0.1</version>
+    <version>2.0.2</version>
 </dependency>
 ```
 
-`final-security`使用前需要先配置排除路径：
+快速开始：`final-security`
 ```java
 @EnableFinalSecurity // 开启 FinalSecurity
 @Configuration
 public class Myconfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
-        properties.setExcludePath("/login", "/logout", "/res/**");
+        // 对项目进行配置
+        properties.checkAuthorize()
+                .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
+                .pathMatchers("/vip/**").hasAllRole("user", "vip1");// 必须同时有所有角色才能访问
     }
 }
 ```
 `更多配置请查看 FinalConfigProperties 类`
-> 不配置排除路径，所有请求都无法通过，只有登录过的会话才能通过。
+> 默认所有请求都能通过
 
 ### 二、传统 servlet 中
 引入依赖
@@ -68,8 +71,11 @@ public class Myconfig extends FinalSecurityConfiguration {
 public class FinalSecurityConfig extends FinalSecurityConfiguration {
     @Override
     protected void config(FinalHttpProperties properties) {
-        HashMap<String, FinalAuth> checkAuths=new HashMap<>();
-        properties.setExcludePath("/login", "/logout", "/res/**");
+        // 对项目进行配置
+        properties.checkAuthorize()
+                .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
+                .pathMatchers("/vip/**").hasAllRole("user", "vip1") // 必须有所有角色才能访问
+                .pathMatchers("/about").hasLogin();// 需要登录才能访问
     }
 }
 ```
@@ -131,14 +137,15 @@ public class Myconfig extends FinalSecurityConfiguration {
     protected void config(FinalHttpProperties properties) {
         properties.checkAuthorize()
                 .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
-                .pathMatchers("/vip/**").hasAllRole("user", "vip1");// 必须有所有角色才能访问
+                .pathMatchers("/vip/**").hasAllRole("user", "vip1") // 必须有所有角色才能访问
+                .pathMatchers("/about").hasLogin();// 需要登录才能访问
 
-
-        properties.setExcludePath("/login", "/logout", "/user/login/app");
+        // 排除鉴权路径匹配, 匹配优先级别：排除路径 > checkAuthorize > 注解
+        properties.setExcludePath("/login", "/logout", "/vip/total", "/vip/user/**");
     }
 }
 ```
-> 通过指定路径，路径通配符等进行角色权限鉴权。注意，排除路径会使checkAuthorize失效。优先等级：注解 > 排除路径 > checkAuthorize 
+> 通过指定路径，路径通配符等进行角色权限鉴权。注意，排除路径会使checkAuthorize失效。优先等级：排除路径 > checkAuthorize > 注解
 
 ### 前端解析视图中获取用户、角色
 final-security依赖session，直接从session中读取即可。在`jsp`中
@@ -232,17 +239,9 @@ AOP切面的异常需要`手动捕获`
 ```java
 @RestControllerAdvice
 public class ErrorAopHandler {
-    @Autowired
-    private FinalHttpProperties properties;
     @ExceptionHandler(FinalBaseException.class)
     public void finalBaseException(FinalBaseException e, HttpServletRequest request, HttpServletResponse response) {
-        if (e instanceof FinalPermissionException) {
-            properties.getExceptionHandler().permissionException(e, request, response);
-        } else if (e instanceof FinalNotLoginException) {
-            properties.getExceptionHandler().notLoginException(e, request, response);
-        } else {
-            properties.getExceptionHandler().exception(e, request, response);
-        }
+        // 异常处理
     }
 }
 ```
@@ -277,7 +276,7 @@ properties.setExceptionHandler(new FinalExceptionHandler() {
 ### 记住我remember
 
 可以通过自定义异常处理来达到记住我remember。
-<br/>例如登录时先将rememberToken存储到map中，记录时间，自定义异常时判断map中是否存在remember，然后重新登录并再次转发当前请求即可。
+<br/>例如登录时先将rememberToken存储到静态map（数据库）中，记录时间，自定义异常时判断map（数据库）中是否存在remember，然后重新登录并再次转发当前请求即可。
 
 
 # 03.集群
@@ -291,9 +290,7 @@ final-security依赖session，因此整合分布式会话可以轻松实现无�
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-session-core</artifactId>
-    <version>2.0.0</version>
-    <scope>system</scope>
-    <systemPath>${project.basedir}/src/main/resources/lib/final-security-core-2.0.0.jar</systemPath>
+    <version>2.0.1</version>
 </dependency>
 ```
 配置
@@ -312,8 +309,8 @@ public class MyFinalSessionConfig extends FinalSessionConfigurerAdapter {
 }
 ```
 
-# 04.打包
-注意，springboot的`spring-boot-maven-plugin`插件打包需要配置将system作用域的依赖打进入项目
+# ~~04.打包~~
+~~注意，springboot的`spring-boot-maven-plugin`插件打包需要配置将system作用域的依赖打进入项目~~
 ```xml
 <plugin>
     <groupId>org.springframework.boot</groupId>

@@ -2,6 +2,7 @@ package top.lingkang.base;
 
 import top.lingkang.error.FinalBaseException;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,8 +11,9 @@ import java.util.Set;
 /**
  * @author lingkang
  * Created by 2022/3/22
+ * 设置授权检查
  */
-public class CheckAuthorize {
+public class CheckAuthorize implements Serializable {
     public CheckAuthorize() {
     }
 
@@ -51,6 +53,14 @@ public class CheckAuthorize {
         newRole.addAll(Arrays.asList(allRole));
         tempFinalAuth.setAndRole(newRole.toArray(new String[newRole.size()]));
         authorize.put(tempMatchers, tempFinalAuth);
+        return this;
+    }
+
+    public CheckAuthorize hasLogin() {
+        if (tempFinalAuth == null) {
+            throw new FinalBaseException("请先设置匹配路径：antMatchers");
+        }
+        authorize.put(tempMatchers, new FinalAuth());
         return this;
     }
 

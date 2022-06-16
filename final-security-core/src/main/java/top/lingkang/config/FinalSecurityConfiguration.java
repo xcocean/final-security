@@ -1,10 +1,7 @@
 package top.lingkang.config;
 
-import org.springframework.context.annotation.Bean;
 import top.lingkang.base.FinalAuth;
 import top.lingkang.base.FinalHttpProperties;
-import top.lingkang.constants.FinalConstants;
-import top.lingkang.constants.FinalSessionKey;
 import top.lingkang.error.FinalNotLoginException;
 import top.lingkang.error.FinalPermissionException;
 import top.lingkang.http.FinalRequestContext;
@@ -20,11 +17,13 @@ import java.util.*;
 /**
  * @author lingkang
  * Created by 2022/2/11
+ * 过滤配置类（核心）
+ * 匹配优先级别：排除 > 鉴权
  */
 public class FinalSecurityConfiguration implements Filter {
     private FinalHttpProperties properties = new FinalHttpProperties();
-    private HashSet<String> cacheExcludePath = new HashSet<>();
-    private HashMap<String, FinalAuth[]> cacheAuths = new HashMap<>();
+    public HashSet<String> cacheExcludePath = new HashSet<>();
+    public HashMap<String, FinalAuth[]> cacheAuths = new HashMap<>();
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
@@ -38,10 +37,6 @@ public class FinalSecurityConfiguration implements Filter {
                 return;
             } else if (cacheAuths.containsKey(path)) {
                 HttpSession session = request.getSession();
-                if (session.getAttribute(FinalSessionKey.IS_LOGIN) == null) {
-                    throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
-                }
-
                 FinalAuth[] finalAuths = cacheAuths.get(path);
                 for (FinalAuth auth : finalAuths) {
                     auth.check(session);
@@ -60,12 +55,6 @@ public class FinalSecurityConfiguration implements Filter {
                 }
             }
 
-            // 检查登录
-            HttpSession session = request.getSession();
-            if (session.getAttribute(FinalSessionKey.IS_LOGIN) == null) {
-                throw new FinalNotLoginException(FinalConstants.NOT_LOGIN_MSG);
-            }
-
             // 检查角色
             HashMap<String, FinalAuth> checkAuth = properties.getCheckAuthorize().getAuthorize();
             List<FinalAuth> auths = new ArrayList<>();
@@ -75,10 +64,18 @@ public class FinalSecurityConfiguration implements Filter {
                 }
             }
 
+            // 不需要校验
+            if (auths.isEmpty()) {
+                cacheExcludePath.add(path);// 添加缓存
+                chain.doFilter(servletRequest, servletResponse);
+                return;
+            }
+
             // cache
             cacheAuths.put(path, auths.toArray(new FinalAuth[auths.size()]));
 
             // 执行检查
+            HttpSession session = request.getSession();
             for (FinalAuth auth : auths) {
                 auth.check(session);
             }
@@ -105,10 +102,5 @@ public class FinalSecurityConfiguration implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         config(properties);
-    }
-
-    @Bean
-    public FinalHttpProperties finalHttpProperties() {
-        return properties;
     }
 }

@@ -1,6 +1,5 @@
 package top.lingkang.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.lingkang.base.FinalHttpProperties;
@@ -17,8 +16,8 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestControllerAdvice
 public class ErrorAopHandler {
-    @Autowired
-    private FinalHttpProperties properties;
+    private FinalHttpProperties properties = new FinalHttpProperties();
+
     @ExceptionHandler(FinalBaseException.class)
     public void finalBaseException(FinalBaseException e, HttpServletRequest request, HttpServletResponse response) {
         if (e instanceof FinalPermissionException) {

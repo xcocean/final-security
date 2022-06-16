@@ -6,7 +6,6 @@ import top.lingkang.annotation.EnableFinalSecurityAnnotation;
 import top.lingkang.base.FinalAuth;
 import top.lingkang.base.FinalExceptionHandler;
 import top.lingkang.base.FinalHttpProperties;
-import top.lingkang.base.FinalHttpSecurity;
 import top.lingkang.base.impl.DefaultFinalExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +24,9 @@ public class Myconfig extends FinalSecurityConfiguration {
     protected void config(FinalHttpProperties properties) {
         properties.checkAuthorize()
                 .pathMatchers("/user").hasAnyRole("user", "vip1") // 有其中任意角色就能访问
-                .pathMatchers("/vip/**").hasAllRole("user", "vip1");// 必须有所有角色才能访问
+                .pathMatchers("/vip/**").hasAllRole("user", "vip1") // 必须有所有角色才能访问
+                .pathMatchers("/about").hasLogin();// 需要登录才能访问
+
 
 
         properties.setExcludePath("/login", "/logout", "/user/login/app");
