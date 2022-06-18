@@ -52,7 +52,7 @@ public class Myconfig extends FinalSecurityConfiguration {
 <dependency>
     <groupId>top.lingkang</groupId>
     <artifactId>final-security-core</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.2</version>
 </dependency>
 ```
 配置 `web.xml`
